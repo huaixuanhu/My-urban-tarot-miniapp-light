@@ -1,0 +1,770 @@
+{
+  "deck": {
+    "name": "Urban Tarot",
+    "creator": "Robin Scott",
+    "publisher": "U.S. Games Systems, Inc.",
+    "year": 2019,
+    "description": "The Urban Tarot reclaims the power of old magic for 21st century seekers, finding wonder in the metropolis and the power under the pavement.",
+    "totalCards": 78
+  },
+  "majorArcana": [
+    {
+      "id": "major-00",
+      "number": 0,
+      "name": "The Fool",
+      "theme": "Beginning of the journey",
+      "interpretation": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+      "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+      "element": "Air",
+      "image": "/images/cards/The_Fool.webp"
+    },
+    {
+      "id": "major-01",
+      "number": 1,
+      "name": "The Mage",
+      "theme": "Infinite potential and promise",
+      "interpretation": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+      "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+      "element": "Mercury",
+      "image": "/images/cards/The_Mage.webp"
+    },
+    {
+      "id": "major-02",
+      "number": 2,
+      "name": "The High Priestess",
+      "theme": "Receiving and understanding",
+      "interpretation": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+      "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+      "element": "Moon",
+      "image": "/images/cards/The_High_Priestess.webp"
+    },
+    {
+      "id": "major-03",
+      "number": 3,
+      "name": "The Empress",
+      "theme": "Mother in every sense",
+      "interpretation": "Symbol of life and creation, Great Mother, Mother Nature, abundant and endless nurturing energy.",
+      "urbanImagery": "Warm tones of late 70's design, antique refrigerator, kitchen setting",
+      "element": "Venus",
+      "image": "/images/cards/The_Empress.webp"
+    },
+    {
+      "id": "major-04",
+      "number": 4,
+      "name": "The Emperor",
+      "theme": "Father in every sense",
+      "interpretation": "Symbol of authority, guardian of order and stability, protector against chaos and fear.",
+      "urbanImagery": "Mayor of New York standing on East River under Brooklyn Bridge during Hurricane Sandy",
+      "element": "Aries",
+      "image": "/images/cards/The_Emperor.webp"
+    },
+    {
+      "id": "major-05",
+      "number": 5,
+      "name": "The Hierophant",
+      "theme": "Power of organization",
+      "interpretation": "About community, trusting hierarchy structure, both light and darkness in institutions.",
+      "urbanImagery": "Catholic church symbols - three circles (Trinity), bishop's crook combined with papal staff",
+      "element": "Taurus",
+      "image": "/images/cards/The_Hierophant.webp"
+    },
+    {
+      "id": "major-06",
+      "number": 6,
+      "name": "The Lovers",
+      "theme": "Unity between opposites",
+      "interpretation": "Opposites united and intertwined, melded into one through power of love, harmony of Yin and Yang.",
+      "urbanImagery": "Small wedding ceremony lighting candle together",
+      "element": "Gemini",
+      "image": "/images/cards/The_Lovers.webp"
+    },
+    {
+      "id": "major-07",
+      "number": 7,
+      "name": "The Chariot",
+      "theme": "Determination and strength",
+      "interpretation": "About having will, rolling forward never stopping, building something from nothing against all obstacles.",
+      "urbanImagery": "Person crouched on taxi, First Baptist Church of New York in background",
+      "element": "Cancer",
+      "image": "/images/cards/The_Chariot.webp"
+    },
+    {
+      "id": "major-08",
+      "number": 8,
+      "name": "Justice",
+      "theme": "What is just, fair, and right",
+      "interpretation": "Core ideal of society, rule of law, balanced and ethical judgment. Needs guidance of love and mercy.",
+      "urbanImagery": "Blindfolded figure with sword of truth",
+      "element": "Libra",
+      "image": "/images/cards/Justice.webp"
+    },
+    {
+      "id": "major-09",
+      "number": 9,
+      "name": "The Hermit",
+      "theme": "Solitude and wisdom",
+      "interpretation": "Listening to inner voice, illuminating path through darkest places, connected to Moon and darker aspects of psyche.",
+      "urbanImagery": "Accompanied by Cerberus (three-headed hound), symbol of journey into underworld",
+      "element": "Virgo",
+      "image": "/images/cards/The_Hermit.webp"
+    },
+    {
+      "id": "major-10",
+      "number": 10,
+      "name": "Wheel of Fortune",
+      "theme": "Force of random chance",
+      "interpretation": "Sudden windfall and unexpected tragedy, neither positive nor negative - reality of living in constantly changing world.",
+      "urbanImagery": "Coney Island Wonder Wheel with Sphinx enthroned, off-season with dark uncertain sky",
+      "element": "Jupiter",
+      "image": "/images/cards/The_Wheel_of_Fortune.webp"
+    },
+    {
+      "id": "major-11",
+      "number": 11,
+      "name": "Strength",
+      "theme": "Many kinds of strength",
+      "interpretation": "Physical, emotional, determination - the lion fierce and mighty, and the woman who tames it with gentle force and calm.",
+      "urbanImagery": "Wrestling the marble lion 'Fortitude' outside New York Public Library",
+      "element": "Leo",
+      "image": "/images/cards/Strength.webp"
+    },
+    {
+      "id": "major-12",
+      "number": 12,
+      "name": "The Hanged Man",
+      "theme": "Finding new perspective",
+      "interpretation": "Moving forward sometimes means giving up, learning sometimes requires unlearning, turning things upside down.",
+      "urbanImagery": "Corporate figure on girder letting worldly wealth fall from pockets",
+      "element": "Water",
+      "image": "/images/cards/The_Hanged_Man.webp"
+    },
+    {
+      "id": "major-13",
+      "number": 13,
+      "name": "Death",
+      "theme": "Change and endings",
+      "interpretation": "Not always the enemy, implications of rebirth and renewal, modern metaphor of organ donation - endings that allow new beginnings.",
+      "urbanImagery": "Hospital setting with faceless figure, scarabs (Egyptian rebirth symbol) crawling on clock",
+      "element": "Scorpio",
+      "image": "/images/cards/Death.webp"
+    },
+    {
+      "id": "major-14",
+      "number": 14,
+      "name": "Art",
+      "theme": "Mixing opposing elements",
+      "interpretation": "Taking opposing pieces, harmonizing them, combining into unique whole - 'Solve et coagula' (dissolve and combine).",
+      "urbanImagery": "Mural on wall featuring Rider-Waite-Smith imagery, creative alchemy of old and new",
+      "element": "Sagittarius",
+      "image": "/images/cards/Art.webp"
+    },
+    {
+      "id": "major-15",
+      "number": 15,
+      "name": "The Devil",
+      "theme": "Ways we are enslaved",
+      "interpretation": "Hedonism, fear, self-doubt, laziness keeping us in chains, addictions we should break but do not.",
+      "urbanImagery": "Dirty bathroom scribbles and stick figures, collaged textures for tangible feel",
+      "element": "Capricorn",
+      "image": "/images/cards/The_Devil.webp"
+    },
+    {
+      "id": "major-16",
+      "number": 16,
+      "name": "The Tower",
+      "theme": "Disaster and crisis",
+      "interpretation": "Things gone terribly wrong, crisis that forces change, structures crumbling to make way for new foundations.",
+      "urbanImagery": "Black and gold ornate tower in NYC, reflecting modern political crisis",
+      "element": "Mars",
+      "image": "/images/cards/The_Towers.webp"
+    },
+    {
+      "id": "major-17",
+      "number": 17,
+      "name": "The Star",
+      "theme": "Hope in the Major Arcana",
+      "interpretation": "Dream just out of view but powerful enough to guide, pouring out love and kindness like water.",
+      "urbanImagery": "Bowery Mission (homeless shelter/soup kitchen), red doors and stained glass, city skyline at night",
+      "element": "Aquarius",
+      "image": "/images/cards/The_Star.webp"
+    },
+    {
+      "id": "major-18",
+      "number": 18,
+      "name": "The Moon",
+      "theme": "Secrets and subconscious",
+      "interpretation": "Journey into mystery and unknown, delving into things we'd prefer not to face, dreams and nightmares.",
+      "urbanImagery": "NYC underground tunnels and sewers (Cobble Hill Tunnel), Anubis as psychopomp",
+      "element": "Pisces",
+      "image": "/images/cards/The_Moon.webp"
+    },
+    {
+      "id": "major-19",
+      "number": 19,
+      "name": "The Sun",
+      "theme": "Life, hope, and clarity",
+      "interpretation": "Light that dispels confusion, childlike perspective that sweeps away complexities, enjoying simple things.",
+      "urbanImagery": "Union Square Park with Apollo statue, golden ratio proportions",
+      "element": "Sun",
+      "image": "/images/cards/The_Sun.webp"
+    },
+    {
+      "id": "major-20",
+      "number": 20,
+      "name": "The Aeon",
+      "theme": "Part of greater cycle",
+      "interpretation": "Looking at your place in history, judged by what we leave behind for generations to come.",
+      "urbanImagery": "Ellis Island and American Immigration Wall of Honor, Freedom Tower in background",
+      "element": "Fire",
+      "image": "/images/cards/The_Aeon.webp"
+    },
+    {
+      "id": "major-21",
+      "number": 21,
+      "name": "The Universe",
+      "theme": "Completion of the journey",
+      "interpretation": "Harmonious synthesis, at peace with universe and ourselves, comfortable knowing nothing yet eager for next journey.",
+      "urbanImagery": "Chrysler Building eagle gargoyle, NYC skyline, International Space Station and Milky Way",
+      "element": "Saturn",
+      "image": "/images/cards/The_Universe.webp"
+    }
+  ],
+  "minorArcana": {
+    "wands": {
+      "element": "Fire",
+      "symbol": "\u25b3",
+      "color": "#ff6b35",
+      "theme": "Passion, will, idealism, spiritual drive",
+      "cards": [
+        {
+          "id": "wands-ace",
+          "name": "Ace of Wands",
+          "title": null,
+          "theme": "Pure elemental Fire",
+          "interpretation": "Raw potential energy, the fuel that drives spirit, making a stand for the better.",
+          "urbanImagery": "Statue of Liberty's torch overlaid with wand design",
+          "image": "/images/cards/The_Ace_of_Wands.webp"
+        },
+        {
+          "id": "wands-02",
+          "name": "Two of Wands",
+          "title": "Dominion",
+          "theme": "Will to succeed",
+          "interpretation": "Movement gaining traction, making sacrifices to reach goals, fire becoming focused tool.",
+          "urbanImagery": "Teddy Roosevelt equestrian statue outside American Museum of Natural History",
+          "image": "/images/cards/The_Two_of_Wands.webp"
+        },
+        {
+          "id": "wands-03",
+          "name": "Three of Wands",
+          "title": "Virtue",
+          "theme": "Responsibility and ideals",
+          "interpretation": "Movement united in defense of ideals, stronger when working together in harmony.",
+          "urbanImagery": "NYC Fire Department, 3rd Hook and Ladder company (9/11 first responders tribute)",
+          "image": "/images/cards/The_Three_of_Wands.webp"
+        },
+        {
+          "id": "wands-04",
+          "name": "Four of Wands",
+          "title": "Completion",
+          "theme": "Achievement and milestone",
+          "interpretation": "End of job well done, achievement of greater understanding, road ahead is clear.",
+          "urbanImagery": "Columbia University graduates, Alma Mater sculpture at Low Library",
+          "image": "/images/cards/The_Four_of_Wands.webp"
+        },
+        {
+          "id": "wands-05",
+          "name": "Five of Wands",
+          "title": "Strife",
+          "theme": "Competition and contest",
+          "interpretation": "Resistance encountered, competition can lead to growth, fighting to defend position.",
+          "urbanImagery": "Sports bar with baseball theme (Fenway Park, Yankee Stadium on TV screens)",
+          "image": "/images/cards/The_Five_of_Wands.webp"
+        },
+        {
+          "id": "wands-06",
+          "name": "Six of Wands",
+          "title": "Victory",
+          "theme": "Hard-won triumph",
+          "interpretation": "Proven through sweat and blood, achieved real change, can rest on laurels or go farther.",
+          "urbanImagery": "NYC Marathon, Verrazano-Narrows Bridge, Ethiopian marathon winner",
+          "image": "/images/cards/The_Six_of_Wands.webp"
+        },
+        {
+          "id": "wands-07",
+          "name": "Seven of Wands",
+          "title": "Valor",
+          "theme": "Speaking truth to power",
+          "interpretation": "Voice of little guy with hopeless cause, spirit of righteous passion and moral courage.",
+          "urbanImagery": "Occupy Wall Street protests at Zuccotti Park, painted cardboard signs",
+          "image": "/images/cards/The_Seven_of_Wands.webp"
+        },
+        {
+          "id": "wands-08",
+          "name": "Eight of Wands",
+          "title": "Swiftness",
+          "theme": "Rapid decisive action",
+          "interpretation": "Keep swimming to stay afloat, move forward before cause runs out of steam.",
+          "urbanImagery": "Bicycle delivery person, wand arrangement like bike wheel or NYC pizza pie",
+          "image": "/images/cards/The_Eight_of_Wands.webp"
+        },
+        {
+          "id": "wands-09",
+          "name": "Nine of Wands",
+          "title": "Fortitude",
+          "theme": "Strength in adversity",
+          "interpretation": "Determination and devotion to duty through sheer force of will, single fire burning stubbornly.",
+          "urbanImagery": "James Farley Post Office on 8th Avenue, mail push carts unique to NYC",
+          "image": "/images/cards/The_Nine_of_Wands.webp"
+        },
+        {
+          "id": "wands-10",
+          "name": "Ten of Wands",
+          "title": "Oppression",
+          "theme": "Ideals becoming dogma",
+          "interpretation": "Idea that became institution, strength corrupted into cruelty, must consider if we've gone too far.",
+          "urbanImagery": "Depicts systemic racial bias in justice system, mass incarceration",
+          "image": "/images/cards/The_Ten_of_Wands.webp"
+        },
+        {
+          "id": "wands-knight",
+          "name": "Knight of Wands",
+          "title": "The Rock Star",
+          "theme": "Fire within Fire",
+          "interpretation": "Pure passion, rebellion, idealism, charisma. Warrior, leader, blazing spark that burns fiercely.",
+          "urbanImagery": "Joey Ramone at CBGB, Johnny and Dee Dee Ramone on stage, Pegasus on drum kit",
+          "image": "/images/cards/The_Knight_of_Wands.webp"
+        },
+        {
+          "id": "wands-queen",
+          "name": "Queen of Wands",
+          "title": "The Public Defender",
+          "theme": "Emotion in context of passion",
+          "interpretation": "Loving and compassionate yet fierce and protective, fighting passionately for the accused.",
+          "urbanImagery": "NY County Supreme Court, Triumph of Human Spirit Memorial fountain, leopard symbol",
+          "image": "/images/cards/The_Queen_of_Wands.webp"
+        },
+        {
+          "id": "wands-prince",
+          "name": "Prince of Wands",
+          "title": "The Journalist",
+          "theme": "Reason in context of passion",
+          "interpretation": "Fiery champion for moral change, uses words as weapons, satirizing those in power.",
+          "urbanImagery": "Broadcast graphics with stars and stripes, NYC skyline, news satirist style",
+          "image": "/images/cards/The_Prince_of_Wands.webp"
+        },
+        {
+          "id": "wands-princess",
+          "name": "Princess of Wands",
+          "title": "The Dancer",
+          "theme": "Earth in context of Fire",
+          "interpretation": "Burlesque performer, seductive and enticing, full of lust and grace, pure joy of living.",
+          "urbanImagery": "Fire dance on stage at small club, NYC burlesque revival scene",
+          "image": "/images/cards/The_Princess_of_Wands.webp"
+        }
+      ]
+    },
+    "cups": {
+      "element": "Water",
+      "symbol": "\u25bd",
+      "color": "#4a90d9",
+      "theme": "Dreams, receptivity, emotions, relationships",
+      "cards": [
+        {
+          "id": "cups-ace",
+          "name": "Ace of Cups",
+          "title": null,
+          "theme": "Pure elemental Water",
+          "interpretation": "Chance encounter full of promise, infinite potential of love, first sight holding potential.",
+          "urbanImagery": "Bethesda Fountain in Central Park, Angel of the Waters sculpture, San Remo apartments",
+          "image": "/images/cards/The_Ace_of_Cups.webp"
+        },
+        {
+          "id": "cups-02",
+          "name": "Two of Cups",
+          "title": "Love",
+          "theme": "Simplest expression of love",
+          "interpretation": "Young love not yet tested, overwhelming infatuation, Romeo and Juliet moment.",
+          "urbanImagery": "Two strangers meeting at coffee shop (Green Lotus Coffee), hands touching mugs",
+          "image": "/images/cards/The_Two_of_Cups.webp"
+        },
+        {
+          "id": "cups-03",
+          "name": "Three of Cups",
+          "title": "Abundance",
+          "theme": "Joys of friendship",
+          "interpretation": "Honeymoon period, joy and fulfillment without limit, celebration and warmth.",
+          "urbanImagery": "Birthday party on New Year's Eve, toast in your honor, kiss at midnight",
+          "image": "/images/cards/The_Three_of_Cups.webp"
+        },
+        {
+          "id": "cups-04",
+          "name": "Four of Cups",
+          "title": "Luxury",
+          "theme": "Stability in emotions",
+          "interpretation": "Comfortable relationship past honeymoon phase, richness of love but lost sense of newness.",
+          "urbanImagery": "Couple watching TV together, comfortable silences, long-term relationship comfort",
+          "image": "/images/cards/The_Four_of_Cups.webp"
+        },
+        {
+          "id": "cups-05",
+          "name": "Five of Cups",
+          "title": "Disappointment",
+          "theme": "Opposition and loss",
+          "interpretation": "Perfect relationship crashing down, crushing lonely feeling, grief and betrayal.",
+          "urbanImagery": "Broken china hutch with raw steak (like open chest wound), shattered hopes",
+          "image": "/images/cards/The_Five_of_Cups.webp"
+        },
+        {
+          "id": "cups-06",
+          "name": "Six of Cups",
+          "title": "Pleasure",
+          "theme": "Element at its best",
+          "interpretation": "Perfect intimacy that deepens love, sexuality without guilt or shame, fertility and kindness.",
+          "urbanImagery": "Wedding night imagery, clean white silk sheets, emotional dimension of intimacy",
+          "image": "/images/cards/The_Six_of_Cups.webp"
+        },
+        {
+          "id": "cups-07",
+          "name": "Seven of Cups",
+          "title": "Debauch",
+          "theme": "Unbalanced energies",
+          "interpretation": "Allure of false and fleeting pleasure, self-destructive pursuit of thrills, hedonism.",
+          "urbanImagery": "Wild bachelorette party aftermath, fruity frozen drinks, drunken night castoffs",
+          "image": "/images/cards/The_Seven_of_Cups.webp"
+        },
+        {
+          "id": "cups-08",
+          "name": "Eight of Cups",
+          "title": "Indolence",
+          "theme": "Threat to relationship",
+          "interpretation": "Toxic morass of procrastination, depression, sloth, ever-deepening pit when someone stops caring.",
+          "urbanImagery": "Artist's own workstation, blank Photoshop canvas, laziness and self-recrimination",
+          "image": "/images/cards/The_Eight_of_Cups.webp"
+        },
+        {
+          "id": "cups-09",
+          "name": "Nine of Cups",
+          "title": "Happiness",
+          "theme": "Pursuit of happiness",
+          "interpretation": "Love reached full expression, all-encompassing fulfillment, happiness without fear or doubt.",
+          "urbanImagery": "Fort Washington Park, George Washington Bridge, summer family picnic scene",
+          "image": "/images/cards/The_Nine_of_Cups.webp"
+        },
+        {
+          "id": "cups-10",
+          "name": "Ten of Cups",
+          "title": "Satiety",
+          "theme": "Happily Ever After",
+          "interpretation": "Love's ultimate dream of home and family, joy and peace for the next generation.",
+          "urbanImagery": "Same-sex marriage celebration, homage to Pamela Colman Smith's original",
+          "image": "/images/cards/The_Ten_of_Cups.webp"
+        },
+        {
+          "id": "cups-knight",
+          "name": "Knight of Cups",
+          "title": "The Seducer",
+          "theme": "Fire in Water",
+          "interpretation": "Attractive and friendly but unpredictable, sudden passion may burn hot then be snuffed out.",
+          "urbanImagery": "Bar scene with crab (Cancer symbol), carousel horse tattoo, kitchen flames in background",
+          "image": "/images/cards/The_Knight_of_Cups.webp"
+        },
+        {
+          "id": "cups-queen",
+          "name": "Queen of Cups",
+          "title": "The Therapist",
+          "theme": "Water in Water",
+          "interpretation": "Kind, affectionate, comforting, accepting without judgment, calm reflection and introspection.",
+          "urbanImagery": "Surrealistic office with koi pond, dreaminess of the suit",
+          "image": "/images/cards/The_Queen_of_Cups.webp"
+        },
+        {
+          "id": "cups-prince",
+          "name": "Prince of Cups",
+          "title": "The Filmmaker",
+          "theme": "Air over Water",
+          "interpretation": "Master of emotional sea, calculated to produce specific effect, strives to touch something universal.",
+          "urbanImagery": "Film director scene, driven by need to evoke and charm",
+          "image": "/images/cards/The_Prince_of_Cups.webp"
+        },
+        {
+          "id": "cups-princess",
+          "name": "Princess of Cups",
+          "title": "The Costume Designer",
+          "theme": "Earth in Water",
+          "interpretation": "Kind and gentle dreamer, lover of romance and grand stories, transforms imaginary characters through clothing.",
+          "urbanImagery": "Broadway theatre district, basement costume studio, transforming dreams into reality",
+          "image": "/images/cards/The_Princess_of_Cups.webp"
+        }
+      ]
+    },
+    "swords": {
+      "element": "Air",
+      "symbol": "\u2721",
+      "color": "#9b59b6",
+      "theme": "Rational thought, language, science, intellect",
+      "cards": [
+        {
+          "id": "swords-ace",
+          "name": "Ace of Swords",
+          "title": null,
+          "theme": "Pure thought and logic",
+          "interpretation": "The 'aha!' experience, sudden realization, moment of pure clarity with revolutionary potential.",
+          "urbanImagery": "Washington Square Arch, crown of intellect with shattered glass texture",
+          "image": "/images/cards/The_Ace_of_Swords.webp"
+        },
+        {
+          "id": "swords-02",
+          "name": "Two of Swords",
+          "title": "Peace",
+          "theme": "Purest expression of intellect",
+          "interpretation": "Moment of perfect clarity, logic as clear as sunny day, all variables balanced.",
+          "urbanImagery": "Empty playground with seesaws, barbed wire fence, welcoming only in theory",
+          "image": "/images/cards/The_Two_of_Swords.webp"
+        },
+        {
+          "id": "swords-03",
+          "name": "Three of Swords",
+          "title": "Sorrow",
+          "theme": "Darker side of understanding",
+          "interpretation": "Painful truths that cannot be ignored, nihilistic conclusions, knowledge leading to suffering.",
+          "urbanImagery": "References to loss, silent epidemic stealing our best and brightest",
+          "image": "/images/cards/The_Three_of_Swords.webp"
+        },
+        {
+          "id": "swords-04",
+          "name": "Four of Swords",
+          "title": "Truce",
+          "theme": "Power of rational mind",
+          "interpretation": "Diplomacy and negotiation replacing chaos, laying down swords to rest.",
+          "urbanImagery": "United Nations General Assembly Hall, forum for preventing global war",
+          "image": "/images/cards/The_Four_of_Swords.webp"
+        },
+        {
+          "id": "swords-05",
+          "name": "Five of Swords",
+          "title": "Defeat",
+          "theme": "Sometimes we can't win",
+          "interpretation": "Truce betrayed by self-interest, winning streak can't last forever, intellectual pride.",
+          "urbanImagery": "Video poker machine in darkened bar corner, thinking we can outsmart the house",
+          "image": "/images/cards/The_Five_of_Swords.webp"
+        },
+        {
+          "id": "swords-06",
+          "name": "Six of Swords",
+          "title": "Science",
+          "theme": "Logic in harmony with world",
+          "interpretation": "Triumph of intellect over ignorance, scientific method, peer review acceptance.",
+          "urbanImagery": "Rod of Asclepius (medical science symbol), hypothesis to conclusion journey",
+          "image": "/images/cards/The_Six_of_Swords.webp"
+        },
+        {
+          "id": "swords-07",
+          "name": "Seven of Swords",
+          "title": "Futility",
+          "theme": "Rules bending for some",
+          "interpretation": "Bureaucracy grinding spirit down, tools of order creating inequality, can't beat the system.",
+          "urbanImagery": "Endless purgatory of bureaucracy, wheels of justice grinding powerless",
+          "image": "/images/cards/The_Seven_of_Swords.webp"
+        },
+        {
+          "id": "swords-08",
+          "name": "Eight of Swords",
+          "title": "Interference",
+          "theme": "Confusing tangle of voices",
+          "interpretation": "Analysis paralysis, confused and unsure, caught in cycle of unlimited input.",
+          "urbanImagery": "Social media endless browsing, comments threads that never end",
+          "image": "/images/cards/The_Eight_of_Swords.webp"
+        },
+        {
+          "id": "swords-09",
+          "name": "Nine of Swords",
+          "title": "Cruelty",
+          "theme": "No restful endpoint for mind",
+          "interpretation": "Most terrifying conclusions begin with noble goals, 'The End Justifies the Deed'.",
+          "urbanImagery": "Dictatorships beginning with order, weapons starting with peace",
+          "image": "/images/cards/The_Nine_of_Swords.webp"
+        },
+        {
+          "id": "swords-10",
+          "name": "Ten of Swords",
+          "title": "Ruin",
+          "theme": "Wasteland from our choices",
+          "interpretation": "Cost of endless analysis is loss of hope, hitting rock bottom with nowhere to go but up.",
+          "urbanImagery": "Hopelessness of addiction cycle, despair",
+          "image": "/images/cards/The_Ten_of_Swords.webp"
+        },
+        {
+          "id": "swords-knight",
+          "name": "Knight of Swords",
+          "title": "The Game Master",
+          "theme": "Fire and Air combined",
+          "interpretation": "Relishes debate and conflict, wields mind like blade, sharp analytical wit, dangerous opponent.",
+          "urbanImagery": "Every challenge like a game he's confident to win",
+          "image": "/images/cards/The_Knight_of_Swords.webp"
+        },
+        {
+          "id": "swords-queen",
+          "name": "Queen of Swords",
+          "title": "The Painter",
+          "theme": "Idealized artist",
+          "interpretation": "Keen observer with sharp creative intellect, creates because she must, art as mirror of truth.",
+          "urbanImagery": "Artist at drafting table, imagination floating free",
+          "image": "/images/cards/The_Queen_of_Swords.webp"
+        },
+        {
+          "id": "swords-prince",
+          "name": "Prince of Swords",
+          "title": "The Hacker",
+          "theme": "Driven by power of idea",
+          "interpretation": "Follows investigation no matter where it leads, information is everything, resourceful and determined.",
+          "urbanImagery": "Matrix-inspired, constantly churning out new solutions",
+          "image": "/images/cards/The_Prince_of_Swords.webp"
+        },
+        {
+          "id": "swords-princess",
+          "name": "Princess of Swords",
+          "title": "The Activist",
+          "theme": "Earthy part of Air",
+          "interpretation": "Environmental activist with bullhorn, warrior at heart with words as weapon, rooted in Earth.",
+          "urbanImagery": "Central Park activist handing out flyers, shouting slogans",
+          "image": "/images/cards/The_Princess_of_Swords.webp"
+        }
+      ]
+    },
+    "disks": {
+      "element": "Earth",
+      "symbol": "\u25bd\u25b3",
+      "color": "#27ae60",
+      "theme": "Physical world, material wealth, body, growing things",
+      "cards": [
+        {
+          "id": "disks-ace",
+          "name": "Ace of Disks",
+          "title": null,
+          "theme": "Root of Ten Thousand Things",
+          "interpretation": "First step of new project, before something can be made it must be imagined, infinite variety of physical world.",
+          "urbanImagery": "Atlas sculpture at Rockefeller Center, Shorakkopoch boulder, Five Boroughs subway token design",
+          "image": "/images/cards/The_Ace_of_Disks.webp"
+        },
+        {
+          "id": "disks-02",
+          "name": "Two of Disks",
+          "title": "Change",
+          "theme": "First step in material goal",
+          "interpretation": "Harmony of flow up and down, flexibility and deliberate choices, first prototype product.",
+          "urbanImagery": "Exercise and physical fitness, deliberate change in ourselves",
+          "image": "/images/cards/The_Two_of_Disks.webp"
+        },
+        {
+          "id": "disks-03",
+          "name": "Three of Disks",
+          "title": "Works",
+          "theme": "Time, effort, concentration",
+          "interpretation": "Setting up storefront, talking to contractors, ready to open shop for first time.",
+          "urbanImagery": "Construction workers building new building on Broadway, city of impossible heights",
+          "image": "/images/cards/The_Three_of_Disks.webp"
+        },
+        {
+          "id": "disks-04",
+          "name": "Four of Disks",
+          "title": "Power",
+          "theme": "Material power from wealth",
+          "interpretation": "Real success, paying employees, keeping lights on, newfound power and hope.",
+          "urbanImagery": "Times Square, commercial power on display, marketing and advertising influence",
+          "image": "/images/cards/The_Four_of_Disks.webp"
+        },
+        {
+          "id": "disks-05",
+          "name": "Five of Disks",
+          "title": "Worry",
+          "theme": "Valley of doubt and doom",
+          "interpretation": "Fear of loss, slow downward spiral, universal fear of mortality.",
+          "urbanImagery": "Doctor's office, diagnosis moment, shadow of Death outside door",
+          "image": "/images/cards/The_Five_of_Disks.webp"
+        },
+        {
+          "id": "disks-06",
+          "name": "Six of Disks",
+          "title": "Success",
+          "theme": "Personal success and generosity",
+          "interpretation": "Having enough to share, nobility, kindness to those who serve you.",
+          "urbanImagery": "Grand Central shoeshine station, Renaissance-era religious fresco tones",
+          "image": "/images/cards/The_Six_of_Disks.webp"
+        },
+        {
+          "id": "disks-07",
+          "name": "Seven of Disks",
+          "title": "Failure",
+          "theme": "Failure as natural part of progress",
+          "interpretation": "Know that you may fail, but failure is not the end - get up, recover, learn, try again.",
+          "urbanImagery": "2003 NYC blackout, Columbus Avenue lit by emergency road flares, city resilience",
+          "image": "/images/cards/The_Seven_of_Disks.webp"
+        },
+        {
+          "id": "disks-08",
+          "name": "Eight of Disks",
+          "title": "Prudence",
+          "theme": "Learning caution after failure",
+          "interpretation": "Patience to give work time and space, wiser after falling and picking ourselves up.",
+          "urbanImagery": "Watch repair shop (Daniel Watch & Jewelry Repair on Lexington), patience with tiny gears",
+          "image": "/images/cards/The_Eight_of_Disks.webp"
+        },
+        {
+          "id": "disks-09",
+          "name": "Nine of Disks",
+          "title": "Gain",
+          "theme": "Pure reward in material arena",
+          "interpretation": "Secure place to enjoy fruits of labor, time to trust reins to others, early retirement.",
+          "urbanImagery": "King Spa in New Jersey, gold-plated pyramid sauna, luxury and relaxation",
+          "image": "/images/cards/The_Nine_of_Disks.webp"
+        },
+        {
+          "id": "disks-10",
+          "name": "Ten of Disks",
+          "title": "Wealth",
+          "theme": "Utmost expression of materialism",
+          "interpretation": "Well-earned reward or warning that material gains can blind you to other things in life.",
+          "urbanImagery": "NYC Diamond Exchange on 47th Street, semi-cubist walk through bazaar",
+          "image": "/images/cards/The_Ten_of_Disks.webp"
+        },
+        {
+          "id": "disks-knight",
+          "name": "Knight of Disks",
+          "title": "The Gourmet Chef",
+          "theme": "Fire in Earth",
+          "interpretation": "Craftsman never satisfied, always thinking how to make next creation better, no rest from work.",
+          "urbanImagery": "Head chef of own restaurant, dignified and proud of excellence",
+          "image": "/images/cards/The_Knight_of_Disks.webp"
+        },
+        {
+          "id": "disks-queen",
+          "name": "Queen of Disks",
+          "title": "The Matriarch",
+          "theme": "Water in Earth",
+          "interpretation": "Turns hot food into family dinner, house into home, strong and stable yet sensitive and caring.",
+          "urbanImagery": "Elegant Upper West Side dining room, family Seder setting, sunburst mirror",
+          "image": "/images/cards/The_Queen_of_Disks.webp"
+        },
+        {
+          "id": "disks-prince",
+          "name": "Prince of Disks",
+          "title": "The Day Trader",
+          "theme": "Air in Earth",
+          "interpretation": "Driven individual, pragmatic problem-solver, patient and unwavering, sees only opportunity in numbers.",
+          "urbanImagery": "Wall Street Bull desk sculpture, rolling office chairs, armillary sphere",
+          "image": "/images/cards/The_Prince_of_Disks.webp"
+        },
+        {
+          "id": "disks-princess",
+          "name": "Princess of Disks",
+          "title": "The Kindergarten Teacher",
+          "theme": "Earth in Earth",
+          "interpretation": "Ultimate personification of elemental Earth, caretaker of growing things, protector of new life and beginnings.",
+          "urbanImagery": "P.S. 111 schoolyard on 10th Avenue, Hell's Kitchen graffiti mural, Worldwide Plaza building",
+          "image": "/images/cards/The_Princess_of_Disks.webp"
+        }
+      ]
+    }
+  }
+}
