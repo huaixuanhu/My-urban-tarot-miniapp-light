@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "source_skill_version": "0.8.4",
+  "package_root": "governance",
+  "coverage": [
+    "."
+  ],
+  "design": {
+    "applicable": true,
+    "reason": "Continuing user-facing tarot app, with an observed legacy design awaiting reconstruction."
+  },
+  "roles": {
+    "entrypoint": "AGENTS.md",
+    "maintenance": "governance/README.md",
+    "decisions": "governance/DECISIONS.md",
+    "agent_log": "governance/AI_AGENT_LOG.md",
+    "architecture": "README.md",
+    "changelog": "CHANGELOG.md",
+    "current_state": "governance/STATE.md",
+    "design": "DESIGN.md"
+  }
+}

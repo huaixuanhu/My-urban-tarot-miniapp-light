@@ -1,0 +1,11 @@
+.venv
+.local
+node_modules
+.git
+.DS_Store
+dist
+release
+governance
+tests
+*.tsbuildinfo
+.env*

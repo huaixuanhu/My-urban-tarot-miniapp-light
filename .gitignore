@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+dist
+.env
+
+# Local development and private service evidence
+.venv/
+.local/
+.vercel/
+.vercel
+.env*

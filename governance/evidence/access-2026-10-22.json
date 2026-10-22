@@ -1,0 +1,160 @@
+{
+  "verified_at_utc": "2026-10-22T05:15:34.227998+00:00",
+  "deployment_id": "dpl_8WgVZuDu6hi9GxrVH1NgVgK3Ggon",
+  "records": [
+    {
+      "case": "edge-home",
+      "url": "https://augurwell.anoriaquant.dev/",
+      "status": 302,
+      "expected_status": 302,
+      "curl_exit": 0,
+      "pass": true,
+      "redirect_destination": "https://polished-scene-f439.cloudflareaccess.com/cdn-cgi/access/login/augurwell.anoriaquant.dev",
+      "server": "cloudflare",
+      "cf-ray": "a4e60652f8cee6df-MEL",
+      "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
+    },
+    {
+      "case": "edge-script",
+      "url": "https://augurwell.anoriaquant.dev/assets/index-CeL6uKaZ.js",
+      "status": 302,
+      "expected_status": 302,
+      "curl_exit": 0,
+      "pass": true,
+      "redirect_destination": "https://polished-scene-f439.cloudflareaccess.com/cdn-cgi/access/login/augurwell.anoriaquant.dev",
+      "server": "cloudflare",
+      "cf-ray": "a4e60653f9092a2a-MEL",
+      "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
+    },
+    {
+      "case": "vercel-primary",
+      "url": "https://my-urban-tarot-miniapp-light.vercel.app/",
+      "status": 403,
+      "expected_status": 403,
+      "curl_exit": 0,
+      "pass": true,
+      "server": "Vercel",
+      "x-vercel-id": "syd1::j7sjq-1792646132016-28b337e69c2a",
+      "cache-control": "private, no-store, max-age=0"
+    },
+    {
+      "case": "vercel-branch",
+      "url": "https://my-urban-tarot-miniapp-light-anorias-projects.vercel.app/",
+      "status": 302,
+      "expected_status": 302,
+      "curl_exit": 0,
+      "pass": true,
+      "redirect_destination": "https://vercel.com/sso-api",
+      "server": "Vercel",
+      "x-vercel-id": "syd1::nd4nm-1792646132175-dd80fd77ffd2",
+      "cache-control": "no-store, max-age=0"
+    },
+    {
+      "case": "old-deployment",
+      "url": "https://my-urban-tarot-miniapp-light-92dk9k0zd-anorias-projects.vercel.app/",
+      "status": 302,
+      "expected_status": 302,
+      "curl_exit": 0,
+      "pass": true,
+      "redirect_destination": "https://vercel.com/sso-api",
+      "server": "Vercel",
+      "x-vercel-id": "syd1::llb87-1792646132380-c9cbaafa57c5",
+      "cache-control": "no-store, max-age=0"
+    },
+    {
+      "case": "current-deployment",
+      "url": "https://my-urban-tarot-miniapp-light-ob7mocpru-anorias-projects.vercel.app/",
+      "status": 302,
+      "expected_status": 302,
+      "curl_exit": 0,
+      "pass": true,
+      "redirect_destination": "https://vercel.com/sso-api",
+      "server": "Vercel",
+      "x-vercel-id": "syd1::hbmrq-1792646132545-a5b7946991e9",
+      "cache-control": "no-store, max-age=0"
+    },
+    {
+      "case": "direct-home-missing-assertion",
+      "url": "https://augurwell.anoriaquant.dev/",
+      "status": 403,
+      "expected_status": 403,
+      "curl_exit": 0,
+      "pass": true,
+      "server": "Vercel",
+      "x-vercel-id": "syd1::xqh7w-1792646132768-d622468b146d",
+      "cache-control": "private, no-store"
+    },
+    {
+      "case": "direct-home-forged-assertion",
+      "url": "https://augurwell.anoriaquant.dev/",
+      "status": 403,
+      "expected_status": 403,
+      "curl_exit": 0,
+      "pass": true,
+      "server": "Vercel",
+      "x-vercel-id": "syd1::x6mpt-1792646133154-75d20471bdfb",
+      "cache-control": "private, no-store"
+    },
+    {
+      "case": "direct-script-forged-assertion",
+      "url": "https://augurwell.anoriaquant.dev/assets/index-CeL6uKaZ.js",
+      "status": 403,
+      "expected_status": 403,
+      "curl_exit": 0,
+      "pass": true,
+      "server": "Vercel",
+      "x-vercel-id": "syd1::xbzkm-1792646133491-6bf285b3693e",
+      "cache-control": "private, no-store"
+    },
+    {
+      "case": "certificate-http",
+      "url": "http://augurwell.anoriaquant.dev/.well-known/acme-challenge/healthcheck",
+      "status": 404,
+      "expected_status": 404,
+      "curl_exit": 0,
+      "pass": true,
+      "server": "cloudflare",
+      "x-vercel-id": "syd1::p5kmv-1792646133663-2e4e51fe5acb",
+      "cf-ray": "a4e6065f0ceb1a6e-MEL",
+      "cache-control": "private, max-age=0, must-revalidate"
+    },
+    {
+      "case": "certificate-https",
+      "url": "https://augurwell.anoriaquant.dev/.well-known/acme-challenge/healthcheck",
+      "status": 404,
+      "expected_status": 404,
+      "curl_exit": 0,
+      "pass": true,
+      "server": "cloudflare",
+      "x-vercel-id": "syd1::22pwt-1792646134056-98e9c23d9fbf",
+      "cf-ray": "a4e60661b80a558b-MEL",
+      "cache-control": "private, max-age=0, must-revalidate"
+    }
+  ],
+  "all_passed": true,
+  "browser_observation": "Existing owner Cloudflare sign-in completed and the original Urban Tarot board rendered at the canonical domain.",
+  "limits": [
+    "Mimi did not independently complete a login in this session.",
+    "Only named endpoints were probed; future deployments and policy changes need revalidation."
+  ],
+  "services": {
+    "canonical_hostname": "augurwell.anoriaquant.dev",
+    "vercel_project_id": "prj_zxLDHbvstH5rB2g1u5Gl6DAqwkdE",
+    "vercel_team_slug": "anorias-projects",
+    "cloudflare_access_application_id": "8d7c8c2a-b489-474e-944e-8a6d902f9439",
+    "cloudflare_allow_policy_id": "a279ca45-05af-42d3-ad69-8e886106aad3",
+    "allowed_email_count": 2,
+    "certificate_application_id": "6c59ff49-1854-405e-b280-8fcfe60b02e8",
+    "certificate_policy_id": "4b8686f5-8980-4f3b-80f8-d80b661a785f",
+    "certificate_path": "/.well-known/acme-challenge/*",
+    "dns_cname_target": "207ca6fad623738f.vercel-dns-017.com",
+    "cloudflare_proxy_enabled": true,
+    "firewall_rule_id": "rule_require_augurwell_private_hostname_imXChf"
+  },
+  "local_checks": {
+    "aggregate": "pnpm check:all passed",
+    "access_regressions": 15,
+    "compiled_node_entrypoint": "passed",
+    "gameplay_source_diff": "none"
+  }
+}
