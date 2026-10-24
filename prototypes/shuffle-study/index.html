@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Augurwell · 重置试作 03</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="./" aria-label="Augurwell 洗牌试作首页"><span class="brand-mark" aria-hidden="true">✧</span> AUGURWELL</a>
+    <span class="study-label">重置试作 <span>03</span></span>
+  </header>
+  <main>
+    <section class="table" aria-label="三维牌桌">
+      <div id="scene" aria-label="78 张卡牌的三维洗牌演示"></div>
+      <div class="intro">
+        <p class="eyebrow">A MOMENT BEFORE THE READING</p>
+        <h1>洗去杂念，<br />留一个问题。</h1>
+        <p class="intro-note">悬空汇聚成叠，再一次洗牌。</p>
+      </div>
+      <div class="view-tools" aria-label="观察角度">
+        <button class="view-button is-active" id="view-front" aria-pressed="true">牌桌视角</button>
+        <button class="view-button" id="view-side" aria-pressed="false">侧看弯曲</button>
+      </div>
+      <div id="load-message" class="load-message" role="status">正在准备牌桌…</div>
+      <div id="scene-error" class="scene-error" role="alert" hidden><h2>这次没能打开三维牌桌</h2><p id="error-detail">请尝试启用浏览器的图形加速后重新打开。</p><button id="retry">重新打开</button></div>
+      <div class="corner-note"><span class="small-star" aria-hidden="true">✦</span><span>78 张牌 · 示例牌阵回收</span></div>
+      <div class="table-caption" aria-live="polite" aria-atomic="true"><span id="phase-name">一次占卜之后</span><span id="phase-description">三张示例牌阵 · 点击全局重置，重新开始</span></div>
+    </section>
+    <section class="playback" aria-label="洗牌播放控制">
+      <div class="playback-top">
+        <div class="play-actions">
+          <button id="play" class="primary-action" disabled><span id="play-icon" aria-hidden="true">↝</span><span id="play-label">全局重置洗牌</span></button>
+          <button id="pause" class="quiet-action" disabled>暂停</button>
+          <button id="finish" class="quiet-action" disabled>直接展牌</button>
+        </div>
+        <div class="options">
+          <label class="toggle"><input id="slow" type="checkbox" /><span>慢放</span></label>
+          <label class="toggle"><input id="reduce" type="checkbox" /><span>减少动态</span></label>
+          <button class="quiet-action sound-button" id="sound" aria-pressed="false" aria-label="开启洗牌音效">音效关</button>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <label for="timeline" class="sr-only">动作进度，0 到 5.06 秒</label>
+        <input id="timeline" type="range" min="0" max="5060" step="1" value="0" disabled aria-valuetext="0.00 秒，一次占卜之后" />
+        <output id="time" for="timeline">0.00 <span>/ 5.06 s</span></output>
+      </div>
+      <div class="chapters" aria-label="查看动作关键帧">
+        <button data-ms="0">牌阵</button><button data-ms="900">飞入</button><button data-ms="2000">汇聚</button><button data-ms="2600">成叠</button><button data-ms="3110">弯曲</button><button data-ms="3650">交错</button><button data-ms="5060">展牌</button>
+      </div>
+    </section>
+  </main>
+  <footer><span>收起上一刻，留一点空白。</span><span>本地动作试样 · 示例牌面 · 暂未接入实际牌阵</span></footer>
+  <script type="module" src="./main.mjs"></script>
+</body>
+</html>

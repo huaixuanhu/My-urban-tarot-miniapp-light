@@ -1,0 +1,55 @@
+# Augurwell shuffle study
+
+Derived from: [governance/STATE.md, stage2.1](../../governance/STATE.md#stage21--local-motion-and-table-study). Bounded scope: a locally playable 5.06-second reset study, preserving the accepted split/bend/interleave motion at normal speed after an airborne convergence. This is implementation documentation, not another plan or acceptance owner. Design direction belongs to [DESIGN.md](../../DESIGN.md).
+
+## Run locally
+
+Use the existing root dependencies and run from the repository root:
+
+```sh
+npm ci --prefix prototypes/shuffle-study --ignore-scripts
+pnpm exec vite --config prototypes/shuffle-study/vite.config.mjs
+```
+
+Open http://127.0.0.1:5174/ on this computer. The server binds only to loopback. No production deployment, account, or Cloudflare change is needed. The study's separate `package-lock.json` pins Three.js 0.186.1; Vite is reused from the root toolchain. Nested dependencies and build outputs are ignored.
+
+Click **全局重置洗牌** for the 5.06-second sequence. Trial 03 starts with three illustrative face-up cards. These return from their positions; other cards rotate in slowly from four edges and continuously converge in the air, accelerating into a stack before the retained bent shuffle begins. There is no table landing or stationary scattered waypoint. **从牌阵再演示** intentionally restarts this fixture with fresh paths/order. **慢放** runs at 0.35 speed; **侧看弯曲**, **暂停**, the timeline and labelled keyframe buttons allow inspection in both directions. **直接展牌** and **减少动态** show the final flat arrangement immediately. System reduced-motion preference is honored. Both view buttons select stable viewpoints. Audio is optional and off initially; short paper-like sounds are generated locally.
+
+Timing: 0–2.60s airborne return and accelerating convergence; 2.60–5.06s original shuffle from its already-lifted stack onward. The old first 0.54 seconds of stationary gathering/table lift are omitted. Pose, bend and sound all use the same offset into that sequence. Each new run prepares its random path descriptors once. Pause, rewind, skip and slow playback retain that run. The three-card fixture does not read or erase any saved reading.
+
+## Boundaries and ownership
+
+- `motion.mjs`: pure pose sampling and independent Fisher–Yates deck permutation. Animation progress never drives randomization; seeking keeps the same run's identities.
+- `reset-motion.mjs`: immutable seeded airborne paths and variable pacing, fixed physical card IDs, identity-to-slot mapping and exact delegation into the original shuffle from progress 0.18 after 2.6 seconds.
+- `flex.mjs`: deterministic per-card bend and damped release, sharing the motion timeline. Circular-layer deformation preserves thickness; no elapsed-frame spring state accumulates while scrubbing.
+- `card-geometry.mjs`: a subdivided rounded solid with printed top/bottom and paper edges. Deformation updates the actual geometry and lighting normals, so visible surfaces and cast shadows agree. Unchanged bend angles reuse the current vertices.
+- `main.mjs`: Three.js scene, mesh integration, lighting, playback, controls and error handling.
+- `textures.mjs`: original procedural canvas art for card backs, a placeholder face and woven cloth. No old card illustrations, external images, fonts or sound downloads.
+- `index.html`, `style.css`: desktop-first review interface; narrow windows retain controls.
+
+This study has no question entry, card picking, reveal, card meanings, history, AI or synchronization. It does not load or alter the legacy React app. Bending and rebound follow authored curves; this is not a measured paper-material or physics simulation. Larger rebound was reduced after sampled intersections between successive cards. Physical plausibility and atmosphere remain subject to user review. WebGL2 is required; failure has a readable retry state. No live missing-GPU/context-loss test or physical-phone acceptance is claimed.
+
+
+## Local reading trial 04
+
+Derived scope: [governance/STATE.md, stage2.2](../../governance/STATE.md#stage22--reliable-reading-table); implementation notes only, not a second plan. The original trial 03 page and motion files remain intact. Open http://127.0.0.1:5174/reading.html for the complete local drawing loop. Use the same dev server, or `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs`. Build both pages with `pnpm exec vite build --config prototypes/shuffle-study/reading.vite.config.mjs`.
+
+Drag any card from the stable lower fan onto the table, move freely, and double-click a placed card to reveal. Single-click selects; the nearby Reveal button and previous/next/place controls provide keyboard alternatives. Hidden cards can return to their original slot. Undo preserves known identities; arrange-three positions the first three drawn cards without limiting the deck. Escape cancels dragging. Hover gently lifts one card while neighboring cards ease apart. Sample faces are original, numbered and explicitly illustrative. No question, meaning or saving feature is claimed.
+
+`reading-state.mjs` owns pure identity/orientation/placement transitions; `reading-art.mjs` produces faces on demand; `reading.mjs` owns pointer input, the scene and reveal timing. `reading-reset.mjs` preserves the current fan during a 450ms exit, then delegates to the unchanged accepted choreography with actual table-card poses. The remaining cards are reordered offscreen, and the completed fan moves into the selection strip over 520ms. Normal reset lasts 6.03s, preceded by a 0.32s return to the original view when needed; skip/reduced motion finishes the same prepared round immediately. This hidden handoff is checked for desktop framing; portrait and arbitrary overlapping-layout collision guarantees are outside the trial's evidence.
+
+## Verification
+
+```sh
+node --test prototypes/shuffle-study/*.test.mjs
+pnpm exec vite build --config prototypes/shuffle-study/vite.config.mjs
+pnpm check:all
+```
+
+Keep current results and evidence ceilings in the canonical state owner. A successful local test/build or screenshot does not imply design acceptance, integration, commit, push or deployment.
+
+Blank-table dragging changes the viewing height and horizontal direction within bounds. Shift + arrow keys is the keyboard alternative; Restore View returns home. Card input takes priority over view dragging. Camera-aware stable card-plane picking keeps the fan reachable at the allowed angles. Neighbor spacing is wider while the accepted slight lift is unchanged. These are trial 04 refinements under the same stage2.2 scope.
+
+Wheel-up zooms toward the table center and wheel-down pulls back (75–180%); minus/plus buttons and keys are equivalent. Restore View returns angles and scale to the original view. Downward pointer dragging raises the view after the owner-requested direction correction; keyboard Up still raises it. Zoom is held fixed during card/view dragging and shuffle. Close zoom intentionally crops outer regions; overview remains recoverable.
+
+The reference-led fan refinement uses `reading-fan.mjs`: one deterministic loose arc per prepared order, with uneven spacing/depth/yaw and solid card clearance. Draw/return/hover do not reroll the arrangement. `reading-cloth.mjs` provides a finite plain textile with stationary edge folds/hem as a spatial reference; it adds no motif or dynamic cloth simulation. The accepted shuffle remains unchanged and blends into the newly prepared fan at the final settling step.

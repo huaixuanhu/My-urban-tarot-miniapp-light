@@ -1,6 +1,6 @@
 # Urban Tarot
 
-An existing React/Vite tarot-board demo being prepared for a future product reconstruction. The current scope and next entry are in [governance/STATE.md](governance/STATE.md).
+An existing React/Vite tarot-board demo with an isolated local reconstruction study. The current scope and next entry are in [governance/STATE.md](governance/STATE.md).
 
 ## Location and source
 
@@ -20,6 +20,14 @@ The working directory is /Users/anoria/Documents/python_coding/small_project/urb
 Use the package manager recorded in package.json. Existing dependencies moved with the directory. Commands: pnpm dev, pnpm check, pnpm build, pnpm preview. pnpm test:access tests signed-token authorization, and pnpm check:access-runtime compiles and loads the production entrypoint using Node ESM rules. For a full local gate: python3 -m venv .venv once, then pnpm check:all. Electron packaging is a separate surface and has not been revalidated by the move.
 
 Do not assume a successful local build is a deployment or product acceptance. Avoid putting personal addresses, tokens, or private account exports into this repository. Local private service evidence belongs under ignored .local/ if needed.
+
+## Local motion study
+
+The locally reviewed stage2.1 study lives in [prototypes/shuffle-study/](prototypes/shuffle-study/README.md). It has its own Three.js manifest/lockfile; it is outside the production client build. From the repository root, install its pinned dependency with `npm ci --prefix prototypes/shuffle-study --ignore-scripts`, then run `pnpm exec vite --config prototypes/shuffle-study/vite.config.mjs`. Open http://127.0.0.1:5174/ on this computer. This loopback-only motion review does not draw cards, collect questions, save readings, or replace the protected hosted app.
+
+Study checks are separate from the existing aggregate: `node --test prototypes/shuffle-study/*.test.mjs` and `pnpm exec vite build --config prototypes/shuffle-study/vite.config.mjs`. The study reuses the repository's Vite toolchain; its build output stays inside `prototypes/shuffle-study/dist/`. Trial 03's `reset-motion.mjs` supplies a 2.6-second seeded airborne return/convergence with a slow-to-fast pace, then joins the preserved motion/flex modules at their already-lifted stack. Its shared shuffle-time helper keeps poses, bending and audio aligned while the remaining 2.46 seconds run at normal speed. A three-card illustrative spread demonstrates returning from existing positions; physical IDs remain fixed while a run maps them to shuffled slots. Face, edge and shadow deformation stays in `flex.mjs` and `card-geometry.mjs`; the full scene remains pausable and scrub-able.
+
+The next local interaction trial is [reading.html](prototypes/shuffle-study/reading.html), served at http://127.0.0.1:5174/reading.html. It adds the agreed drag/free-placement/double-click-reveal/reset loop and bounded blank-table view dragging and 75–180% wheel zoom without editing the accepted shuffle page. `reading-state.mjs` owns identity-preserving transitions, `reading-art.mjs` supplies original numbered sample faces, and `reading-reset.mjs` adapts current poses before delegating to the accepted choreography. `reading-fan.mjs` prepares a stable loose arc per order, `reading-cloth.mjs` supplies a plain static cloth, and `reading-view.mjs` owns bounded camera movement/framing and `reading-picking.mjs` selects stable card planes from the current angle. It has no persistence or real tarot interpretation. Build both local entries with `pnpm exec vite build --config prototypes/shuffle-study/reading.vite.config.mjs`; test the study with `node --test prototypes/shuffle-study/*.test.mjs`.
 
 ## Hosted access maintenance
 

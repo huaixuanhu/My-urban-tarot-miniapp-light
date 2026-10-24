@@ -1,0 +1,15 @@
+{
+  "name": "augurwell-shuffle-study",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local stage2.1 motion study; governed by ../../governance/STATE.md",
+  "scripts": {
+    "dev": "vite --config vite.config.mjs",
+    "test": "node --test *.test.mjs",
+    "build": "vite build --config vite.config.mjs"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  }
+}

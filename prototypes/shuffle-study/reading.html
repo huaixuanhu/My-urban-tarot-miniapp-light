@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Augurwell · 牌桌试作 04</title>
+  <link rel="stylesheet" href="./reading.css" />
+</head>
+<body>
+  <header class="masthead"><a href="./reading.html" class="wordmark"><span>✧</span> AUGURWELL</a><div class="edition">牌桌试作 <b>04</b><a href="./">洗牌试作 03 ↗</a></div></header>
+  <main>
+    <section class="table" id="table" aria-label="自由摆牌桌">
+      <div id="scene"></div>
+      <div class="invitation"><p>A MOMENT FOR YOURSELF</p><h1>挑一张，留在此刻。</h1><span id="instruction">从下方拖出三张牌，放到你想放的位置。</span></div>
+      <div class="table-note"><span id="counts">剩余 78 张 · 已抽 0 张</span><span>自由摆放 · 双击翻开</span><span>空白处拖动 · 滚轮缩放</span></div>
+      <div id="deck-hint" class="deck-hint" aria-live="polite">沿牌带慢慢挑选</div>
+      <div id="reset-message" class="reset-message" hidden><span>收起这一刻，再开始。</span><button id="skip">跳过动作</button></div>
+      <div id="loading" class="cover">正在准备牌桌…</div>
+      <div id="failure" class="cover" hidden><h2>这次没能打开三维牌桌</h2><p>请启用浏览器的图形加速后重试。</p><button id="retry">重新打开</button></div>
+    </section>
+    <section class="controls" aria-label="牌桌操作">
+      <div class="main-controls"><div class="selection"><span id="selected-label">选中一张桌上的牌</span><button id="reveal" disabled>翻开</button><button id="return" disabled>放回牌带</button></div><div class="table-actions"><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button><button id="reset" class="primary" disabled>收牌，重新洗牌 <span>↝</span></button></div></div>
+      <div class="secondary-controls"><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">放到桌面</button></div><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><button id="view-home" disabled>恢复视角</button><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
+      <div class="reading-summary"><span id="progress" role="status">先抽三张，再按自己的顺序揭晓。</span><ol id="placed-list" aria-label="桌上的牌"></ol></div>
+    </section>
+  </main>
+  <footer><span>空白拖动调视角 · 滚轮 / 加减键缩放 · Esc 取消拖动</span><span>本地试作 · 示例牌面 · 刷新后重新开始</span></footer>
+  <script type="module" src="./reading.mjs"></script>
+</body>
+</html>

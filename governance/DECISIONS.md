@@ -1,5 +1,47 @@
 # Decisions
 
+## 2026-10-25 — commit checkpoint 1 before enlarging the table
+
+Source: the user accepted the existing version as the first checkpoint, requested committing it first, then enlarging the cloth for more placement space. Commit only the current prototype source/dependency lock/test/docs slice. Preserve .DS_Store and tracked node_modules changes outside the commit. Stage2.2.2 enlargement begins after the checkpoint and stays uncommitted for local review. No push, deployment or access change is authorized.
+
+## 2026-10-24 — reference-led loose fan and plain cloth
+
+Source: the user supplied an image of a naturally staggered arced card fan, requested imitating its spreading arrangement, and asked for a plain cloth to help with 3D orientation without designing the cloth yet. Apply this only to local stage2.2 trial 04. Preserve the current hover lift, card identities, draw/reveal, bounded view/zoom and accepted shuffle; vary spacing/depth/yaw once per prepared order. A static finite textile with modest edge folds provides the requested visual anchor. No symbols, new deck art, physics engine or claim of proven motion-sickness relief. No publication/access authority is added.
+
+## 2026-10-24 — wheel zoom and corrected vertical orbit
+
+Source: the user requested bounded wheel zoom to inspect cards or see the whole table, and reported the y–z rotation direction reversed. Add 75–180% centered optical zoom to local trial 04, preserve horizontal orbit direction and reverse vertical pointer movement. Keep keyboard Up semantically raising the view. Home/reset restore both angle and scale before the unchanged shuffle; camera actions never change card identities. No publication or access authority is added.
+
+## 2026-10-24 — bounded reading-table view
+
+Source: the user accepted the slight picking lift, requested wider side separation and blank-table dragging to adjust height/direction like the cottage. Extend only local stage2.2 trial 04. Keep card drag/reveal priority, bound the view above the table and provide a home-view control plus keyboard alternative. Camera movement does not mutate reading state or shuffle identity. Reset returns to its original camera before starting the accepted choreography because its hidden handoff was verified in that framing. No production or publication authority is added.
+
+## 2026-10-24 — authorize the local reading loop
+
+Source: the user approved the next local prototype with free placement and dragging, and then answered the pending question with double-click reveal. The later answer overrides the earlier selected-card-button primary gesture; retain a visible button only as an alternative. Build and verify drawing three cards, arranging them freely, individually revealing them and resetting, while preserving the accepted shuffle as its own page and unchanged modules. Numbered original sample faces are sufficient for this interaction trial; meanings, saving, production integration and publication remain outside the scope. STATE.md remains the current owner; no separate child plan.
+
+## 2026-10-24 — accept and retain trial 03 shuffle
+
+Source: the user explicitly accepted the current shuffle effect, asked to retain it, and requested alignment on drawing, placement and reveal interactions while continuing with local prototypes. Preserve design revision 5’s airborne/accelerating shuffle as the accepted motion baseline. Open stage2.2 for discussion only; do not infer acceptance of a draw gesture, placement model, reveal trigger, full visual identity, card art, production integration or publication. Current proposal and pending choices remain solely in STATE.md.
+
+## 2026-10-24 — continuous airborne assembly and pace
+
+Source: after removing the scattered hold, the user requested eliminating the table landing entirely, flying in more slowly, accelerating during cuboid assembly and reaching normal speed at interleaving. Keep trial 03 local. Replace the prefix with continuous airborne paths and deterministic pacing. Join the original motion at its lifted-stack state, skipping the now-redundant initial stationary/table-lift section; use the same offset for poses, flex and audio. Preserve the accepted splitting and bent interleaving modules and rate. The three-card fixture, stable identities, playback controls and publication boundaries remain.
+
+## 2026-10-24 — trial 03 global-reset prelude
+
+Source: the user said the existing shuffle motion was good, proposed rotating cards arriving from all directions, scattering, then gathering into a rectangular stack before the current shuffle, and explicitly approved implementing that proposal as local trial 03. Preserve the accepted motion/flex/geometry modules; prepend a bounded 2.8-second wrapper to the original three-second sequence. Use a three-card illustrative spread to demonstrate return from known positions because the actual reading board is not integrated in stage2.1. Keep IDs fixed and randomize a run once; explicit replay starts the fixture again, while pause/seek/skip retain the same run. No production app, data persistence, cleanup, publication or access change is authorized.
+
+## 2026-10-24 — refine stage2.1 with paper bending and springback
+
+Source: the user explicitly requested bending and rebound, especially where the two packets interleave, and permitted Blender if needed. Extend the same local study without beginning stage2.2. Apply deterministic deformation to a subdivided solid so faces, edges, normals and shadows follow the same curve and time seeking remains exact. Browser geometry supports this bounded change without a Blender export pipeline or new dependency. Keep the selected materials, stable viewpoints, roughly three-second duration and reduced-motion behavior. This is an authored physical-looking animation, not a claim of measured paper dynamics. Commit, push, deployment and integration remain outside this refinement.
+
+## 2026-10-24 — begin a bounded physical-shuffle trial
+
+Source: the user's direction answers, explicit deferral of AI/cross-device saving, acceptance of a roughly three-second trial, preference to try a real deck moved by invisible hands, and instruction to start. Implement stage2.1 locally, preserving the protected hosted app and existing dirty files. Desktop personal reflection is the agreed product direction; a full replacement's gesture/content contract is still to be worked out. Keep the current plan solely in STATE.md and the versioned design contract in DESIGN.md.
+
+Use an isolated browser 3D scene to make the motion directly playable. The user permitted Blender if needed and pointed to 萱敏小屋. That project's retained model README documents direct background Blender scripts without a separate MCP service; its local Blender executable remains available. This trial does not require importing or modifying those assets. Original procedural art avoids making an unverified reuse decision about the old card illustrations. This local authorization grants no new commit, push, deployment, paid service or access-policy change.
+
 ## 2026-10-22 — publish the migration and access slice
 
 Source: the user explicitly requested committing and pushing these changes to GitHub after the migration/access handoff, while deferring full reconstruction. This grants the publication authority that was absent from the original migration slice. Publish the reviewed source, dependency declarations/lockfile, tests, ignore rules, and project records on the existing main branch. Retain .DS_Store and generated node_modules changes locally; do not combine dependency-history cleanup or product changes with this publication. The external two-email Access policy stays unchanged.
