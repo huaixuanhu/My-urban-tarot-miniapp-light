@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-26 — checkpoint 5 before fixed-control refinement
+
+Executor: Codex (GPT-6). Verified HEAD c9e3ff1c and the same 65 pre-existing generated changes. Recorded bounded user acceptance and the fixed lower-center control request before product edits. Existing prototype evidence applies to unchanged product source. No push/deployment.
+
+
 ## 2026-10-26 — local trial 08 camera, backs and physical controls
 
 Executor: Codex (GPT-6), with bounded camera/material/dock agents and read-only integration review. Saved accepted checkpoint 4 as `0bdb04f7`, then committed the stable camera slice as `a555a294`. Implemented the requested physical control surface, paired reference-led backs and static light/shadow refinements. Read-only review caught list-button replacement losing focus/double-click identity; keyed nodes and disclosure focus routing repair it. STATE.md remains current-state owner; bounded evidence is under docs/design/stage2.4.6/. No push, deployment or access changes.

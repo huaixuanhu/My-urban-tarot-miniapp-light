@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-10-26 — retain trial 08, replace its button treatment
+
+The user accepts the surrounding scene/camera/backs and requests a checkpoint, then asks to return controls to a fixed screen position with clear concept-led glass optics. The asynchronous answer confirms lower-center placement. This supersedes only the table-mounted control contract; it does not reopen the accepted cards, camera or motion.
+
+
 ## 2026-10-26 — one camera and physical glass controls
 
 Source: the user’s four requested refinements after checkpoint 4. The prior lens transition is superseded: reading and reset retain one perspective and the chosen elevation/yaw, with optional zoom normalization only. Exact vertical viewing uses stable camera axes. Native controls share the physical glass top plane; expanded reading/utilities stay screen-aligned for legibility. Original Urban Tarot faces, identity/reversal and shuffle/reveal choreography remain authoritative. The supplied back and glass-block references guide materials; the implementation remains a candidate for local user review.

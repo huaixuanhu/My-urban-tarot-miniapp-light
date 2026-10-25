@@ -1,5 +1,10 @@
 # Change history
 
+## 2026-10-26 — local checkpoint 5
+
+Recorded user acceptance of trial 08’s non-button treatment at c9e3ff1c. The table-mounted button block remains unaccepted and is explicitly replaced by the next fixed-position clear-glass trial.
+
+
 ## 2026-10-26 — local trial 08
 
 - Enables exact overhead viewing and keeps reading/reset under the same perspective and chosen angle.
