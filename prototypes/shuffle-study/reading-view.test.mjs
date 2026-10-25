@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, clampView, dragView, getViewPosition, isDefaultView, fitViewSize, getViewSize, ZOOM_LIMITS, wheelZoom } from './reading-view.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, clampView, dragView, getViewPosition, isDefaultView, fitViewSize, getViewSize, getFramedViewSize, ZOOM_LIMITS, wheelZoom } from './reading-view.mjs';
+import { READING_ENVELOPE } from './reading-layout.mjs';
 
 const near = (a, b, tolerance = 1e-12) => assert.ok(Math.abs(a - b) <= tolerance, `${a} differs from ${b}`);
 
@@ -68,9 +69,29 @@ test('orthographic size keeps the original desktop and portrait fitting rules', 
   }
 });
 
-test('default view framing remains exactly unchanged at every supported aspect', () => {
+test('reading overview expands while dedicated shuffle framing retains the accepted size', () => {
   for (const aspect of [2, 16 / 9, 1440 / 900, 360 / 470, 1]) {
-    assert.deepEqual(getViewSize(DEFAULT_VIEW, aspect), fitViewSize(aspect));
+    const overview = getViewSize(DEFAULT_VIEW, aspect), original = fitViewSize(aspect);
+    assert.ok(overview.width > original.width);
+    assert.deepEqual(getFramedViewSize(DEFAULT_VIEW, aspect, 0), overview);
+    const shuffle = getFramedViewSize(DEFAULT_VIEW, aspect, 1);
+    near(shuffle.width, original.width); near(shuffle.height, original.height);
+  }
+});
+
+test('framing transitions stay bounded, reversible, and aspect-correct', () => {
+  for (const aspect of [1.5, 2, 2.4]) {
+    const reading = getViewSize(DEFAULT_VIEW, aspect), shuffle = fitViewSize(aspect);
+    let previous = reading.width;
+    for (const progress of [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1]) {
+      const size = getFramedViewSize(DEFAULT_VIEW, aspect, progress);
+      near(size.width / size.height, aspect);
+      assert.ok(size.width <= previous + 1e-12 && size.width >= shuffle.width - 1e-12);
+      previous = size.width;
+    }
+    assert.deepEqual(getFramedViewSize(DEFAULT_VIEW, aspect, -1), reading);
+    assert.deepEqual(getFramedViewSize(DEFAULT_VIEW, aspect, NaN), reading);
+    near(getFramedViewSize(DEFAULT_VIEW, aspect, 2).width, shuffle.width);
   }
 });
 
@@ -88,7 +109,7 @@ test('all conservative table-card corners fit at extreme views and aspect ratios
         const rightLength = Math.hypot(normal[0], normal[2]);
         const right = [normal[2] / rightLength, 0, -normal[0] / rightLength];
         const up = [normal[1] * right[2], normal[2] * right[0] - normal[0] * right[2], -normal[1] * right[0]];
-        for (const x of [-6.05, 6.05]) for (const y of [-0.025, 1.10]) for (const z of [-3.70, 4.50]) {
+        for (const x of [READING_ENVELOPE.minX, READING_ENVELOPE.maxX]) for (const y of [READING_ENVELOPE.minY, READING_ENVELOPE.maxY]) for (const z of [READING_ENVELOPE.minZ, READING_ENVELOPE.maxZ]) {
           const relative = [x - VIEW_TARGET.x, y - VIEW_TARGET.y, z - VIEW_TARGET.z];
           const projectedX = relative.reduce((sum, value, i) => sum + value * right[i], 0);
           const projectedY = relative.reduce((sum, value, i) => sum + value * up[i], 0);

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { Euler, OrthographicCamera, Plane, Quaternion, Raycaster, Vector2, Vector3 } from 'three';
 import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from './motion.mjs';
 import { createReadingFan } from './reading-fan.mjs';
+import { PLACEMENT_BOUNDS } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, ZOOM_LIMITS, getViewPosition, getViewSize } from './reading-view.mjs';
 
@@ -85,7 +86,7 @@ test('real camera rays recover the world table plane and each tilted fan local f
   const table = new Plane(new Vector3(0, 1, 0), -0.05);
   for (const view of views) {
     const camera = cameraAt(view);
-    for (const point of [new Vector3(-4.9, 0.05, -2.5), new Vector3(0, 0.05, -0.7), new Vector3(5.1, 0.05, 0.7)]) {
+    for (const point of [new Vector3(PLACEMENT_BOUNDS.minX, 0.05, PLACEMENT_BOUNDS.minZ), new Vector3(0, 0.05, -0.7), new Vector3(PLACEMENT_BOUNDS.maxX, 0.05, PLACEMENT_BOUNDS.maxZ)]) {
       const recovered = rayThrough(camera, point).intersectPlane(table, new Vector3());
       assert.ok(recovered && recovered.distanceTo(point) < 1e-10);
     }
@@ -106,8 +107,8 @@ test('real camera rays recover the world table plane and each tilted fan local f
 });
 
 test('view padding keeps the complete extreme placed-card bounds inside the frame', () => {
-  const xCorners = [-5.4 - CARD_WIDTH / 2, 5.4 + CARD_WIDTH / 2];
-  const zCorners = [-2.65 - CARD_LENGTH / 2, 0.75 + CARD_LENGTH / 2];
+  const xCorners = [PLACEMENT_BOUNDS.minX - CARD_WIDTH / 2, PLACEMENT_BOUNDS.maxX + CARD_WIDTH / 2];
+  const zCorners = [PLACEMENT_BOUNDS.minZ - CARD_LENGTH / 2, PLACEMENT_BOUNDS.maxZ + CARD_LENGTH / 2];
   const yCorners = [0.05, 0.05 + (CARD_COUNT - 1) * 0.012 + CARD_THICKNESS];
   for (const aspect of aspects) for (const view of views) {
     const camera = cameraAt(view, aspect);

@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-10-25 — accepted cloth and side reveal as checkpoint 2
+
+Source: the user explicitly accepted the new reveal effect and requested one commit combining the cloth enlargement with random left/right reveal as the second checkpoint. Commit the bounded stage2.2.2/2.2.3 implementation, tests and governance/design records after checkpoint 919e66dc. This supersedes the temporary uncommitted boundary for those two slices only. Preserve original .DS_Store and tracked node_modules changes; do not push, deploy or start another product stage. STATE.md stage2.2.4 owns the receipt and continuation.
+
 ## 2026-10-25 — commit checkpoint 1 before enlarging the table
 
 Source: the user accepted the existing version as the first checkpoint, requested committing it first, then enlarging the cloth for more placement space. Commit only the current prototype source/dependency lock/test/docs slice. Preserve .DS_Store and tracked node_modules changes outside the commit. Stage2.2.2 enlargement begins after the checkpoint and stays uncommitted for local review. No push, deployment or access change is authorized.

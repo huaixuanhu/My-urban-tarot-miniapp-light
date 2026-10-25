@@ -2,7 +2,12 @@
 
 ## 2026-10-25
 
+- Accepted the enlarged cloth and random left/right reveal together as local checkpoint 2; committed their implementation, tests and documentation without publication.
+
+- Recorded acceptance of the enlarged cloth and retained shuffle; changed local reveals to a once-per-reveal random left/right side turn while preserving fixed identity, reversal and face-up dragging.
+
 - Accepted the current local motion/reading prototype as checkpoint 1 and recorded its local-only commit scope before the separately requested cloth/placement enlargement.
+- After local checkpoint `919e66dc`, enlarged trial 04's plain cloth and usable placement area toward the sides/back. Reading framing fits the enlarged area; reset smoothly borrows the original shuffle framing and returns to the larger table.
 
 ## 2026-10-24
 

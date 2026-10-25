@@ -1,15 +1,17 @@
 import * as THREE from 'three';
-import { CARD_COUNT, CARD_THICKNESS, shuffleDeck } from './motion.mjs';
+import { CARD_COUNT, shuffleDeck } from './motion.mjs';
 import { createReadingReset, sampleReadingResetPose, READING_RESET_DURATION_MS as RESET_DURATION_MS, readingShuffleProgressAt as shuffleProgressAt } from './reading-reset.mjs';
 import { createCardGeometry, applyCardFlex } from './card-geometry.mjs';
 import { sampleFlex } from './flex.mjs';
 import { createCardBack } from './textures.mjs';
 import { createReading, reduceReading, canUndo } from './reading-state.mjs';
 import { createReadingCardFace, readingCardLabel } from './reading-art.mjs';
-import { DEFAULT_VIEW, VIEW_TARGET, dragView, getViewPosition, isDefaultView, clampView, getViewSize, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
+import { DEFAULT_VIEW, VIEW_TARGET, dragView, getViewPosition, isDefaultView, clampView, getFramedViewSize, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
+import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
 import { createReadingCloth } from './reading-cloth.mjs';
+import { readingTablePose, sampleSideRevealPose, REVEAL_DURATION_MS } from './reading-reveal.mjs';
 
 const $ = id => document.getElementById(id);
 const ids = Array.from({ length: CARD_COUNT }, (_, id) => id);
@@ -32,6 +34,7 @@ let noticeText = '', noticeUntil = 0, noticeTimer = null;
 const flips = new Map(), faceMaterials = new Map(), currentPoses = new Map();
 const hoverOffsets = ids.map(() => ({ x: 0, y: 0 }));
 let previousFrameTime = 0, view = { ...DEFAULT_VIEW }, viewDrag = null, viewTransition = null, zoomTarget = 1;
+let shuffleFraming = 0;
 const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2(), tablePlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.05);
 const SETTLE_MS = 520;
 
@@ -39,9 +42,7 @@ function fanPose(ordinal, fan = readingFan) { return { ...fan[ordinal] }; }
 function placedInOrder() { return Object.values(reading.placed).sort((a, b) => a.drawOrder - b.drawOrder); }
 function tablePose(card) {
   const layers = Object.values(reading.placed).sort((a, b) => a.zIndex - b.zIndex);
-  // The underside UVs turn end-for-end under Rx(PI); add Ry(PI) for upright
-  // printing. The rotationally symmetric back does not disclose orientation.
-  return { x: card.x, y: 0.05 + layers.findIndex(item => item.id === card.id) * 0.012 + (card.faceUp ? CARD_THICKNESS : 0), z: card.z, rx: card.faceUp ? Math.PI : 0, ry: reading.reversed[card.id] ? 0 : Math.PI, rz: 0 };
+  return readingTablePose(card, reading.reversed[card.id], layers.findIndex(item => item.id === card.id));
 }
 function texture(canvas) {
   const result = new THREE.CanvasTexture(canvas);
@@ -118,6 +119,7 @@ function frame(now) {
   previousFrameTime = now;
   if (viewTransition) {
     const u = clamp((now - viewTransition.started) / 320, 0, 1), t = smooth(u);
+    shuffleFraming = viewTransition.frameFrom + (viewTransition.frameTo - viewTransition.frameFrom) * t;
     applyView({ zoom: viewTransition.from.zoom + (1 - viewTransition.from.zoom) * t, yaw: viewTransition.from.yaw * (1 - t), elevation: viewTransition.from.elevation + (DEFAULT_VIEW.elevation - viewTransition.from.elevation) * t });
     if (u === 1) { viewTransition = null; applyView(DEFAULT_VIEW); if (reset) reset.lastTime = now; updateUI(); }
     else animating = true;
@@ -132,7 +134,13 @@ function frame(now) {
     if (viewTransition) reset.lastTime = now;
     reset.elapsed += Math.max(0, now - reset.lastTime); reset.lastTime = now;
     if (reset.elapsed >= RESET_DURATION_MS + SETTLE_MS) finishReset();
-    else animating = true;
+    else {
+      if (reset.elapsed > RESET_DURATION_MS) {
+        shuffleFraming = 1 - smooth((reset.elapsed - RESET_DURATION_MS) / SETTLE_MS);
+        updateProjection();
+      }
+      animating = true;
+    }
   }
   for (const id of ids) {
     let pose, flex = sampleFlex(0, 0);
@@ -156,10 +164,10 @@ function frame(now) {
       // Lift only a little, keeping the original fan angle and depth. Nearby
       // cards ease apart; the selected card never swings out as a whole panel.
       if (!card) { pose.x += offset.x; pose.y += offset.y; }
-      if (drag?.started && drag.id === id) pose = { ...pose, x: drag.point.x, z: drag.point.z, y: Math.max(0.35, pose.y + 0.20), rz: 0 };
+      if (drag?.started && drag.id === id) pose = { ...pose, x: drag.point.x, z: drag.point.z, y: Math.max(0.35, pose.y + 0.20), rz: card ? pose.rz : 0 };
       if (flips.has(id)) {
-        const flip = flips.get(id), u = clamp((now - flip.started) / 620, 0, 1);
-        pose.rx = Math.PI * smooth(u); pose.y += 1.08 * Math.sin(Math.PI * smooth(u)) - CARD_THICKNESS * (1 - smooth(u));
+        const flip = flips.get(id), u = clamp((now - flip.started) / REVEAL_DURATION_MS, 0, 1);
+        pose = sampleSideRevealPose(pose, u, flip.direction);
         if (u < 1) animating = true;
         else { flips.delete(id); updateUI(); }
       }
@@ -185,7 +193,7 @@ function frame(now) {
 function reveal(id) {
   if (reset || drag?.started || !reading.placed[id] || reading.placed[id].faceUp) return;
   ensureFace(id);
-  if (!$('reduce').checked) flips.set(id, { started: performance.now() });
+  if (!$('reduce').checked) flips.set(id, { started: performance.now(), direction: crypto.getRandomValues(new Uint8Array(1))[0] < 128 ? -1 : 1 });
   dispatch({ type: 'reveal', id });
   announce(`${readingCardLabel(id)} · ${reading.reversed[id] ? '逆位' : '正位'} · 示例牌面`);
 }
@@ -207,7 +215,7 @@ function beginReset() {
 }
 function finishReset() {
   if (!reset) return;
-  viewTransition = null; zoomTarget = 1; applyView(DEFAULT_VIEW);
+  viewTransition = null; zoomTarget = 1; shuffleFraming = 0; applyView(DEFAULT_VIEW);
   reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
   hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
   deckFocusId = reading.order[0]; flips.clear(); updateUI(); invalidate();
@@ -233,7 +241,7 @@ function pick(event) {
 }
 function validDrop(event, point) {
   const box = renderer.domElement.getBoundingClientRect();
-  return point && event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top + 82 && event.clientY <= box.bottom && Math.abs(point.x) <= 5.6 && point.z >= -2.8 && point.z <= 0.85;
+  return canPlaceAt(point) && event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top + 82 && event.clientY <= box.bottom;
 }
 function cancelDrag() {
   if (viewDrag) {
@@ -300,8 +308,9 @@ function onPointerUp(event) {
   if (action.started) {
     lastTap = null;
     const point = planePoint(event);
-    if (validDrop(event, point)) {
-      dispatch({ type: action.fromDeck ? 'draw' : 'move', id: action.id, x: clamp(point.x + action.offsetX, -5.4, 5.4), z: clamp(point.z + action.offsetZ, -2.65, 0.75) });
+    const target = point && { x: point.x + action.offsetX, z: point.z + action.offsetZ };
+    if (validDrop(event, target)) {
+      dispatch({ type: action.fromDeck ? 'draw' : 'move', id: action.id, ...clampPlacement(target) });
       hoverId = null;
     } else notice = '未放到桌面，已回到原位。';
   } else if (!action.fromDeck) {
@@ -327,7 +336,7 @@ function placeFocused() {
 }
 function updateProjection() {
   const box = $('scene').getBoundingClientRect(), aspect = box.width / box.height;
-  const { width, height } = getViewSize(view, aspect);
+  const { width, height } = getFramedViewSize(view, aspect, shuffleFraming);
   camera.left = -width / 2; camera.right = width / 2; camera.top = height / 2; camera.bottom = -height / 2;
   camera.zoom = view.zoom;
   camera.updateProjectionMatrix();
@@ -340,8 +349,9 @@ function applyView(next) {
 }
 function homeView() {
   cancelDrag(); hoverId = null; lastTap = null; zoomTarget = 1;
-  if ($('reduce').checked || isDefaultView(view)) { viewTransition = null; applyView(DEFAULT_VIEW); }
-  else viewTransition = { from: { ...view }, started: performance.now() };
+  const frameTo = reset ? 1 : 0;
+  if ($('reduce').checked || (isDefaultView(view) && shuffleFraming === frameTo)) { viewTransition = null; shuffleFraming = frameTo; applyView(DEFAULT_VIEW); }
+  else viewTransition = { from: { ...view }, frameFrom: shuffleFraming, frameTo, started: performance.now() };
   updateUI(); invalidate();
 }
 function updateViewDrag(event) {

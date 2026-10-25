@@ -1,9 +1,8 @@
 import * as THREE from 'three';
+import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
+export { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
 
 /** A stationary, unpatterned textile surface for the local reading prototype. */
-export const CLOTH_WIDTH = 12.4;
-export const CLOTH_LENGTH = 9.2;
-export const CLOTH_CENTER_Z = 0.4;
 export const CLOTH_MAX_HEIGHT = 0.013;
 
 const TAU = Math.PI * 2;

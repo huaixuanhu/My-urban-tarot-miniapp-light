@@ -4,6 +4,9 @@ import { Euler, Matrix3, Matrix4, OrthographicCamera, Vector3 } from 'three';
 import { OBB } from 'three/examples/jsm/math/OBB.js';
 import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from './motion.mjs';
 import { createReadingFan } from './reading-fan.mjs';
+import { readingTablePose, sampleSideRevealPose } from './reading-reveal.mjs';
+import { PLACEMENT_BOUNDS } from './reading-layout.mjs';
+import { DEFAULT_VIEW, VIEW_TARGET, getViewPosition, getFramedViewSize } from './reading-view.mjs';
 import { RESET_DURATION_MS, sampleResetPose, shuffleProgressAt } from './reset-motion.mjs';
 import { READING_RESET_PRELUDE_MS, READING_RESET_DURATION_MS, READING_RESET_SWEEP_Z, createReadingReset, sampleReadingResetPose, readingShuffleProgressAt } from './reading-reset.mjs';
 
@@ -15,7 +18,7 @@ function snapshotFor(positions = [{ x: -2, z: 0 }, { x: 0, z: 0.3 }, { x: 2, z: 
   return ids.map(id => {
     const placedIndex = placedIds.indexOf(id);
     return placedIndex < 0 ? { id, ...fan[id] }
-      : { id, ...positions[placedIndex], y: 0.055 + placedIndex * 0.012, rx: placedIndex === 1 ? 0 : Math.PI, ry: placedIndex === 2 ? Math.PI : 0, rz: 0 };
+      : { id, ...readingTablePose({ ...positions[placedIndex], faceUp: placedIndex !== 1 }, placedIndex === 2, placedIndex) };
   });
 }
 const deckIds = ids.filter(id => !placedIds.includes(id));
@@ -57,8 +60,11 @@ test('prelude preserves all fan-relative positions and rotations while placed ca
   near(sampleReadingResetPose(0, 449.999, run).z - run.poseById[0].z, READING_RESET_SWEEP_Z, 1e-8);
 });
 
-test('separated ordinary and lower-edge table layouts remain clear during sweep and takeoff', () => {
-  const layouts = [undefined, [{ x: -4.6, z: 0.85 }, { x: 0, z: 0.85 }, { x: 4.6, z: 0.85 }]];
+test('separated ordinary, lower-edge and expanded back/side layouts clear sweep and takeoff', () => {
+  const b = PLACEMENT_BOUNDS;
+  const layouts = [undefined, [{ x: -4.6, z: 0.85 }, { x: 0, z: 0.85 }, { x: 4.6, z: 0.85 }],
+    [{ x: b.minX, z: b.minZ }, { x: 0, z: b.minZ }, { x: b.maxX, z: b.minZ }],
+    [{ x: b.minX, z: b.minZ }, { x: b.maxX, z: -3 }, { x: 0, z: b.maxZ }]];
   for (const positions of layouts) {
     const run = makeRun('edge', positions);
     for (let frame = 0; frame <= 150; frame += 1) {
@@ -68,15 +74,17 @@ test('separated ordinary and lower-edge table layouts remain clear during sweep 
   }
 });
 
-test('hidden handoff is outside the verified desktop camera framing', () => {
+test('hidden handoff stays outside the actual dedicated shuffle frame', () => {
   const run = makeRun('camera');
-  for (const width of [12.8, 17]) {
-    const camera = new OrthographicCamera(-width / 2, width / 2, 3.8, -3.8, 0.1, 100);
-    camera.position.set(0, 10.5, 11.7); camera.lookAt(0, 0.1, 0.3); camera.updateMatrixWorld();
+  for (const aspect of [1.5, 2, 2.4]) {
+    const { width, height } = getFramedViewSize(DEFAULT_VIEW, aspect, 1), position = getViewPosition(DEFAULT_VIEW);
+    const camera = new OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0.1, 100);
+    camera.position.set(position.x, position.y, position.z);
+    camera.lookAt(VIEW_TARGET.x, VIEW_TARGET.y, VIEW_TARGET.z); camera.updateMatrixWorld();
     for (const id of deckIds) for (const ms of [449.999, 450]) {
       const points = corners(sampleReadingResetPose(id, ms, run)).map(point => point.project(camera));
       const outside = ['x', 'y', 'z'].some(axis => points.every(point => point[axis] < -1) || points.every(point => point[axis] > 1));
-      assert.ok(outside, `Card${id} visible at desktop handoff${ms}ms,width${width}`);
+      assert.ok(outside, `Card${id} visible at dedicated handoff${ms}ms,aspect${aspect}`);
     }
   }
 });
@@ -106,4 +114,28 @@ test('invalid snapshots, deck membership and elapsed values are rejected', () =>
   const run = makeRun();
   assert.throws(() => sampleReadingResetPose(78, 0, run), RangeError);
   assert.throws(() => sampleReadingResetPose(0, NaN, run), TypeError);
+});
+
+test('interrupted side turns retain the exact rendered pose through prelude and delegate the accepted suffix unchanged', () => {
+  const id = placedIds[0];
+  for (const reversed of [false, true]) for (const direction of [-1, 1]) for (const progress of [0.13, 0.5, 0.87]) {
+    const snapshot = snapshotFor();
+    const partial = sampleSideRevealPose(readingTablePose({ x: -2, z: 0, faceUp: true }, reversed), progress, direction);
+    snapshot[id] = { id, ...partial };
+    const original = structuredClone(snapshot);
+    const run = createReadingReset({ snapshot, deckIds, order, seed: 'interrupted-reveal' });
+    assert.deepEqual(snapshot, original);
+    for (const ms of [0, 170, 449.999, 450]) assert.deepEqual(sampleReadingResetPose(id, ms, run), partial);
+    // A tiny advance must not re-encode a signed roll through another Euler
+    // branch. Check world corners and the authored numeric angle continuity.
+    const after = sampleReadingResetPose(id, 450.001, run);
+    near(after.rz, partial.rz, 1e-6);
+    const initialCorners = corners(partial), afterCorners = corners(after);
+    initialCorners.forEach((corner, index) => assert.ok(corner.distanceTo(afterCorners[index]) < 1e-6));
+    for (let ms = 450; ms <= 750; ms += 5) for (const corner of corners(sampleReadingResetPose(id, ms, run))) assert.ok(corner.y > 0.025, `Interrupted reveal below table at ${ms}ms`);
+    for (const physicalId of ids) for (const ms of [0, 150, 300, 2600, 3650, 5060]) {
+      assert.deepEqual(sampleReadingResetPose(physicalId, ms + 450, run), sampleResetPose(physicalId, ms, run.motion));
+      assert.equal(readingShuffleProgressAt(ms + 450), shuffleProgressAt(ms));
+    }
+  }
 });

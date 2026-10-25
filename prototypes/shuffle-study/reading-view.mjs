@@ -1,4 +1,5 @@
 /** Bounded reading-table camera; angles are radians and drag distances pixels. */
+import { READING_ENVELOPE } from './reading-layout.mjs';
 const radians = degrees => degrees * Math.PI / 180;
 const RADIUS = Math.hypot(10.4, 11.4);
 const DRAG_SCALE = 0.0025;
@@ -54,7 +55,7 @@ export function getViewPosition(view = DEFAULT_VIEW) {
   return { x: VIEW_TARGET.x + horizontal * Math.sin(current.yaw), y: VIEW_TARGET.y + RADIUS * Math.sin(current.elevation), z: VIEW_TARGET.z + horizontal * Math.cos(current.yaw) };
 }
 
-/** Original reading-table orthographic framing, unchanged by camera dragging. */
+/** Retained shuffle framing; offscreen card handoffs depend on this envelope. */
 export function fitViewSize(aspect) {
   const safeAspect = Number.isFinite(aspect) && aspect > 0 ? aspect : 12.8 / 7.6;
   const width = Math.max(12.8, safeAspect * 7.6);
@@ -66,11 +67,11 @@ export function fitViewSize(aspect) {
 export function getViewSize(view, aspect) {
   const current = clampView(view);
   const base = fitViewSize(aspect);
-  if (hasDefaultAngles(current)) return base;
   const sinYaw = Math.sin(current.yaw), cosYaw = Math.cos(current.yaw);
   const sinElevation = Math.sin(current.elevation), cosElevation = Math.cos(current.elevation);
   let maxX = 0, maxY = 0;
-  for (const x of [-6.05, 6.05]) for (const y of [-0.025, 1.10]) for (const z of [-3.70, 4.50]) {
+  const bounds = READING_ENVELOPE;
+  for (const x of [bounds.minX, bounds.maxX]) for (const y of [bounds.minY, bounds.maxY]) for (const z of [bounds.minZ, bounds.maxZ]) {
     const dx = x - VIEW_TARGET.x, dy = y - VIEW_TARGET.y, dz = z - VIEW_TARGET.z;
     const projectedX = cosYaw * dx - sinYaw * dz;
     const projectedY = -sinElevation * sinYaw * dx + cosElevation * dy - sinElevation * cosYaw * dz;
@@ -83,4 +84,11 @@ export function getViewSize(view, aspect) {
   // Preserve finite output even for pathological, effectively zero aspect ratios.
   if (!Number.isFinite(width) || !Number.isFinite(height)) return getViewSize(current, 12.8 / 7.6);
   return { width, height };
+}
+
+/** Blend to the accepted shuffle frame before starting its clock, then back. */
+export function getFramedViewSize(view, aspect, shuffleFraming = 0) {
+  const reading = getViewSize(view, aspect), shuffle = fitViewSize(aspect);
+  const t = clamp(finiteOr(shuffleFraming, 0), 0, 1);
+  return { width: reading.width + (shuffle.width - reading.width) * t, height: reading.height + (shuffle.height - reading.height) * t };
 }

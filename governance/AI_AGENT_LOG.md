@@ -1,5 +1,23 @@
 # Agent continuity log
 
+## 2026-10-25 — stage2.2.4 local checkpoint 2
+
+Executor: Codex (GPT-6). Source: the user accepted the sideways reveal and explicitly requested committing it together with the expanded cloth as checkpoint 2. Reviewed the bounded source/test diff and recorded local acceptance of design revision 11. The commit packages stage2.2.2 and stage2.2.3 plus their canonical documentation. The exact Git receipt is the commit carrying this entry; checkpoint 1 remains 919e66dc. Existing .DS_Store and tracked node_modules changes remain excluded. No new gameplay behavior, push, deployment, cleanup or future-stage implementation is included.
+
+Validation: refreshed the 77-test study suite, two-entry build and pnpm check:all before committing. Earlier browser observations remain the visual evidence; this commit does not imply production, phone, arbitrary-overlap or measured comfort qualification. Continue through STATE.md.
+
+## 2026-10-25 — stage2.2.3 side-turn reveal
+
+Executor: Codex (GPT-6), with independent Three.js orientation/reset tests and controller source review. Source: the user accepted the cloth size and retained shuffle, then requested random left/right reveals instead of vertical end-over-end turns. Added reading-reveal.mjs, kept final printed orientation matrix-equivalent for each fixed reversal, sampled direction once per animated reveal, and retained the face-up rotation during dragging. Design revision 11 records the delegated local motion change. Previous reversal data was already fixed; no historical reroll bug is asserted.
+
+Validation: 77/77 study tests, two-entry build and pnpm check:all passed, including 15 access regressions. Tests cover actual underside texture directions, both turn directions/orientations, sampled solid clearance, exact interrupted reset snapshots and retained suffix. Browser evidence includes visible intermediate side turns, upright/reversed printing, three reveals, face-up movement, repeat reveal protection, normal reset and reduced-motion reveal. Broader collision/comfort qualification remains open. Accepted shuffle, cloth/fan/camera code and original local generated changes stay intact. No commit, push or deployment; continue through STATE.md.
+
+## 2026-10-25 — stage2.2.2 larger plain cloth and placement area
+
+Executor: Codex (GPT-6), with an independent layout/view/reset test reviewer. Source: the user explicitly sequenced this local refinement after checkpoint 1. Committed the pre-enlargement prototype as `919e66dc`, then expanded cloth and actual placement bounds through shared reading-layout.mjs helpers. Reading framing now fits the expanded envelope; the controller blends to the retained shuffle frame before advancing the clock and back during the existing final settling step. Accepted trial 03, card/fan scale and production/access sources remain unchanged. Design revision 10 records the delegated spatial change. No second commit, push or deployment.
+
+Validation: 70 study tests, two-entry build and pnpm check:all passed. Independent bounded execution of the actual framing/finish/reduced-motion bodies confirmed clock hold and frame restoration, without GPU rendering. Real browser checks exercised three new-boundary draws, movement, double-click reveal, orbit, both zoom limits, normal reset from rotated/zoomed view, skip and reduced motion. These checks retain the existing limits on arbitrary overlap, final-morph collisions and comfort/mobile acceptance. The current continuation and acceptance owner remains STATE.md.
+
 ## 2026-10-25 — stage2.2.1 local checkpoint 1
 
 Executor: Codex (GPT-6). Source: the user accepted the current version as the first checkpoint and explicitly requested committing it before enlarging the cloth. Prepared the existing local stage2.1/2.2 prototype sources, pinned isolated dependency manifest/lock, tests and canonical governance/design records. No enlargement code belongs to this snapshot. Existing .DS_Store and tracked node_modules changes remain outside the commit. Git supplies the checkpoint identity; STATE.md is the continuation owner for the separately authorized stage2.2.2 follow-up. No push or deployment is authorized.
