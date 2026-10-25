@@ -1,0 +1,265 @@
+{
+  "status": "PASS",
+  "passed": 8,
+  "total": 8,
+  "outsideTolerance": "exact RGBA bytes",
+  "excludedRegion": "capsule + 24 CSS pixels capture padding + 1 framebuffer pixel",
+  "cases": [
+    {
+      "theme": "light",
+      "dpr": 1,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        420,
+        280
+      ],
+      "pass": true,
+      "outsidePixels": 81440,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 15232,
+      "insideChanged": 3248,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "light",
+      "dpr": 1,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        620,
+        390
+      ],
+      "pass": true,
+      "outsidePixels": 191176,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 22912,
+      "insideChanged": 4817,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "light",
+      "dpr": 2,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        840,
+        560
+      ],
+      "pass": true,
+      "outsidePixels": 328572,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 60942,
+      "insideChanged": 13415,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "light",
+      "dpr": 2,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        1240,
+        780
+      ],
+      "pass": true,
+      "outsidePixels": 768284,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 91666,
+      "insideChanged": 19460,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 1,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        420,
+        280
+      ],
+      "pass": true,
+      "outsidePixels": 81440,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 15232,
+      "insideChanged": 3245,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 1,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        620,
+        390
+      ],
+      "pass": true,
+      "outsidePixels": 191176,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 22912,
+      "insideChanged": 4816,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 2,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        840,
+        560
+      ],
+      "pass": true,
+      "outsidePixels": 328572,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 60942,
+      "insideChanged": 13406,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 2,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        1240,
+        780
+      ],
+      "pass": true,
+      "outsidePixels": 768284,
+      "outsideChanged": 0,
+      "maximumOutsideByteDifference": 0,
+      "insidePixels": 91666,
+      "insideChanged": 19449,
+      "sourceWhitePreserved": true,
+      "whiteBefore": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteAfter": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rendererStatePreserved": true
+    }
+  ]
+}

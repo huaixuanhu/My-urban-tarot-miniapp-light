@@ -82,3 +82,7 @@ Replaced reserved columns/control rows with a full-viewport scene and floating g
 ## 2026-10-26 — checkpoint 6 and room refinement authority
 
 Record trial 09 as local checkpoint 6, with the user-authorized next clear-lens and blurred-cottage refinement scoped in STATE.md. Product behavior unchanged.
+
+## 2026-10-26 — clear-lens local batch
+
+Refine local trial 10 control lens: clearer center, narrow optical edge, warm/violet catches and softer shadow; retain all card actions.

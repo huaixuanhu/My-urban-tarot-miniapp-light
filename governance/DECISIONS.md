@@ -107,3 +107,7 @@ The original and destination are on the same filesystem; a directory rename pres
 ## 2026-10-26 — checkpoint 6 and room refinement authority
 
 Checkpoint 6 records the user’s acceptance of trial 09 at d3aaa4a8. The new room/environment request reopens the prior no-foliage constraint and authorizes bounded source reuse from 萱敏小屋, with local batch commits only. Current scope is STATE.md stage2.4.10.
+
+## 2026-10-26 — clear-lens local batch
+
+Refine reference optics with an untinted center, a thinner refractive rim and softer displaced shadow; retain the screen-fixed lower-center controls. Room composition will be verified separately in stage2.4.10.2, using the same lens over the real background.

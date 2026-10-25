@@ -198,7 +198,15 @@ Source: the user's 2026-10-26 “现在的效果还不错先commit” accepts tr
 
 #### stage2.4.10 — clear lens and inhabited room
 
-Source: the same request and two supplied concept crops, followed by renewed instruction to commit substantial work in batches. The user authorizes a clearer, reference-led fixed lower-center lens and a softly blurred 萱敏小屋 room behind a floating glass table, with restrained foliage, a small stone dish and coherent highlights/shadows. This explicitly supersedes the previous exclusion of leaves/room props for the surrounding UI. Read the cottage's actual geometry/material sources and reuse a bounded, attributed local subset; do not modify that project, import private data/links or couple application runtimes. Preserve Urban Tarot artwork/data, camera bounds, card identity/reversal and accepted interactions. Local implementation and verified batch commits are authorized; push/deployment remain unauthorized. First save checkpoint 6, then separate reviewable lens and room/environment batches. The concept is a material/composition target; exact static-image identity is not a verified property of an interactive 3D scene. stage2.5 remains deferred.
+Source: the same request and two supplied concept crops, followed by renewed instruction to commit substantial work in batches. The user authorizes a clearer, reference-led fixed lower-center lens and a softly blurred 萱敏小屋 room behind a floating glass table, with restrained foliage, a small stone dish and coherent highlights/shadows. This explicitly supersedes the previous exclusion of leaves/room props for the surrounding UI. Read the cottage's actual geometry/material sources and reuse a bounded, attributed local subset; do not modify that project, import private data/links or couple application runtimes. Preserve Urban Tarot artwork/data, camera bounds, card identity/reversal and accepted interactions. Local implementation and verified batch commits are authorized; push/deployment remain unauthorized. Checkpoint 6 is `47b67ea4`. Keep subsequent lens and room/environment batches separately reviewable. The concept is a material/composition target; exact static-image identity is not a verified property of an interactive 3D scene. stage2.5 remains deferred.
+
+##### stage2.4.10.1 — clear-lens batch
+
+Local candidate: a narrower optical bevel and rim, softly displaced cast shadow, restrained violet edge and warm lower catch. The center samples actual background without a gray fill. The enabled primary action has a soft ivory insert. Controls remain fixed and preserve their actions. Six lens tests and eight actual browser GPU cases pass; outside-region pixels and unlit white artwork remain byte-identical. Browser checked the empty and hidden-selected states in daylight. Evidence: docs/design/stage2.4.10/lens-gpu.json and lens-before-room.png. This is an intermediate optical batch; evaluate again over the room background in stage2.4.10.2.
+
+##### stage2.4.10.2 — cottage environment batch
+
+Pending implementation/verification: portable cottage architecture and vegetation, a newly authored stone dish, blurred room only, clear card objects and coherent floating-table shadows. Source provenance is bounded by docs/design/stage2.4.10/cottage-source.md. All inherited gameplay/access boundaries remain.
 
 ### stage2.5 — full flow and local continuity
 

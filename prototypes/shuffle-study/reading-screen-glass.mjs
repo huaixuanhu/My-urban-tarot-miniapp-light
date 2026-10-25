@@ -70,44 +70,53 @@ const fragmentShader = /* glsl */`
     float aa = max(0.35, fwidth(distance) * 0.65);
     float coverage = 1.0 - smoothstep(-aa, aa, distance);
 
-    // A short shadow belongs to the hovering control itself, in screen space.
-    // The halo fades completely before the capture rectangle's outer border.
-    float shadowDistance = capsuleDistance(p - vec2(1.4, 5.0), halfSize);
-    float shadow = exp(-pow(max(0.0, shadowDistance) / 5.0, 2.0))
-      * (1.0 - coverage) * mix(0.15, 0.24, uDark);
-    if (coverage < 0.00001 && shadow < 0.00001) discard;
+    // A lifted clear lens casts a displaced, diffuse shadow. Keep its falloff
+    // inside the capture padding and avoid a dark extrusion along the full rim.
+    float shadowDistance = capsuleDistance(p - vec2(5.0, 7.0), halfSize - vec2(1.0));
+    float shadow = exp(-pow(max(0.0, shadowDistance) / 6.2, 2.0))
+      * (1.0 - smoothstep(10.0, 16.0, shadowDistance))
+      * (1.0 - coverage) * mix(0.095, 0.17, uDark);
+    float caustic = exp(-pow((p.x + size.x * 0.30) / (size.x * 0.09), 2.0)
+      - pow((p.y - halfSize.y - 3.6) / 2.8, 2.0)) * (1.0 - coverage);
+    if (coverage < 0.00001 && shadow < 0.00001 && caustic < 0.00001) discard;
 
     vec3 original = sceneColor(vec2(0.0));
-    vec3 under = original * (1.0 - shadow);
+    vec3 under = toLinear(original) * (1.0 - shadow);
+    under += vec3(1.0, 0.86, 0.66) * caustic * mix(0.035, 0.018, uDark);
+    under = toDisplay(under);
     float radius = min(halfSize.x, halfSize.y);
     vec2 radial = vec2(p.x - clamp(p.x, -halfSize.x + radius, halfSize.x - radius), p.y);
     vec2 normal = radial / max(length(radial), 0.001);
-    float bevelWidth = min(14.0, size.y * 0.22);
-    float bevel = smoothstep(-bevelWidth, -0.7, distance);
-    float edge = bevel * bevel;
-
-    // The center stays clear. Only the curved perimeter bends the real scene;
-    // the tiny RGB separation is confined to the thickest optical edge.
-    vec2 bend = -normal * (0.12 * bevel + 3.4 * edge);
+    float bevelWidth = min(9.0, size.y * 0.15);
+    float bevel = 1.0 - smoothstep(0.0, bevelWidth, max(0.0, -distance));
+    // A shallow elliptical edge has little optical power over the center and
+    // a steeper slope at the perimeter. No center tint or frost is introduced.
+    float edgeSlope = pow(sin(bevel * 1.5707963), 2.2);
+    vec2 bend = -normal * (0.06 * bevel + 4.1 * edgeSlope);
     vec3 refracted = sceneColor(bend);
-    refracted.r = sceneColor(bend - normal * 0.16 * edge).r;
-    refracted.b = sceneColor(bend + normal * 0.16 * edge).b;
+    refracted.r = sceneColor(bend - normal * 0.22 * edgeSlope).r;
+    refracted.b = sceneColor(bend + normal * 0.22 * edgeSlope).b;
     vec3 light = toLinear(refracted);
 
-    float warm = exp(-pow((p.x + size.x * 0.31) / (size.x * 0.13), 2.0)
-      - pow((p.y - size.y * 0.34) / (size.y * 0.24), 2.0));
-    float cool = exp(-pow((p.x - size.x * 0.455) / (size.x * 0.065), 2.0)
-      - pow((p.y + size.y * 0.015) / (size.y * 0.53), 2.0));
-    float rim = exp(-pow((distance + 1.65) / 1.25, 2.0));
-    float warmCore = pow(warm, 2.6);
-    float directional = pow(max(0.0, dot(normal, normalize(vec2(-0.45, -0.8)))), 5.0);
-    // Neutral transmission and localized catches replace a gray fill or a
-    // uniformly bright outline. A darker inner lip supplies a little thickness.
-    light *= 1.0 - edge * (0.018 + max(normal.y, 0.0) * 0.025);
-    light += vec3(1.0, 0.88, 0.70) * warm * (0.065 + 0.30 * rim);
-    light += vec3(1.0, 0.98, 0.94) * warmCore * mix(0.25, 0.18, uDark);
-    light += vec3(0.66, 0.68, 1.0) * cool * rim * mix(0.19, 0.15, uDark);
-    light += vec3(0.95, 0.97, 1.0) * rim * directional * 0.075;
+    float topLeft = pow(max(0.0, dot(normal, normalize(vec2(-0.48, -0.88)))), 3.0);
+    float lower = smoothstep(-0.05, 0.85, normal.y);
+    float rim = exp(-pow((distance + 0.9) / 0.62, 2.0));
+    float innerRim = exp(-pow((distance + 3.7) / 1.35, 2.0));
+    float warm = exp(-pow((p.x + size.x * 0.30) / (size.x * 0.105), 2.0)
+      - pow((p.y - size.y * 0.43) / (size.y * 0.115), 2.0));
+    float cool = exp(-pow((p.x - size.x * 0.465) / (size.x * 0.055), 2.0)
+      - pow((p.y - size.y * 0.05) / (size.y * 0.46), 2.0));
+    float leftCatch = exp(-pow((p.x + size.x * 0.472) / (size.x * 0.026), 2.0)
+      - pow((p.y + size.y * 0.17) / (size.y * 0.28), 2.0));
+    // Clear thickness is defined by two narrow reflected boundaries rather
+    // than a filled gray band. Local spectral catches stay on the curved edge.
+    light *= 1.0 - edgeSlope * lower * 0.018;
+    light += vec3(0.96, 0.985, 1.0) * rim * (0.024 + topLeft * 0.20);
+    light += vec3(0.96, 0.98, 1.0) * innerRim * lower * 0.022;
+    light += vec3(1.0, 0.87, 0.69) * warm * (0.075 + rim * 0.40);
+    light += vec3(1.0, 0.98, 0.93) * pow(warm, 2.6) * mix(0.26, 0.17, uDark);
+    light += vec3(0.66, 0.61, 1.0) * cool * rim * mix(0.28, 0.18, uDark);
+    light += vec3(0.72, 0.74, 1.0) * leftCatch * rim * 0.14;
     vec3 glass = toDisplay(light);
     fragColor = vec4(mix(under, glass, coverage), 1.0);
   }

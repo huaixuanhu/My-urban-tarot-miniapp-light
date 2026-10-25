@@ -179,3 +179,7 @@ No commit, push, gameplay reconstruction, independent review, physical-phone acc
 ## 2026-10-26 — checkpoint 6 and room refinement authority
 
 Executing host: Codex; model: GPT-6. Recorded checkpoint 6 acceptance at unchanged trial 09 product baseline d3aaa4a8 before implementation. Preserved 65 existing generated-file changes by entry hashes. Previous 112 study tests, eight GPU checks and browser evidence remain applicable; the aggregate gate is rerun for this documentation checkpoint. No push/deployment. Continue through STATE.md stage2.4.10.
+
+## 2026-10-26 — clear-lens local batch
+
+Executing host: Codex; model: GPT-6. Completed stage2.4.10.1 lens-only batch after checkpoint 6 (47b67ea4). Six lens tests and eight actual GPU cases passed, preserving outside-region bytes and source-white color. Browser observed empty/selected states. Room module preparation is separate and not included in this lens commit. No push/deployment.
