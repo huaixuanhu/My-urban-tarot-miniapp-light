@@ -57,3 +57,15 @@ The reference-led fan refinement uses `reading-fan.mjs`: one deterministic loose
 After local checkpoint `919e66dc`, stage2.2.2 expands the cloth to 14.8 × 11.2, centered at z = −0.6. `reading-layout.mjs` owns the shared dimensions and card-center bounds (x ±6.6, z −4.6 to 0.75). The front edge and card scale are retained; added room is at the sides and back. Drops, movement and camera fitting use the enlarged area. The owner accepted this size and the sideways reveal below, and requested packaging both as local checkpoint 2. Current evidence and the checkpoint scope are in `governance/STATE.md`.
 
 `reading-reveal.mjs` owns the side-turn pose: one random left/right choice per reveal, independent of the round’s fixed upright/reversed array. The long-axis turn keeps printed head/foot direction, uses short-edge lift clearance and finishes in 620ms. Reduced motion uses the same final pose immediately; face-up dragging and an interrupted reset preserve the visible orientation. The former end-over-end reveal is superseded.
+
+## Local day/night trial 06
+
+Derived from governance/STATE.md stage2.4.2–stage2.4.4; implementation/evidence notes only, not a separate plan. User authorized the local trial after selecting the later light/dark concepts, retained Urban Tarot artwork and no foliage, then explicitly requested replacing cloth with a fluid-glass surface. Open the same reading.html URL.
+
+The appearance selector follows the system or manually selects day/night; only that preference is stored as `augurwell.appearance`. One scene and reading state serve both modes. `reading-glass.mjs` builds a rounded solid glass volume with transmission, IOR, clearcoat and a generated neutral reflection environment; no visible props. It retains the 14.8 × 11.2 footprint, with its top below the card layer. `reading-scene-style.mjs` owns material/light changes and the original geometric back; `reading-cloth.mjs` remains a retained legacy utility, unused by trial 06. Card face files/data and accepted motion/state/camera modules are unchanged. Reading framing has a 4% overview margin to show the surface edge, blended out for the accepted shuffle.
+
+The glass action dock, original-card meanings and keyboard/view utilities share a single responsive layout. Detailed art/meaning remains optional; the selected name/theme stays visible separately. Keyboard-triggered Reveal continues at the meaning summary if focus has not moved elsewhere. No question, history, AI, cloud synchronization or publication. Evidence: [local review](../../docs/design/stage2.4.2/README.md).
+
+## Local trial 07 — floating interface
+
+Derived from governance/STATE.md stage2.4, scope: the local UI refinement only. Full-viewport rendering replaces the prior split reader layout. Stable permanent controls and contextual card actions float over the table; native disclosures are mutually exclusive and close with Esc. The first local commit contains the glass/floating UI; a separate batch corrects the reading projection. Original images/data and gameplay remain unchanged.

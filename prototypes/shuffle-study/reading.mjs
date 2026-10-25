@@ -3,7 +3,8 @@ import { CARD_COUNT, shuffleDeck } from './motion.mjs';
 import { createReadingReset, sampleReadingResetPose, READING_RESET_DURATION_MS as RESET_DURATION_MS, readingShuffleProgressAt as shuffleProgressAt } from './reading-reset.mjs';
 import { createCardGeometry, applyCardFlex } from './card-geometry.mjs';
 import { sampleFlex } from './flex.mjs';
-import { createCardBack } from './textures.mjs';
+import { createReadingSceneStyle } from './reading-scene-style.mjs';
+import { createAppearancePreference } from './reading-appearance.mjs';
 import { createReading, reduceReading, canUndo } from './reading-state.mjs';
 import { createReadingCardFace } from './reading-art.mjs';
 import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
@@ -12,7 +13,6 @@ import { DEFAULT_VIEW, VIEW_TARGET, dragView, getViewPosition, isDefaultView, cl
 import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
-import { createReadingCloth } from './reading-cloth.mjs';
 import { readingTablePose, sampleSideRevealPose, REVEAL_DURATION_MS } from './reading-reveal.mjs';
 
 const $ = id => document.getElementById(id);
@@ -30,15 +30,17 @@ function freshReading(order = shuffleDeck(ids)) {
 }
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
-let scene, camera, renderer, meshes, outline, resizeObserver;
+let scene, camera, renderer, meshes, outline, resizeObserver, sceneStyle;
+let appearanceController;
 let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
 const flips = new Map(), currentPoses = new Map(), pendingReveals = new Map();
-let round = 0;
+let round = 0, readerFocusRequest = null;
 const updateReader = createReadingReader($('reader'));
 const loadFace = createCardLoader(async id => {
   const canvas = await createReadingCardFace(id);
-  const material = new THREE.MeshStandardMaterial({ map: texture(canvas), roughness: 0.9 });
+  // Keep the original illustration color independent of day/night scene lighting.
+  const material = new THREE.MeshBasicMaterial({ map: texture(canvas), toneMapped: false });
   meshes[id].material[1] = material;
   return material;
 });
@@ -83,11 +85,15 @@ function updateUI() {
   const selected = reading.placed[reading.selectedId];
   const busy = !!reset || failed;
   $('table').classList.toggle('is-resetting', !!reset);
+  $('table').classList.toggle('has-cards', placed.length > 0);
+  $('table').dataset.readingState = failed ? 'error' : reset ? 'resetting' : isOpened(selected) ? 'revealed' : placed.length ? 'hidden' : 'empty';
   $('reset-message').hidden = !reset;
-  $('counts').textContent = `剩余 ${CARD_COUNT - placed.length} 张 · 已抽 ${placed.length} 张`;
-  $('instruction').textContent = placed.length < 3 ? `从下方拖出${3 - placed.length === 3 ? '三' : 3 - placed.length}张牌，放到你想放的位置。` : '自由移动，双击一张牌，按自己的顺序揭晓。';
+  $('counts').textContent = `已抽 ${placed.length} · 已揭示 ${opened}`;
+  $('instruction').textContent = placed.length ? '自由摆放 · 双击翻开' : '从牌带拖出一张，放在你想放的位置。';
   $('selected-label').textContent = selected ? (isOpened(selected) ? `${readingCardLabel(selected.id)} · ${reading.reversed[selected.id] ? '逆位' : '正位'}` : `已选第 ${placed.indexOf(selected) + 1} 张 · ${flips.has(selected.id) ? '正在翻开' : '未翻开'}`) : '选中一张桌上的牌';
-  $('reveal').textContent = pendingReveals.has(selected?.id) ? '准备牌面…' : '翻开';
+  $('reveal').hidden = isOpened(selected);
+  $('return').hidden = !selected || selected.faceUp;
+  $('reveal').textContent = pendingReveals.has(selected?.id) ? '准备牌面…' : flips.has(selected?.id) ? '正在翻开' : '翻开';
   $('reveal').disabled = busy || !selected || selected.faceUp || pendingReveals.has(selected?.id);
   $('return').disabled = busy || !selected || selected.faceUp || pendingReveals.has(selected?.id);
   $('undo').disabled = busy || !canUndo(reading);
@@ -101,7 +107,7 @@ function updateUI() {
   for (const id of ['previous', 'next', 'place']) $(id).disabled = busy || deckFocusId === null;
   $('deck-position').textContent = deckFocusId === null ? '牌带已空' : `第 ${reading.order.indexOf(deckFocusId) + 1} / 78 张`;
   $('deck-hint').textContent = hoverId !== null && !reading.placed[hoverId] ? `第 ${reading.order.indexOf(hoverId) + 1} 张 · 按住拖到桌面` : '沿牌带挑选 · 按住拖出';
-  $('progress').textContent = reset ? '正在收牌与洗牌…' : opened >= 3 ? `已翻开 ${opened} 张。点选一张，慢慢看它的画面与牌义。` : placed.length >= 3 ? `已摆好 ${placed.length} 张 · 已翻开 ${opened} 张，双击继续揭晓。` : `已抽 ${placed.length} 张 · 先为自己留下三张牌。`;
+  $('progress').textContent = reset ? '正在洗牌…' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
   if (!reset && noticeText && performance.now() < noticeUntil) $('progress').textContent = noticeText;
   const list = $('placed-list');
   const signature = placed.map(card => `${card.id}:${isOpened(card)}:${card.id === reading.selectedId}`).join('|');
@@ -119,6 +125,15 @@ function updateUI() {
   }
   list.querySelectorAll('button').forEach(button => { button.disabled = busy; });
   updateReader(reading, { resetting: !!reset, revealing: flips.has(selected?.id), loading: pendingReveals.has(selected?.id), failed });
+  if (readerFocusRequest) {
+    if (busy || selected?.id !== readerFocusRequest.id || round !== readerFocusRequest.round) readerFocusRequest = null;
+    else if (isOpened(selected)) {
+      // A keyboard-activated reveal leaves a disappearing control. Continue at
+      // its result only if the user has not moved focus to another control.
+      if (document.activeElement === document.body || document.activeElement === $('reveal')) $('reader-details').querySelector('summary').focus({ preventScroll: true });
+      readerFocusRequest = null;
+    }
+  }
 }
 
 function frame(now) {
@@ -358,7 +373,10 @@ function placeFocused() {
 function updateProjection() {
   const box = $('scene').getBoundingClientRect(), aspect = box.width / box.height;
   const { width, height } = getFramedViewSize(view, aspect, shuffleFraming);
-  camera.left = -width / 2; camera.right = width / 2; camera.top = height / 2; camera.bottom = -height / 2;
+  // A small visual margin keeps the complete finite surface visible; the
+  // accepted shuffle frame and all world-space placement limits stay intact.
+  const margin = 1 + 0.04 * (1 - shuffleFraming);
+  camera.left = -width * margin / 2; camera.right = width * margin / 2; camera.top = height * margin / 2; camera.bottom = -height * margin / 2;
   camera.zoom = view.zoom;
   camera.updateProjectionMatrix();
 }
@@ -406,28 +424,18 @@ function fail(error) {
 }
 
 try {
-  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
   $('scene').append(renderer.domElement);
   renderer.domElement.tabIndex = 0;
-  renderer.domElement.setAttribute('aria-label', '牌桌：拖出抽牌，拖动摆放，双击翻开；拖动空白处调整视角，滚轮拉近拉远，Shift 加方向键调视角，加减键缩放。也可使用下方逐张挑牌按钮。');
+  renderer.domElement.setAttribute('aria-label', '牌桌：拖出抽牌，拖动摆放，双击翻开；拖动空白处调整视角，滚轮拉近拉远，Shift 加方向键调视角，加减键缩放。也可打开牌桌工具逐张挑牌。');
   scene = new THREE.Scene(); scene.background = new THREE.Color(0x111815); scene.fog = new THREE.FogExp2(0x111815, 0.035);
   camera = new THREE.OrthographicCamera(-6.4, 6.4, 3.8, -3.8, 0.1, 100);
   applyView(DEFAULT_VIEW);
-  scene.add(new THREE.HemisphereLight(0xc5d9cf, 0x253226, 2.15));
-  const key = new THREE.DirectionalLight(0xffe1aa, 3.2); key.position.set(-3.5, 8, 5.5); key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: 0.5, far: 25 });
-  key.shadow.bias = 0.0002; key.shadow.normalBias = 0.012; key.shadow.intensity = 0.82; scene.add(key);
-  const rim = new THREE.DirectionalLight(0x92b8b1, 1.7); rim.position.set(4, 5, -4); scene.add(rim);
-  const table = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x1b211d, roughness: 1 }));
-  table.rotation.x = -Math.PI / 2; table.position.y = -0.08; table.receiveShadow = true; scene.add(table);
-  scene.add(createReadingCloth(renderer));
-  const back = new THREE.MeshStandardMaterial({ map: texture(createCardBack()), roughness: 0.63, metalness: 0.12 });
-  const blank = new THREE.MeshStandardMaterial({ color: 0xe8dfc9, roughness: 0.9 });
-  const edge = new THREE.MeshStandardMaterial({ color: 0xc7bca2, roughness: 0.84, metalness: 0.02 });
-  meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [back, blank, edge]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
+  sceneStyle = createReadingSceneStyle(scene, renderer, texture);
+  meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [...sceneStyle.materials]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
   const outlineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.69, 0, -1.09), new THREE.Vector3(0.69, 0, -1.09), new THREE.Vector3(0.69, 0, 1.09), new THREE.Vector3(-0.69, 0, 1.09)]);
   outline = new THREE.LineLoop(outlineGeometry, new THREE.LineBasicMaterial({ color: 0xd2b882, transparent: true, opacity: 0.8 })); scene.add(outline);
   renderer.domElement.addEventListener('pointerdown', onPointerDown);
@@ -454,7 +462,23 @@ try {
   resizeObserver = new ResizeObserver(fit); resizeObserver.observe($('scene')); fit(); updateUI(); $('loading').hidden = true;
 } catch (error) { fail(error); }
 
-$('reveal').addEventListener('click', () => reveal(reading.selectedId));
+let appearanceStorage;
+try { appearanceStorage = window.localStorage; } catch { /* Appearance stays usable without storage. */ }
+appearanceController = createAppearancePreference({
+  storage: appearanceStorage, mediaQuery: matchMedia('(prefers-color-scheme: dark)'),
+  onChange({ preference, theme }) {
+    document.documentElement.dataset.theme = theme;
+    $('appearance').value = preference;
+    sceneStyle?.apply(theme, outline);
+    invalidate();
+  },
+});
+$('appearance').addEventListener('change', event => appearanceController.set(event.target.value));
+
+$('reveal').addEventListener('click', event => {
+  if (event.detail === 0 && !$('reveal').disabled) readerFocusRequest = { id: reading.selectedId, round };
+  reveal(reading.selectedId);
+});
 $('return').addEventListener('click', () => { if (!reset) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
 $('undo').addEventListener('click', () => { if (!reset) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });
 $('arrange').addEventListener('click', () => { if (!reset) { cancelDrag(); dispatch({ type: 'arrange3', positions: [{ x: -2, z: -0.7 }, { x: 0, z: -0.7 }, { x: 2, z: -0.7 }] }); } });
@@ -468,11 +492,22 @@ $('next').addEventListener('click', () => stepDeck(1));
 $('place').addEventListener('click', placeFocused);
 $('reduce').addEventListener('change', () => { if ($('reduce').checked) { if (viewTransition) { viewTransition = null; zoomTarget = 1; applyView(DEFAULT_VIEW); } else applyView({ ...view, zoom: zoomTarget }); flips.clear(); if (reset) finishReset(); updateUI(); invalidate(); } });
 $('retry').addEventListener('click', () => location.reload());
-document.addEventListener('keydown', event => { if (event.key === 'Escape') { cancelDrag(); dispatch({ type: 'select', id: null }); } });
+const floatingDisclosures = ['reader-details', 'table-tools', 'drawn-cards'].map($);
+for (const disclosure of floatingDisclosures) disclosure.addEventListener('toggle', () => {
+  if (disclosure.open) for (const other of floatingDisclosures) if (other !== disclosure) other.open = false;
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  const expanded = floatingDisclosures.find(disclosure => disclosure.open);
+  if (expanded) {
+    expanded.open = false;
+    expanded.querySelector('summary').focus({ preventScroll: true });
+  } else { cancelDrag(); dispatch({ type: 'select', id: null }); }
+});
 document.addEventListener('visibilitychange', () => {
   cancelDrag(); if (!viewTransition) zoomTarget = view.zoom;
   if (document.hidden) { cancelAnimationFrame(scheduled); scheduled = 0; }
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

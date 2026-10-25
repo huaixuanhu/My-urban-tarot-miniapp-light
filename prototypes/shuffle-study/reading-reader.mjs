@@ -1,13 +1,13 @@
 import { readingDeck, selectedCardContent } from './reading-content.mjs';
 import { readingCardImage } from './reading-art.mjs';
 
-/** A stable side rail, never a modal or a trigger for camera movement. */
+/** A floating reading layer; opening it never moves the camera or the cards. */
 export function createReadingReader(root) {
   const $ = id => root.querySelector(`#${id}`);
   let shownKey = null;
   $('reader-credit').textContent = `${readingDeck.name} · ${readingDeck.creator} · ${readingDeck.publisher}`;
   $('reader-details').addEventListener('toggle', () => {
-    $('reader-toggle-label').textContent = $('reader-details').open ? '收起详细牌义' : '展开牌义与画面线索';
+    $('reader-toggle-label').textContent = $('reader-details').open ? '收起详细牌义' : '展开牌义';
   });
   $('reader-image').addEventListener('error', () => {
     $('reader-image').hidden = true;
@@ -23,9 +23,10 @@ export function createReadingReader(root) {
     $('reader-empty').hidden = !!card;
     $('reader-content').hidden = !card;
     root.setAttribute('aria-busy', String(loading || revealing));
+    root.dataset.hasContent = String(!!card);
     if (!card) {
-      $('reader-empty-title').textContent = resetting ? '留一点空白，再开始。' : loading ? '正在准备这张牌…' : revealing ? '慢慢揭晓。' : state.selectedId !== null ? '先看看这张牌。' : '从一张牌开始。';
-      $('reader-empty-copy').textContent = failed ? '牌桌恢复后，可以继续阅读牌面。' : resetting ? '洗牌完成后，再挑选属于这一刻的牌。' : loading ? '图像准备好后会继续翻开。' : revealing ? '先让画面留下一个印象。' : state.selectedId !== null ? '双击桌上的牌，或点「翻开」。' : '翻开后，牌名与主题会留在这里。';
+      $('reader-empty-title').textContent = resetting ? '留一点空白，再开始。' : loading ? '正在准备这张牌…' : revealing ? '慢慢揭晓。' : state.selectedId !== null ? '尚未揭示' : '留一点未知。';
+      $('reader-empty-copy').textContent = failed ? '牌桌恢复后，可以继续阅读牌面。' : resetting ? '洗牌完成后，再挑选属于这一刻的牌。' : loading ? '图像准备好后会继续翻开。' : revealing ? '先让画面留下一个印象。' : state.selectedId !== null ? '双击这张牌，或点「翻开」。' : '翻开一张牌，线索会留在这里。';
     }
     if (key === shownKey) return;
     shownKey = key;

@@ -1,6 +1,13 @@
 # Change history
 
+## 2026-10-25 — floating glass interface, first local UI batch
+
+Replaced reserved columns/control rows with a full-viewport scene and floating glass controls, optional meanings and stable action targets. Includes the day/night glass foundation and original face-color preservation. The low-angle perspective correction follows separately. User authorized local batched commits; no push/deployment.
+
+
 ## 2026-10-25
+
+- Added local trial 06: paired day/night appearance on one glass table, original Urban Tarot faces, compact glass controls and optional reading. Replaced cloth with a rounded transmitting glass volume at the accepted footprint; kept motion/identity/orientation unchanged. Only appearance preference persists. No commit or publication.
 
 - Accepted trial 05 functionality as local checkpoint 3 before UI redesign. Deferred question records/full-flow refinement until afterward; existing Urban Tarot art remains the basis for the upcoming light/dark material comparison.
 

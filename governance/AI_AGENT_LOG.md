@@ -1,5 +1,22 @@
 # Agent continuity log
 
+## 2026-10-25 — trial 07 floating layer, first local batch
+
+Executor: Codex (GPT-6), with same-host bounded shell and projection agents. Rechecked Apple official material guidance, replaced split layout with full-scene overlays and repaired moving toolbar targets observed during an actual flip/click sequence. Existing gestures/meanings and appearance remain local. User requested batched commits; the first includes glass/floating UI, the second will contain the perspective fix. STATE.md owns receipts and final validation. No push/deployment.
+
+
+## 2026-10-25 — local trial 06: day/night glass table
+
+Executor: Codex (GPT-6), with bounded same-host agents for the HTML/CSS shell, appearance controller/glass module and independent read-only review. User explicitly started the local trial, then requested replacing cloth itself with fluid glass. Implemented one shared day/night scene, original Urban Tarot faces, quiet name/theme rail, optional meanings and compact glass/native controls; only appearance preference persists. Original cloth utility and accepted motion/state/camera modules remain intact; glass retains the footprint and adds only a small overview margin. 89 study tests and both local builds passed. Actual browser checks and screenshots are recorded under docs/design/stage2.4.2/. Keyboard-focus continuity found in review was repaired and exercised. STATE.md owns remaining aggregate evidence and user review. No commit/push/deployment or deferred question/history work.
+
+## 2026-10-25 — refined concept direction retained; foliage excluded
+
+Executor: Codex (GPT-6). Recorded the user's request to retain the feeling of generated images three/four, understood as the later refined light/dark pair, without leaves. STATE.md owns the selection; DESIGN.md excludes decorative foliage and plant shadows while preserving original card artwork. Updated the evidence mapping and removed the stale comparison-pending wording from AGENTS.md. Documentation only; no runtime, generated-image, source-art, commit, push or deployment changes.
+
+## 2026-10-25 — stage2.4.1 UI planning and concept comparison
+
+Executor: Codex (GPT-6), with a bounded read-only design/precedent review agent. This work starts after local checkpoint 31160c9f. The user confirmed retaining current Urban Tarot faces and requested comparing light/dark concepts before choosing. Read the current governance/design skills, source scene/material structure and original Star/Sun art; consulted Apple material hierarchy and W3C non-text contrast guidance. Built-in image generation is used for two concept directions, with one targeted refinement to remove extraneous still-life props and attempt to contain the source fan. Props were removed; the light fan remains cropped. Final concepts, prompts and a bounded critique are stored under docs/design/stage2.4.1/. Proposed state/control/material rules remain a candidate for design revision 13; STATE.md stages2.4.1–2.4.4 own the only current UI plan. The user then selected coexisting day/light and night/dark modes. Recorded one shared layout/state model with paired material values, unchanged original card faces, and a proposed system/manual appearance preference. Corrected the stale DESIGN continuation so question/record work follows UI review. The effective implemented baseline remains revision 12. No product source changes, additional commit, push, deployment or question/record implementation.
+
 ## 2026-10-25 — stage2.3.3 local checkpoint 3
 
 Executor: Codex (GPT-6), with a read-only scope/code review agent. Source: explicit user acceptance of current functionality and local-commit instruction before UI planning. Reviewed the 16-path trial 05 slice; retained current product code and recorded functional acceptance of design revision 12. Independent review found no blocking defect and verified unchanged source/access, accepted motion and 65 old dirty files. The checkpoint aggregate passed; prior 83-test/build/browser evidence remains applicable. STATE.md owns the commit receipt and next UI design-only scope. No push, deployment, new gameplay or cleanup.

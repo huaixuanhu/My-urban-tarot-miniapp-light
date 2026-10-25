@@ -1,5 +1,14 @@
 # Decisions
 
+## 2026-10-25 — full-scene overlays and separate local batches
+
+Source: explicit user feedback requesting floating text/buttons over the entire table with Apple Liquid Glass as a reference, followed by batch-commit permission. Adopt a distinct functional layer above the scene, keeping physical table/card geometry and transient reading state. Split the runnable glass/floating UI from the perspective correction; no push or deployment is authorized. The existing camera is orthographic, so source does not show literal inverse perspective; correct the missing depth scaling rather than invert another axis.
+
+
+## 2026-10-25 — local day/night glass UI trial
+
+Source: the user selected both light/day and dark/night, retained the third/fourth generated concepts without leaves, then explicitly requested rigorous local trial implementation. During implementation the user additionally requested replacing the cloth itself with fluid-glass material. Proceed locally within STATE.md stage2.4: one shared table/state, retained original Urban Tarot art and accepted motion, paired material values, native appearance selector and only appearance preference storage. Original cloth footprint remains; no source-card recoloring, foliage, question/history flow, commit, push or deployment. This supersedes the earlier planning-only boundary for this bounded local UI slice.
+
 ## 2026-10-25 — checkpoint 3 before UI redesign
 
 Source: the user accepted current functionality, explicitly requested a local checkpoint before UI redesign, supplied three generated material/mood references and deferred complete-flow refinement and question records until afterward. Commit trial 05 and its records only. Next work is UI planning/design: compare light and dark with the existing Urban Tarot artwork; do not treat the pasted assistant recommendation or reference layouts as acceptance. STATE.md stages 2.4–2.6 record the revised sequence. No push, deployment or UI implementation is inferred.

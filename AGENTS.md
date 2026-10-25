@@ -5,7 +5,7 @@ Generated/adapted from human-ai-governance v0.8.4
 ## Collaboration
 
 - Verify local facts from source, tool results, and checks; verify external or changing facts online. Never invent acceptance or history.
-- Establish human agreement before material work. Current scope and authority are owned by governance/STATE.md. The latest 2026-10-25 request accepts trial 05's functionality and authorizes one local checkpoint 3 commit, then UI planning/design. Full-flow refinement, question records and persistence follow UI redesign. Existing Urban Tarot art is retained; light/dark concepts are to be compared; no UI implementation, further commit, push or deployment is inferred.
+- Establish human agreement before material work. Current scope and authority are owned by governance/STATE.md. The latest 2026-10-25 request accepts trial 05's functionality and authorizes one local checkpoint 3 commit, then UI planning/design. Full-flow refinement, question records and persistence follow UI redesign. Existing Urban Tarot art is retained; the current accepted visual direction and remaining UI scope are owned by STATE.md. The subsequent explicit start request authorizes the bounded local UI implementation and verification owned by STATE.md stage2.4. It does not authorize a new commit, push or deployment.
 - Explain computer concepts simply in Chinese. Keep necessary specialist terms in English with a Chinese explanation. Use numeric stage identifiers such as stage1.2; letters only denote special additions.
 - Preserve existing user changes. Commit, push, publication, paid subscriptions, and product redesign remain separate permissions.
 - Use project-local dependencies and .venv for Python. Do not expose authentication secrets or put personal email addresses in tracked documentation.
@@ -20,3 +20,5 @@ Generated/adapted from human-ai-governance v0.8.4
 3. Run pnpm check:all for the combined governance, TypeScript, and build checks. Create .venv with python3 -m venv .venv if absent; its checker uses only the standard library.
 
 Governance root: this repository. Coverage: all project files. Working tier: Tier 3 for the private hosted app and its access configuration; no financial or external-account execution authority. Browser gameplay has no verified cloud persistence. Protect production access independently of local gameplay.
+
+The subsequent request to batch substantial UI changes authorizes bounded local UI commits after verification. Keep the glass/floating UI batch and the perspective correction reviewable as separate local commits. No push or deployment is authorized.
