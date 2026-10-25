@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-10-25 — real reading depth with retained shuffle framing
+
+Source: explicit low-angle perspective feedback. The old orthographic camera gave equal-size objects no distance scaling; there was no source evidence of an inverse projection. Add native perspective for reading, and approach the original orthographic shuffle camera with a continuous dolly/long-lens transition so glass view vectors stay coherent. Reuse physical bounds, identity, reversal, motion and zoom/orbit limits. Anchor the dock to the projected near edge, clearing all original fan slots so card selection/removal cannot move the permanent targets. First local UI batch is 97d40218; this second batch remains local-only.
+
+
 ## 2026-10-25 — full-scene overlays and separate local batches
 
 Source: explicit user feedback requesting floating text/buttons over the entire table with Apple Liquid Glass as a reference, followed by batch-commit permission. Adopt a distinct functional layer above the scene, keeping physical table/card geometry and transient reading state. Split the runnable glass/floating UI from the perspective correction; no push or deployment is authorized. The existing camera is orthographic, so source does not show literal inverse perspective; correct the missing depth scaling rather than invert another axis.

@@ -9,7 +9,8 @@ import { createReading, reduceReading, canUndo } from './reading-state.mjs';
 import { createReadingCardFace } from './reading-art.mjs';
 import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
 import { createReadingReader } from './reading-reader.mjs';
-import { DEFAULT_VIEW, VIEW_TARGET, dragView, getViewPosition, isDefaultView, clampView, getFramedViewSize, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
+import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
+import { createReadingProjection, getReadingDockAnchor } from './reading-projection.mjs';
 import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
@@ -30,7 +31,7 @@ function freshReading(order = shuffleDeck(ids)) {
 }
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
-let scene, camera, renderer, meshes, outline, resizeObserver, sceneStyle;
+let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle;
 let appearanceController;
 let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
@@ -234,6 +235,7 @@ async function reveal(id) {
 }
 function beginReset() {
   if (reset || failed) return;
+  for (const id of ['reader-details', 'table-tools', 'drawn-cards']) $(id).open = false;
   round += 1; pendingReveals.clear();
   cancelDrag(); lastTap = null; hoverId = null;
   noticeText = '';
@@ -253,6 +255,7 @@ function finishReset() {
   if (!reset) return;
   viewTransition = null; zoomTarget = 1; shuffleFraming = 0; applyView(DEFAULT_VIEW);
   reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
+  updateOverlayAnchor();
   hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
   deckFocusId = reading.order[0]; flips.clear(); updateUI(); invalidate();
 }
@@ -371,19 +374,21 @@ function placeFocused() {
   hoverId = null;
 }
 function updateProjection() {
-  const box = $('scene').getBoundingClientRect(), aspect = box.width / box.height;
-  const { width, height } = getFramedViewSize(view, aspect, shuffleFraming);
-  // A small visual margin keeps the complete finite surface visible; the
-  // accepted shuffle frame and all world-space placement limits stay intact.
-  const margin = 1 + 0.04 * (1 - shuffleFraming);
-  camera.left = -width * margin / 2; camera.right = width * margin / 2; camera.top = height * margin / 2; camera.bottom = -height * margin / 2;
-  camera.zoom = view.zoom;
-  camera.updateProjectionMatrix();
+  const box = $('scene').getBoundingClientRect();
+  camera = projection.update(view, { width: box.width, height: box.height }, shuffleFraming);
+  updateOverlayAnchor();
+}
+function updateOverlayAnchor(force = false) {
+  if (!camera || (!force && (reset || viewTransition || $('table-tools').open || $('drawn-cards').open))) return;
+  const box = $('scene').getBoundingClientRect();
+  const controls = document.querySelector('.controls'), dock = document.querySelector('.glass-dock');
+  const height = controls.getBoundingClientRect().height;
+  const anchor = getReadingDockAnchor(camera, box, readingFan, height, dock.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--dock-bottom', `${anchor.bottom}px`);
+  document.documentElement.style.setProperty('--dock-height', `${height}px`);
 }
 function applyView(next) {
   view = clampView(next);
-  const point = getViewPosition(view);
-  camera.position.set(point.x, point.y, point.z); camera.lookAt(VIEW_TARGET.x, VIEW_TARGET.y, VIEW_TARGET.z); camera.updateMatrixWorld();
   updateProjection(); invalidate();
 }
 function homeView() {
@@ -415,7 +420,7 @@ function fit() {
   if (!renderer || failed) return;
   cancelDrag(); if (!viewTransition) zoomTarget = view.zoom;
   const box = $('scene').getBoundingClientRect();
-  updateProjection(); renderer.setSize(box.width, box.height); invalidate();
+  updateProjection(); updateOverlayAnchor(true); renderer.setSize(box.width, box.height); invalidate();
 }
 function fail(error) {
   failed = true; cancelAnimationFrame(scheduled); scheduled = 0;
@@ -432,7 +437,7 @@ try {
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label', '牌桌：拖出抽牌，拖动摆放，双击翻开；拖动空白处调整视角，滚轮拉近拉远，Shift 加方向键调视角，加减键缩放。也可打开牌桌工具逐张挑牌。');
   scene = new THREE.Scene(); scene.background = new THREE.Color(0x111815); scene.fog = new THREE.FogExp2(0x111815, 0.035);
-  camera = new THREE.OrthographicCamera(-6.4, 6.4, 3.8, -3.8, 0.1, 100);
+  projection = createReadingProjection();
   applyView(DEFAULT_VIEW);
   sceneStyle = createReadingSceneStyle(scene, renderer, texture);
   meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [...sceneStyle.materials]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
@@ -495,6 +500,7 @@ $('retry').addEventListener('click', () => location.reload());
 const floatingDisclosures = ['reader-details', 'table-tools', 'drawn-cards'].map($);
 for (const disclosure of floatingDisclosures) disclosure.addEventListener('toggle', () => {
   if (disclosure.open) for (const other of floatingDisclosures) if (other !== disclosure) other.open = false;
+  if (!disclosure.open) updateOverlayAnchor();
 });
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;

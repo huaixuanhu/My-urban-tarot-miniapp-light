@@ -19,6 +19,8 @@
   --quiet-fill: #888ca00d;
   --inset: #ffffff9e;
   --text-halo: #ffffff96;
+  --dock-bottom: 25px;
+  --dock-height: 83px;
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -73,9 +75,9 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .invitation > span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; line-height: 1.8; max-width: 340px; }
 .has-cards .invitation h1 { display: none; }
 .table-note { position: absolute; z-index: 1; top: 106px; right: 3.4%; color: var(--muted); font-size: 10px; letter-spacing: .04em; text-align: right; pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
-.deck-hint { position: absolute; z-index: 1; bottom: 119px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 10px; line-height: 1.8; letter-spacing: .06em; white-space: nowrap; pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
+.deck-hint { position: absolute; z-index: 1; bottom: calc(var(--dock-bottom) + var(--dock-height) + 9px); left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 10px; line-height: 1.8; letter-spacing: .06em; white-space: nowrap; pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
 .is-resetting .invitation, .is-resetting .table-note, .is-resetting .deck-hint { opacity: 0; }
-.reset-message { position: absolute; z-index: 2; bottom: 121px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 12px; white-space: nowrap; color: var(--ink); pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
+.reset-message { position: absolute; z-index: 2; bottom: calc(var(--dock-bottom) + var(--dock-height) + 9px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 12px; white-space: nowrap; color: var(--ink); pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
 .reset-message button { pointer-events: auto; font-size: 11px; border: 1px solid var(--glass-edge); border-radius: 22px; background: var(--reader-ground); box-shadow: 0 3px 15px var(--glass-shadow); }
 .cover { position: absolute; z-index: 5; inset: 0; background: var(--page); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; text-align: center; padding: 24px; pointer-events: auto; }
 .cover h2 { font: 400 24px/1.5 "Songti SC",serif; color: var(--ink); margin-bottom: 4px; }
@@ -83,7 +85,7 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .cover button { border: 1px solid var(--line); margin-top: 12px; }
 
 /* A small floating control layer. Popovers open above it, never resize the scene. */
-.controls { position: fixed; z-index: 5; bottom: 25px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 40px); pointer-events: none; }
+.controls { position: fixed; z-index: 5; bottom: var(--dock-bottom); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 40px); pointer-events: none; }
 .main-controls { display: flex; justify-content: center; }
 .glass-dock, .context-actions { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 3px; padding: 6px 8px; min-height: 56px; border: 1px solid var(--glass-edge); border-radius: 999px; background: linear-gradient(145deg,var(--glass-top),var(--glass-bottom)); box-shadow: inset 0 1px 2px var(--inset),inset 0 -1px 1px #aaa0d32e,0 8px 30px var(--glass-shadow),1px 0 1px #b4c4f174,-1px 0 1px #e6c5ed56; backdrop-filter: blur(20px) saturate(1.15); -webkit-backdrop-filter: blur(20px) saturate(1.15); pointer-events: auto; }
 .glass-dock > button, .glass-dock > details > summary, .context-actions > button { display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; min-height: 41px; padding: 10px 17px; font-size: 12px; line-height: 1.6; white-space: nowrap; letter-spacing: .03em; }
@@ -101,7 +103,7 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .glass-dock > details[open] > summary { background: var(--hover); }
 .glass-dock > details[open] > summary > span { transform: rotate(180deg); }
 .progress { font-size: 10px; line-height: 1.8; color: var(--muted); text-align: center; min-height: 18px; margin: 9px 0 0; text-shadow: 0 1px 8px var(--text-halo); pointer-events: none; }
-.tool-body, #placed-list { position: absolute; bottom: calc(100% + 13px); left: 50%; transform: translateX(-50%); width: min(520px,calc(100vw - 44px)); max-height: min(50svh,390px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border: 1px solid var(--glass-edge); border-radius: 22px; padding: 22px; margin: 0; background: var(--reader-ground); box-shadow: inset 0 1px 1px var(--inset),0 12px 40px var(--glass-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); color: var(--ink); }
+.tool-body, #placed-list { position: absolute; bottom: calc(100% + 13px); left: 50%; transform: translateX(-50%); width: min(520px,calc(100vw - 44px)); max-height: min(50svh,390px,calc(100svh - var(--dock-bottom) - 130px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border: 1px solid var(--glass-edge); border-radius: 22px; padding: 22px; margin: 0; background: var(--reader-ground); box-shadow: inset 0 1px 1px var(--inset),0 12px 40px var(--glass-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); color: var(--ink); }
 .tool-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 9px; }
 .tool-heading { min-width: 30px; font-size: 10px; color: var(--muted); }
 .deck-navigation, .table-actions, .view-controls, .zoom-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; }
@@ -175,14 +177,14 @@ footer a:hover { text-decoration: underline; }
   .invitation h1 { font-size: 20px; }
   .invitation > span { max-width: 200px; font-size: 10px; }
   .table-note { right: 5%; top: 82px; max-width: 100px; font-size: 9px; }
-  .controls { bottom: 18px; max-width: calc(100% - 20px); }
+  .controls { bottom: var(--dock-bottom); max-width: calc(100% - 20px); }
   .glass-dock, .context-actions { gap: 1px; padding: 5px; min-height: 50px; }
   .context-actions { right: auto; left: 50%; top: auto; bottom: calc(100% + 11px); transform: translateX(-50%); }
   .glass-dock:has(> details[open]) .context-actions { visibility: hidden; pointer-events: none; }
   .glass-dock > button, .glass-dock > details > summary, .context-actions > button { gap: 4px; padding: 8px 10px; font-size: 11px; min-height: 38px; }
   .reset-action > span { font-size: 18px; }
   .progress { font-size: 9px; max-width: 310px; margin: 8px auto 0; }
-  .deck-hint, .reset-message { bottom: 112px; font-size: 9px; }
+  .deck-hint, .reset-message { bottom: calc(var(--dock-bottom) + var(--dock-height) + 9px); font-size: 9px; }
   .reset-message { gap: 10px; }
   .tool-body, #placed-list { padding: 16px; width: min(480px,calc(100vw - 28px)); }
   .tool-group { gap: 6px; }

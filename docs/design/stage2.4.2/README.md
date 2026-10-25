@@ -38,3 +38,20 @@ Source: the user's subsequent request that all text/buttons float over the whole
 The permanent Reset/Tools/Drawn dock keeps stable hit targets while Reveal/Return form an adjacent contextual capsule. Empty reader duplication is removed; selected original name/theme float over the scene and optional dense meanings open on a readable glass ground. Disclosures are mutually exclusive, close with Esc and preserve the camera/card layout. The current full-screen shell retains the old camera until the next batch. Verification for the final perspective refinement will be recorded below.
 
 First-batch browser checks: native drag and double-click reveal worked through the full-viewport overlay, Tools/Drawn/Meaning disclosures were exclusive, Esc closed the open disclosure, dense meanings scrolled independently, and the canvas remained exactly viewport-sized. The permanent three-control rectangles were byte-for-byte equal before/during/after contextual reveal removal; a rapid click during reveal reached Tools correctly after the fix. Aggregate project checks and the retained 89 tests passed; local two-entry build refreshed after the final CSS adjustment.
+
+## Trial 07 — perspective and anchored controls, second local batch
+
+Derived from the same STATE.md stage2.4 scope and the user's low-angle perspective correction request. First local batch: `97d40218`; the second receipt is the Git commit carrying this evidence entry. Both are local only.
+
+Reading now uses native perspective with a 42° vertical field of view. Overview fits the combined glass/card envelope with room for the overlays; zoom remains 75–180%. The old orthographic endpoint is retained exactly for the accepted shuffle, approached using a native perspective dolly/long-lens transition. The comparison test bounds residual endpoint movement below one CSS pixel at 1440 × 1000 specifically. Existing physical positions, fan, original face data, reversal and shuffle/reveal choreography remain unchanged. The dock anchors near the projected front rim with clearance from the full original fan, so drawing a card does not change its anchor. It freezes during lens transitions and open utility popovers.
+
+Browser evidence after integration: three native drags to separate positions and three double-click reveals; original content and reversal retained across light/dark; lowest-angle orbit visibly narrows the far edge; native wheel reached 180% and Home recovered the overview. Keyboard Reveal returned focus to Meaning. Full normal reset finished with zero drawn cards; Skip and reduced-motion reveal/reset also completed. Reset closes disclosures. At 1024 × 768, measured canvas/page dimensions were 1024 × 768, the tool popup stayed inside the viewport, and the reader stayed bounded with its own scroll. Earlier first-batch meaning scrolling measured reader scrollTop 352 without resizing the canvas. Final console warn/error query returned none. Temporary viewport overrides were reset.
+
+Final checks: **98/98 study tests**, both entrypoint builds and **pnpm check:all** passed, including **15 access tests**. Nine new tests cover perspective near/far scale, view bounds, ray unprojection, zoom, exact shuffle endpoint, transition finiteness, malformed inputs and dock/fan clearance. Independent read-only projection review found no blocker; GPU appearance and core gestures were then checked in the actual browser. Existing analytics configuration and shared-renderer chunk-size advisories remain. No real-phone, formal accessibility, sustained frame-rate or subjective comfort qualification is claimed.
+
+Actual runtime captures at the restored native 1125 × 954 viewport:
+
+- [Trial 07 day](runtime07-light.jpg) and [night](runtime07-dark.jpg): same three revealed physical cards, The Star selected/reversed; current full-scene floating UI.
+- [Low-angle night](runtime07-low-angle.jpg): earlier three-card state with Prince of Cups selected/reversed, showing the corrected near/far relationship.
+
+These captures replace trial 06 as the current review evidence. Full question/reflection/history work remains deferred.

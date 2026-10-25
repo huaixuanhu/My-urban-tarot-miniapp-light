@@ -1,5 +1,10 @@
 # Change history
 
+## 2026-10-25 — reading perspective and table-edge controls
+
+Corrected the low-angle depth impression by adding genuine perspective with safe overview framing. Kept native ray picking, existing zoom/orbit bounds and the exact original shuffle-camera endpoint. Floating controls now follow the near table edge, freeze while utilities are open and retain source-fan clearance.
+
+
 ## 2026-10-25 — floating glass interface, first local UI batch
 
 Replaced reserved columns/control rows with a full-viewport scene and floating glass controls, optional meanings and stable action targets. Includes the day/night glass foundation and original face-color preservation. The low-angle perspective correction follows separately. User authorized local batched commits; no push/deployment.

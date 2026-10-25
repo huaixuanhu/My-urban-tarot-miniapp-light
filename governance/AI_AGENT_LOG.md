@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-25 — trial 07 perspective refinement, second local batch
+
+Executor: Codex (GPT-6), with a bounded projection implementation agent and independent read-only reviewer. Committed the first glass/floating batch as 97d40218 under explicit batch-commit authority. Added a native perspective camera, safe overview framing, stable fan-aware dock anchor and exact old reset endpoint through a perspective lens transition. Actual GPU/interaction verification and final checks are recorded in STATE.md and the existing evidence document; the commit carrying this entry records the second batch. No source-deck, access configuration, push/deployment or deferred flow work.
+
+
 ## 2026-10-25 — trial 07 floating layer, first local batch
 
 Executor: Codex (GPT-6), with same-host bounded shell and projection agents. Rechecked Apple official material guidance, replaced split layout with full-scene overlays and repaired moving toolbar targets observed during an actual flip/click sequence. Existing gestures/meanings and appearance remain local. User requested batched commits; the first includes glass/floating UI, the second will contain the perspective fix. STATE.md owns receipts and final validation. No push/deployment.
