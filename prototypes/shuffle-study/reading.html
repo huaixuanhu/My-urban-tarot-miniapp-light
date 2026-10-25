@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <title>Augurwell · 牌桌试作 04</title>
+  <title>Augurwell · 读牌试作 05</title>
   <link rel="stylesheet" href="./reading.css" />
 </head>
 <body>
-  <header class="masthead"><a href="./reading.html" class="wordmark"><span>✧</span> AUGURWELL</a><div class="edition">牌桌试作 <b>04</b><a href="./">洗牌试作 03 ↗</a></div></header>
-  <main>
+  <header class="masthead"><a href="./reading.html" class="wordmark"><span>✧</span> AUGURWELL</a><div class="edition">读牌试作 <b>05</b><a href="./">洗牌试作 03 ↗</a></div></header>
+  <main class="reading-workspace">
     <section class="table" id="table" aria-label="自由摆牌桌">
       <div id="scene"></div>
       <div class="invitation"><p>A MOMENT FOR YOURSELF</p><h1>挑一张，留在此刻。</h1><span id="instruction">从下方拖出三张牌，放到你想放的位置。</span></div>
@@ -19,13 +19,32 @@
       <div id="loading" class="cover">正在准备牌桌…</div>
       <div id="failure" class="cover" hidden><h2>这次没能打开三维牌桌</h2><p>请启用浏览器的图形加速后重试。</p><button id="retry">重新打开</button></div>
     </section>
+
     <section class="controls" aria-label="牌桌操作">
       <div class="main-controls"><div class="selection"><span id="selected-label">选中一张桌上的牌</span><button id="reveal" disabled>翻开</button><button id="return" disabled>放回牌带</button></div><div class="table-actions"><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button><button id="reset" class="primary" disabled>收牌，重新洗牌 <span>↝</span></button></div></div>
       <div class="secondary-controls"><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">放到桌面</button></div><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><button id="view-home" disabled>恢复视角</button><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
       <div class="reading-summary"><span id="progress" role="status">先抽三张，再按自己的顺序揭晓。</span><ol id="placed-list" aria-label="桌上的牌"></ol></div>
     </section>
+    <aside class="card-reader" id="reader" aria-label="当前牌的内容">
+      <div class="reader-heading"><span>此刻的牌</span><span>URBAN TAROT</span></div>
+      <div class="reader-body" id="reader-body">
+        <div id="reader-empty" class="reader-empty"><span aria-hidden="true">✧</span><h2 id="reader-empty-title">从一张牌开始。</h2><p id="reader-empty-copy">翻开后，牌名与主题会留在这里。</p><small>先看画面，再读牌义。</small></div>
+        <div id="reader-content" hidden>
+          <div class="reader-meta"><span id="reader-family"></span><span id="reader-orientation"></span></div>
+          <figure class="reader-art"><img id="reader-image" alt="" /><figcaption id="reader-image-error" hidden>预览图暂未载入；可以查看桌上的牌。</figcaption></figure>
+          <h2 id="reader-name" lang="en"></h2><p id="reader-title" class="reader-title" lang="en" hidden></p>
+          <p class="reader-theme"><span>主题</span><span id="reader-theme" lang="en"></span></p>
+          <details id="reader-details"><summary><span id="reader-toggle-label">展开牌义与画面线索</span><span aria-hidden="true">＋</span></summary><div class="reader-details-body">
+            <p id="reader-reversed-note" class="reader-note" hidden>这张牌是逆位。原有资料没有单独的逆位牌义，以下保留原版基础说明。</p>
+            <h3>牌义<span>原版英文</span></h3><p id="reader-meaning" lang="en"></p>
+            <h3>画面线索</h3><p id="reader-imagery" lang="en"></p>
+            <p id="reader-credit" class="reader-credit"></p>
+          </div></details>
+        </div>
+      </div>
+    </aside>
   </main>
-  <footer><span>空白拖动调视角 · 滚轮 / 加减键缩放 · Esc 取消拖动</span><span>本地试作 · 示例牌面 · 刷新后重新开始</span></footer>
+  <footer><span>空白拖动调视角 · 滚轮 / 加减键缩放 · Esc 取消拖动</span><span>本地试作 · 原版牌面与说明 · 刷新后重新开始</span></footer>
   <script type="module" src="./reading.mjs"></script>
 </body>
 </html>

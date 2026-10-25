@@ -1,5 +1,13 @@
 # Decisions
 
+## 2026-10-25 — checkpoint 3 before UI redesign
+
+Source: the user accepted current functionality, explicitly requested a local checkpoint before UI redesign, supplied three generated material/mood references and deferred complete-flow refinement and question records until afterward. Commit trial 05 and its records only. Next work is UI planning/design: compare light and dark with the existing Urban Tarot artwork; do not treat the pasted assistant recommendation or reference layouts as acceptance. STATE.md stages 2.4–2.6 record the revised sequence. No push, deployment or UI implementation is inferred.
+
+## 2026-10-25 — restore the original deck, discuss the wider flow
+
+Source: after accepting the shuffle/reveal work, the user requested installing the original card content and starting overall interaction design. The subsequent answers choose image/theme first, detailed meanings on demand, and explicitly limit this iteration to card faces/meanings with discussion of the larger flow. Reuse existing data/art locally, retain accepted motion and fixed identities/orientations, and keep the new reading surface peripheral to the table. Report the absence of authored reversed meanings instead of generating replacement interpretations. No question/notes/history implementation, new commit, push, deployment or access change. STATE.md stage2.3 is the only current plan owner; DESIGN.md revision 12 owns the bounded candidate contract.
+
 ## 2026-10-25 — accepted cloth and side reveal as checkpoint 2
 
 Source: the user explicitly accepted the new reveal effect and requested one commit combining the cloth enlargement with random left/right reveal as the second checkpoint. Commit the bounded stage2.2.2/2.2.3 implementation, tests and governance/design records after checkpoint 919e66dc. This supersedes the temporary uncommitted boundary for those two slices only. Preserve original .DS_Store and tracked node_modules changes; do not push, deploy or start another product stage. STATE.md stage2.2.4 owns the receipt and continuation.

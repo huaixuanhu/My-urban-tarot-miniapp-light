@@ -3,3 +3,37 @@
 .view-controls{display:flex;align-items:center;gap:12px}.view-controls button{font-size:10px;padding:6px 10px}@media(max-width:600px){.secondary-controls{flex-wrap:wrap;gap:4px}.view-controls{margin-left:auto}.table-note span:not(:first-child){display:none}}
 
 .zoom-controls{display:flex;align-items:center;gap:2px}.zoom-controls span{width:34px;text-align:center;font-variant-numeric:tabular-nums}.zoom-controls button{font-size:15px;padding:4px 9px}.view-controls{gap:8px}@media(max-width:760px){.secondary-controls{flex-wrap:wrap;gap:4px}.view-controls{margin-left:auto}}
+
+/* Reading is peripheral to the physical table; the rail never covers a card. */
+.reading-workspace{display:grid;grid-template-columns:minmax(0,1fr) calc(290px + 4vw);min-width:0}
+.reading-workspace>.table{grid-column:1;grid-row:1}.reading-workspace>.controls{grid-column:1/-1;grid-row:2}.reading-workspace>.card-reader{grid-column:2;grid-row:1}
+.reading-workspace .table{height:calc(100svh - 274px);min-height:510px}
+.card-reader{border-left:1px solid var(--line);margin:24px 4vw 16px 0;min-width:0;height:calc(100svh - 314px);min-height:470px;display:flex;flex-direction:column}
+.reader-heading{display:flex;justify-content:space-between;gap:10px;padding:0 0 14px 24px;font-size:11px;color:#c3baa3;letter-spacing:.08em}
+.reader-heading span:last-child{font:9px Georgia,serif;letter-spacing:.13em;color:#82917e}
+.reader-body{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#5d6651 transparent;min-height:0;padding:2px 8px 16px 24px}
+.reader-empty{padding-top:96px;text-align:center;color:#9aa58f}
+.reader-empty>span{display:block;font:40px Georgia,serif;color:#a99769;margin-bottom:22px}
+.reader-empty h2{font:400 21px/1.5 "Songti SC","STSong",serif;color:#d8cfb7}
+.reader-empty p{font-size:11px;line-height:1.9}.reader-empty small{display:block;font-size:10px;color:#7c8a77;margin-top:26px}
+.reader-meta{display:flex;justify-content:space-between;font-size:10px;color:#a5b29a;letter-spacing:.1em}
+.reader-meta span:last-child{color:#d1bb8c}
+.reader-art{margin:18px auto 18px;max-width:160px;min-height:220px;display:flex;align-items:center;justify-content:center}
+.reader-art img{width:100%;height:auto;max-height:270px;object-fit:contain;display:block;border-radius:5px;box-shadow:0 8px 26px #0005}
+.reader-art img.is-reversed{transform:rotate(180deg)}.reader-art figcaption{font-size:11px;line-height:1.8;color:#a7af9c}
+#reader-name{font:400 23px/1.2 Georgia,"Songti SC",serif;color:#e7dbc1;margin:0;overflow-wrap:anywhere}
+.reader-title{font:italic 13px/1.6 Georgia,serif;color:#a9ad96;margin:6px 0 0}
+.reader-theme{margin:14px 0 19px;font-size:12px;line-height:1.65;color:#c7c9b5;display:flex;flex-direction:column;gap:5px}
+.reader-theme>span:first-child{color:#83947e;font-size:9px;letter-spacing:.15em}
+#reader-details{border-top:1px solid var(--line)}
+#reader-details summary{list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:11px;padding:15px 0;color:#cdbb92;cursor:pointer}
+#reader-details summary::-webkit-details-marker{display:none}#reader-details summary:hover{color:#f0d9a8}#reader-details summary:focus-visible{outline:2px solid #ddc591;outline-offset:2px}
+#reader-details[open] summary>span:last-child{transform:rotate(45deg)}
+.reader-details-body{padding-bottom:4px}.reader-details-body h3{font-size:11px;font-weight:500;color:#d2c4a3;margin:20px 0 8px}.reader-details-body h3 span{font-size:9px;color:#81917b;margin-left:12px}
+.reader-details-body p{font:14px/1.65 Georgia,"Songti SC",serif;color:#b8bfac;margin:0}
+.reader-details-body .reader-note{font:11px/1.8 "PingFang SC",sans-serif;color:#c4b894;padding:10px 12px;border-left:1px solid #b59a665c;background:#b59a6609}
+.reader-details-body .reader-credit{font:9px/1.7 system-ui,sans-serif;color:#7b8977;border-top:1px solid var(--line);padding-top:12px;margin-top:22px}
+.selection>span{max-width:300px}.table-note{right:3%;font-size:9px}.table-note span:not(:first-child){display:none}
+@media(min-width:1500px){.reading-workspace{grid-template-columns:minmax(0,1fr) calc(320px + 4vw)}.reader-art{max-width:180px}.reader-art img{max-height:300px}}
+@media(max-width:1099px){.reading-workspace{display:block;margin-right:0}.card-reader{height:auto;min-height:0;margin:18px 4% 20px;border-left:0;border-top:1px solid var(--line);padding-top:16px}.reader-heading{padding-left:0}.reader-body{overflow:visible;padding-left:0}.reader-empty{padding-top:2px;text-align:left;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}.reader-empty>span{display:none}.reader-empty h2{font-size:18px;margin:8px 0}.reader-empty p,.reader-empty small{margin:0}.reader-empty small{display:none}#reader-content{display:grid;grid-template-columns:150px minmax(0,1fr);column-gap:25px;align-items:start}.reader-meta{grid-column:2;grid-row:1}.reader-art{grid-column:1;grid-row:1/6;margin:0;min-height:0;max-width:150px}#reader-name,.reader-title,.reader-theme,#reader-details{grid-column:2}#reader-name{margin-top:14px}.reader-theme{margin:10px 0 14px}#reader-details{margin-top:0}}
+@media(max-width:600px){.reading-workspace .table{min-height:470px}#reader-content{grid-template-columns:110px minmax(0,1fr);column-gap:16px}.reader-art{max-width:110px}#reader-name{font-size:20px}#reader-details{grid-column:1/-1;margin-top:16px}.reader-meta{font-size:9px}.reader-theme{margin-bottom:8px}.reader-title{font-size:12px}.selection>span{max-width:52%;min-width:0}.reader-empty p{font-size:10px}}

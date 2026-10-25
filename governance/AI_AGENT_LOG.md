@@ -1,5 +1,15 @@
 # Agent continuity log
 
+## 2026-10-25 — stage2.3.3 local checkpoint 3
+
+Executor: Codex (GPT-6), with a read-only scope/code review agent. Source: explicit user acceptance of current functionality and local-commit instruction before UI planning. Reviewed the 16-path trial 05 slice; retained current product code and recorded functional acceptance of design revision 12. Independent review found no blocking defect and verified unchanged source/access, accepted motion and 65 old dirty files. The checkpoint aggregate passed; prior 83-test/build/browser evidence remains applicable. STATE.md owns the commit receipt and next UI design-only scope. No push, deployment, new gameplay or cleanup.
+
+## 2026-10-25 — stage2.3.1 original card content and stage2.3.2 discussion
+
+Executor: Codex (GPT-6), without delegation. Source: the user's request to restore original deck content and begin overall interaction design, narrowed by answers to image/theme first, detailed meanings on demand, and larger-flow discussion only. Read the installed human-ai-governance and design-authorship skills and the current package. Reused all 78 existing images and exact English data via stable physical IDs; added asynchronous image preparation, retry/stale-round protection and a non-modal reader with matching orientation and explicit missing-reverse-content messaging. Preserved accepted motion and existing original sources. DESIGN.md revision 12 records the delegated local candidate; STATE.md remains the sole plan owner. No question/notes/saving implementation or renewed publication authority.
+
+Verification: 83 study tests, two-entry local build and pnpm check:all passed. Checked all image mappings and byte-identical packaged images, representative real browser draw/reveal/move/read/reset flows at desktop and narrow widths, keyboard disclosure, reduced motion, and empty console errors. Corrected a tiny reader overflow and stale local dev transforms. Preserved 65 prior dirty files and 18 motion/layout modules; no legacy client/access/dependency change, new commit, push or deployment. Detailed evidence and limitations are in STATE.md stage2.3.1. Next: user feedback on the content panel, then discuss overall question/reflection/revisit structure before implementing it.
+
 ## 2026-10-25 — stage2.2.4 local checkpoint 2
 
 Executor: Codex (GPT-6). Source: the user accepted the sideways reveal and explicitly requested committing it together with the expanded cloth as checkpoint 2. Reviewed the bounded source/test diff and recorded local acceptance of design revision 11. The commit packages stage2.2.2 and stage2.2.3 plus their canonical documentation. The exact Git receipt is the commit carrying this entry; checkpoint 1 remains 919e66dc. Existing .DS_Store and tracked node_modules changes remain excluded. No new gameplay behavior, push, deployment, cleanup or future-stage implementation is included.

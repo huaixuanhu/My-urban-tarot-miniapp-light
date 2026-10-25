@@ -2,6 +2,10 @@
 
 ## 2026-10-25
 
+- Accepted trial 05 functionality as local checkpoint 3 before UI redesign. Deferred question records/full-flow refinement until afterward; existing Urban Tarot art remains the basis for the upcoming light/dark material comparison.
+
+- Added local trial 05: existing 78 card images/English data, stable identity mapping, uncropped artwork, decode-before-reveal/retry, and a selected-card reading panel with optional details. Missing authored reversed meanings are explicit. Preserved accepted shuffle/sideways reveal; broader question/reflection/saving flow remains discussion only.
+
 - Accepted the enlarged cloth and random left/right reveal together as local checkpoint 2; committed their implementation, tests and documentation without publication.
 
 - Recorded acceptance of the enlarged cloth and retained shuffle; changed local reveals to a once-per-reveal random left/right side turn while preserving fixed identity, reversal and face-up dragging.

@@ -5,7 +5,9 @@ import { createCardGeometry, applyCardFlex } from './card-geometry.mjs';
 import { sampleFlex } from './flex.mjs';
 import { createCardBack } from './textures.mjs';
 import { createReading, reduceReading, canUndo } from './reading-state.mjs';
-import { createReadingCardFace, readingCardLabel } from './reading-art.mjs';
+import { createReadingCardFace } from './reading-art.mjs';
+import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
+import { createReadingReader } from './reading-reader.mjs';
 import { DEFAULT_VIEW, VIEW_TARGET, dragView, getViewPosition, isDefaultView, clampView, getFramedViewSize, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
 import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
@@ -31,7 +33,15 @@ let readingFan = createReadingFan(reading.order);
 let scene, camera, renderer, meshes, outline, resizeObserver;
 let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
-const flips = new Map(), faceMaterials = new Map(), currentPoses = new Map();
+const flips = new Map(), currentPoses = new Map(), pendingReveals = new Map();
+let round = 0;
+const updateReader = createReadingReader($('reader'));
+const loadFace = createCardLoader(async id => {
+  const canvas = await createReadingCardFace(id);
+  const material = new THREE.MeshStandardMaterial({ map: texture(canvas), roughness: 0.9 });
+  meshes[id].material[1] = material;
+  return material;
+});
 const hoverOffsets = ids.map(() => ({ x: 0, y: 0 }));
 let previousFrameTime = 0, view = { ...DEFAULT_VIEW }, viewDrag = null, viewTransition = null, zoomTarget = 1;
 let shuffleFraming = 0;
@@ -50,15 +60,14 @@ function texture(canvas) {
   result.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   return result;
 }
-function ensureFace(id) {
-  if (!faceMaterials.has(id)) faceMaterials.set(id, new THREE.MeshStandardMaterial({ map: texture(createReadingCardFace(id)), roughness: 0.9 }));
-  meshes[id].material[1] = faceMaterials.get(id);
-}
+const isOpened = card => !!card?.faceUp && !flips.has(card.id);
 function invalidate() { if (!scheduled && !failed && !document.hidden) scheduled = requestAnimationFrame(frame); }
 function dispatch(action) {
   const before = reading;
   reading = reduceReading(reading, action);
   if (reading === before) return false;
+  // Prepare only drawn cards; loading never changes identity or reveals a face.
+  if (action.type === 'draw') loadFace(action.id).catch(() => {});
   noticeText = '';
   if (deckFocusId === null || reading.placed[deckFocusId]) deckFocusId = reading.order.find(id => !reading.placed[id]) ?? null;
   updateUI(); invalidate(); return true;
@@ -70,16 +79,17 @@ function announce(text) {
   noticeTimer = setTimeout(() => { noticeText = ''; updateUI(); }, 2500);
 }
 function updateUI() {
-  const placed = placedInOrder(), opened = placed.filter(card => card.faceUp).length;
+  const placed = placedInOrder(), opened = placed.filter(isOpened).length;
   const selected = reading.placed[reading.selectedId];
   const busy = !!reset || failed;
   $('table').classList.toggle('is-resetting', !!reset);
   $('reset-message').hidden = !reset;
   $('counts').textContent = `剩余 ${CARD_COUNT - placed.length} 张 · 已抽 ${placed.length} 张`;
   $('instruction').textContent = placed.length < 3 ? `从下方拖出${3 - placed.length === 3 ? '三' : 3 - placed.length}张牌，放到你想放的位置。` : '自由移动，双击一张牌，按自己的顺序揭晓。';
-  $('selected-label').textContent = selected ? (selected.faceUp ? `${readingCardLabel(selected.id)} · ${reading.reversed[selected.id] ? '逆位' : '正位'}` : `已选第 ${placed.indexOf(selected) + 1} 张 · 未翻开`) : '选中一张桌上的牌';
-  $('reveal').disabled = busy || !selected || selected.faceUp || flips.has(selected?.id);
-  $('return').disabled = busy || !selected || selected.faceUp || flips.has(selected?.id);
+  $('selected-label').textContent = selected ? (isOpened(selected) ? `${readingCardLabel(selected.id)} · ${reading.reversed[selected.id] ? '逆位' : '正位'}` : `已选第 ${placed.indexOf(selected) + 1} 张 · ${flips.has(selected.id) ? '正在翻开' : '未翻开'}`) : '选中一张桌上的牌';
+  $('reveal').textContent = pendingReveals.has(selected?.id) ? '准备牌面…' : '翻开';
+  $('reveal').disabled = busy || !selected || selected.faceUp || pendingReveals.has(selected?.id);
+  $('return').disabled = busy || !selected || selected.faceUp || pendingReveals.has(selected?.id);
   $('undo').disabled = busy || !canUndo(reading);
   $('arrange').disabled = busy || placed.length < 3 || flips.size > 0;
   $('reset').disabled = busy;
@@ -91,15 +101,15 @@ function updateUI() {
   for (const id of ['previous', 'next', 'place']) $(id).disabled = busy || deckFocusId === null;
   $('deck-position').textContent = deckFocusId === null ? '牌带已空' : `第 ${reading.order.indexOf(deckFocusId) + 1} / 78 张`;
   $('deck-hint').textContent = hoverId !== null && !reading.placed[hoverId] ? `第 ${reading.order.indexOf(hoverId) + 1} 张 · 按住拖到桌面` : '沿牌带挑选 · 按住拖出';
-  $('progress').textContent = reset ? '正在收牌与洗牌…' : opened >= 3 ? '三张牌已揭晓。可以继续摆放，或重新洗牌。' : placed.length >= 3 ? `已摆好 ${placed.length} 张 · 已翻开 ${opened} 张，双击继续揭晓。` : `已抽 ${placed.length} 张 · 先为自己留下三张牌。`;
+  $('progress').textContent = reset ? '正在收牌与洗牌…' : opened >= 3 ? `已翻开 ${opened} 张。点选一张，慢慢看它的画面与牌义。` : placed.length >= 3 ? `已摆好 ${placed.length} 张 · 已翻开 ${opened} 张，双击继续揭晓。` : `已抽 ${placed.length} 张 · 先为自己留下三张牌。`;
   if (!reset && noticeText && performance.now() < noticeUntil) $('progress').textContent = noticeText;
   const list = $('placed-list');
-  const signature = placed.map(card => `${card.id}:${card.faceUp}:${card.id === reading.selectedId}`).join('|');
+  const signature = placed.map(card => `${card.id}:${isOpened(card)}:${card.id === reading.selectedId}`).join('|');
   if (list.dataset.signature !== signature) {
     list.dataset.signature = signature; list.replaceChildren();
     for (const [index, card] of placed.entries()) {
       const item = document.createElement('li'), button = document.createElement('button');
-      button.textContent = card.faceUp ? `${readingCardLabel(card.id)} · ${reading.reversed[card.id] ? '逆位' : '正位'}` : `第 ${index + 1} 张 · 未翻开`;
+      button.textContent = isOpened(card) ? `${readingCardLabel(card.id)} · ${reading.reversed[card.id] ? '逆位' : '正位'}` : `第 ${index + 1} 张 · 未翻开`;
       button.setAttribute('aria-pressed', String(card.id === reading.selectedId));
       button.dataset.cardId = String(card.id);
       button.addEventListener('click', () => { if (!reset) dispatch({ type: 'select', id: card.id }); });
@@ -108,6 +118,7 @@ function updateUI() {
     }
   }
   list.querySelectorAll('button').forEach(button => { button.disabled = busy; });
+  updateReader(reading, { resetting: !!reset, revealing: flips.has(selected?.id), loading: pendingReveals.has(selected?.id), failed });
 }
 
 function frame(now) {
@@ -190,15 +201,25 @@ function frame(now) {
   if (animating) invalidate();
 }
 
-function reveal(id) {
-  if (reset || drag?.started || !reading.placed[id] || reading.placed[id].faceUp) return;
-  ensureFace(id);
-  if (!$('reduce').checked) flips.set(id, { started: performance.now(), direction: crypto.getRandomValues(new Uint8Array(1))[0] < 128 ? -1 : 1 });
-  dispatch({ type: 'reveal', id });
-  announce(`${readingCardLabel(id)} · ${reading.reversed[id] ? '逆位' : '正位'} · 示例牌面`);
+async function reveal(id) {
+  if (failed || reset || drag?.started || pendingReveals.has(id) || !reading.placed[id] || reading.placed[id].faceUp) return;
+  const request = { id, round, drawOrder: reading.placed[id].drawOrder };
+  pendingReveals.set(id, request); updateUI();
+  try {
+    await loadFace(id);
+    if (failed || reset || drag?.started || !mayFinishReveal(reading, request, round)) return;
+    if (!$('reduce').checked) flips.set(id, { started: performance.now(), direction: crypto.getRandomValues(new Uint8Array(1))[0] < 128 ? -1 : 1 });
+    dispatch({ type: 'reveal', id });
+  } catch {
+    if (mayFinishReveal(reading, request, round) && !reset) announce('牌图暂时没有载入。再点「翻开」可重试，仍是这张牌。');
+  } finally {
+    if (pendingReveals.get(id) === request) pendingReveals.delete(id);
+    updateUI();
+  }
 }
 function beginReset() {
   if (reset || failed) return;
+  round += 1; pendingReveals.clear();
   cancelDrag(); lastTap = null; hoverId = null;
   noticeText = '';
   const order = shuffleDeck(ids), seed = crypto.getRandomValues(new Uint32Array(1))[0];
@@ -264,7 +285,7 @@ function onPointerDown(event) {
     renderer.domElement.setPointerCapture(event.pointerId); renderer.domElement.focus({ preventScroll: true });
     renderer.domElement.style.cursor = 'grabbing'; event.preventDefault(); updateUI(); invalidate(); return;
   }
-  if (flips.has(id)) return;
+  if (flips.has(id) || pendingReveals.has(id)) return;
   const point = planePoint(event), origin = reading.placed[id];
   if (!point) return;
   if (origin) dispatch({ type: 'select', id });

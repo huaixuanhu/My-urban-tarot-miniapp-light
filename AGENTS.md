@@ -5,7 +5,7 @@ Generated/adapted from human-ai-governance v0.8.4
 ## Collaboration
 
 - Verify local facts from source, tool results, and checks; verify external or changing facts online. Never invent acceptance or history.
-- Establish human agreement before material work. Current scope and authority are owned by governance/STATE.md. Local stage2.1/stage2.2 work follows the accepted scope in STATE.md. The 2026-10-25 requests authorize two local checkpoints: the first prototype baseline, then the accepted cloth enlargement and sideways reveal together as checkpoint 2. Neither authorizes push or deployment.
+- Establish human agreement before material work. Current scope and authority are owned by governance/STATE.md. The latest 2026-10-25 request accepts trial 05's functionality and authorizes one local checkpoint 3 commit, then UI planning/design. Full-flow refinement, question records and persistence follow UI redesign. Existing Urban Tarot art is retained; light/dark concepts are to be compared; no UI implementation, further commit, push or deployment is inferred.
 - Explain computer concepts simply in Chinese. Keep necessary specialist terms in English with a Chinese explanation. Use numeric stage identifiers such as stage1.2; letters only denote special additions.
 - Preserve existing user changes. Commit, push, publication, paid subscriptions, and product redesign remain separate permissions.
 - Use project-local dependencies and .venv for Python. Do not expose authentication secrets or put personal email addresses in tracked documentation.
