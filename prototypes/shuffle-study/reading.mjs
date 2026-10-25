@@ -10,7 +10,8 @@ import { createReadingCardFace } from './reading-art.mjs';
 import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
 import { createReadingReader } from './reading-reader.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
-import { createReadingProjection, getReadingDockAnchor } from './reading-projection.mjs';
+import { createReadingProjection, projectReadingPlane } from './reading-projection.mjs';
+import { createReadingDock, READING_DOCK_LABEL_PLANE, planarCssTransform } from './reading-dock.mjs';
 import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
@@ -31,7 +32,7 @@ function freshReading(order = shuffleDeck(ids)) {
 }
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
-let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle;
+let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, physicalDock;
 let appearanceController;
 let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
@@ -89,9 +90,13 @@ function updateUI() {
   $('table').dataset.readingState = failed ? 'error' : reset ? 'resetting' : isOpened(selected) ? 'revealed' : placed.length ? 'hidden' : 'empty';
   $('reset-message').hidden = !reset;
   $('counts').textContent = `已抽 ${placed.length} · 已揭示 ${opened}`;
+  $('dock-count').textContent = `已揭示 ${opened} 张`;
   $('instruction').textContent = placed.length ? '自由摆放 · 双击翻开' : '从牌带拖出一张，放在你想放的位置。';
   $('selected-label').textContent = selected ? (isOpened(selected) ? `${readingCardLabel(selected.id)} · ${reading.reversed[selected.id] ? '逆位' : '正位'}` : `已选第 ${placed.indexOf(selected) + 1} 张 · ${flips.has(selected.id) ? '正在翻开' : '未翻开'}`) : '选中一张桌上的牌';
   $('reveal').hidden = isOpened(selected);
+  $('meaning').hidden = !isOpened(selected);
+  $('meaning').disabled = busy;
+  $('view-recover').disabled = busy;
   $('return').hidden = !selected || selected.faceUp;
   $('reveal').textContent = pendingReveals.has(selected?.id) ? '准备牌面…' : flips.has(selected?.id) ? '正在翻开' : '翻开';
   $('reveal').disabled = busy || !selected || selected.faceUp || pendingReveals.has(selected?.id);
@@ -112,15 +117,20 @@ function updateUI() {
   const list = $('placed-list');
   const signature = placed.map(card => `${card.id}:${isOpened(card)}:${card.id === reading.selectedId}`).join('|');
   if (list.dataset.signature !== signature) {
-    list.dataset.signature = signature; list.replaceChildren();
+    list.dataset.signature = signature;
+    const existing = new Map([...list.querySelectorAll('button')].map(button => [Number(button.dataset.cardId), button]));
+    for (const [id, button] of existing) if (!reading.placed[id]) button.parentElement.remove();
     for (const [index, card] of placed.entries()) {
-      const item = document.createElement('li'), button = document.createElement('button');
+      let button = existing.get(card.id);
+      if (!button) {
+        const item = document.createElement('li'); button = document.createElement('button');
+        button.dataset.cardId = String(card.id);
+        button.addEventListener('click', () => { if (!reset) dispatch({ type: 'select', id: card.id }); });
+        button.addEventListener('dblclick', () => reveal(card.id));
+        item.append(button); list.insertBefore(item, list.children[index] || null);
+      }
       button.textContent = isOpened(card) ? `${readingCardLabel(card.id)} · ${reading.reversed[card.id] ? '逆位' : '正位'}` : `第 ${index + 1} 张 · 未翻开`;
       button.setAttribute('aria-pressed', String(card.id === reading.selectedId));
-      button.dataset.cardId = String(card.id);
-      button.addEventListener('click', () => { if (!reset) dispatch({ type: 'select', id: card.id }); });
-      button.addEventListener('dblclick', () => reveal(card.id));
-      item.append(button); list.append(item);
     }
   }
   list.querySelectorAll('button').forEach(button => { button.disabled = busy; });
@@ -130,7 +140,7 @@ function updateUI() {
     else if (isOpened(selected)) {
       // A keyboard-activated reveal leaves a disappearing control. Continue at
       // its result only if the user has not moved focus to another control.
-      if (document.activeElement === document.body || document.activeElement === $('reveal')) $('reader-details').querySelector('summary').focus({ preventScroll: true });
+      if (document.activeElement === document.body || document.activeElement === $('reveal')) $('meaning').focus({ preventScroll: true });
       readerFocusRequest = null;
     }
   }
@@ -373,14 +383,26 @@ function updateProjection() {
   camera = projection.update(view, { width: box.width, height: box.height });
   updateOverlayAnchor();
 }
-function updateOverlayAnchor(force = false) {
-  if (!camera || (!force && (reset || viewTransition || $('table-tools').open || $('drawn-cards').open))) return;
+function updateOverlayAnchor() {
+  if (!camera) return;
   const box = $('scene').getBoundingClientRect();
-  const controls = document.querySelector('.controls'), dock = document.querySelector('.glass-dock');
-  const height = controls.getBoundingClientRect().height;
-  const anchor = getReadingDockAnchor(camera, box, readingFan, height, dock.getBoundingClientRect().height);
-  document.documentElement.style.setProperty('--dock-bottom', `${anchor.bottom}px`);
-  document.documentElement.style.setProperty('--dock-height', `${height}px`);
+  const corners = projectReadingPlane(camera, box, READING_DOCK_LABEL_PLANE);
+  const points = Object.values(corners);
+  const minX = Math.min(...points.map(p => p.x)), maxX = Math.max(...points.map(p => p.x));
+  const minY = Math.min(...points.map(p => p.y)), maxY = Math.max(...points.map(p => p.y));
+  const dock = document.querySelector('.main-controls');
+  dock.style.transform = planarCssTransform(corners, 1000, 110);
+  const inFrame = points.every(p => p.visible) && minX >= 12 && maxX <= box.width - 12 && minY >= 70 && maxY <= box.height - 25;
+  dock.hidden = !inFrame;
+  $('view-recover').hidden = inFrame;
+  $('deck-hint').hidden = !inFrame;
+  $('progress').hidden = !inFrame;
+  const style = document.documentElement.style;
+  style.setProperty('--dock-center-x', `${(minX + maxX) / 2}px`);
+  style.setProperty('--dock-hint-top', `${clamp(minY - 28, 130, box.height - 100)}px`);
+  style.setProperty('--dock-caption-top', `${Math.min(box.height - 27, maxY + 16)}px`);
+  style.setProperty('--popover-left', `${clamp((minX + maxX) / 2, Math.min(282, box.width / 2), Math.max(box.width - 282, box.width / 2))}px`);
+  style.setProperty('--popover-bottom', `${clamp(box.height - minY + 18, 95, box.height - 180)}px`);
 }
 function applyView(next) {
   view = clampView(next);
@@ -440,6 +462,8 @@ try {
   projection = createReadingProjection();
   applyView(DEFAULT_VIEW);
   sceneStyle = createReadingSceneStyle(scene, renderer, texture);
+  physicalDock = createReadingDock({ environmentTexture: sceneStyle.environmentTexture });
+  scene.add(physicalDock.group);
   meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [...sceneStyle.materials]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
   const outlineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.69, 0, -1.09), new THREE.Vector3(0.69, 0, -1.09), new THREE.Vector3(0.69, 0, 1.09), new THREE.Vector3(-0.69, 0, 1.09)]);
   outline = new THREE.LineLoop(outlineGeometry, new THREE.LineBasicMaterial({ color: 0xd2b882, transparent: true, opacity: 0.8 })); scene.add(outline);
@@ -475,6 +499,7 @@ appearanceController = createAppearancePreference({
     document.documentElement.dataset.theme = theme;
     $('appearance').value = preference;
     sceneStyle?.apply(theme, outline);
+    physicalDock?.applyAppearance(theme);
     invalidate();
   },
 });
@@ -484,6 +509,16 @@ $('reveal').addEventListener('click', event => {
   if (event.detail === 0 && !$('reveal').disabled) readerFocusRequest = { id: reading.selectedId, round };
   reveal(reading.selectedId);
 });
+$('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
+$('view-recover').addEventListener('click', () => { if (!reset && !failed) homeView(); });
+for (const [buttonId, detailsId] of [['tools-toggle', 'table-tools'], ['drawn-toggle', 'drawn-cards']]) {
+  $(buttonId).addEventListener('click', () => {
+    $(detailsId).open = !$(detailsId).open;
+    if (detailsId === 'drawn-cards' && $(detailsId).open) {
+      ($('placed-list').querySelector('button') || $('placed-list')).focus({ preventScroll: true });
+    }
+  });
+}
 $('return').addEventListener('click', () => { if (!reset) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
 $('undo').addEventListener('click', () => { if (!reset) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });
 $('arrange').addEventListener('click', () => { if (!reset) { cancelDrag(); dispatch({ type: 'arrange3', positions: [{ x: -2, z: -0.7 }, { x: 0, z: -0.7 }, { x: 2, z: -0.7 }] }); } });
@@ -500,14 +535,16 @@ $('retry').addEventListener('click', () => location.reload());
 const floatingDisclosures = ['reader-details', 'table-tools', 'drawn-cards'].map($);
 for (const disclosure of floatingDisclosures) disclosure.addEventListener('toggle', () => {
   if (disclosure.open) for (const other of floatingDisclosures) if (other !== disclosure) other.open = false;
-  if (!disclosure.open) updateOverlayAnchor();
+  const trigger = disclosure.id === 'reader-details' ? 'meaning' : disclosure.id === 'table-tools' ? 'tools-toggle' : 'drawn-toggle';
+  $(trigger).setAttribute('aria-expanded', String(disclosure.open));
 });
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;
   const expanded = floatingDisclosures.find(disclosure => disclosure.open);
   if (expanded) {
     expanded.open = false;
-    expanded.querySelector('summary').focus({ preventScroll: true });
+    const trigger = expanded.id === 'reader-details' ? 'meaning' : 'tools-toggle';
+    $(trigger).focus({ preventScroll: true });
   } else { cancelDrag(); dispatch({ type: 'select', id: null }); }
 });
 document.addEventListener('visibilitychange', () => {
@@ -515,5 +552,5 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { cancelAnimationFrame(scheduled); scheduled = 0; }
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); physicalDock?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

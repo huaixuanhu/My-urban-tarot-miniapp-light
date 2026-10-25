@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <title>Augurwell · 日夜牌桌试作 07</title>
+  <title>Augurwell · 日夜牌桌试作 08</title>
   <script>
     // Resolve appearance before paint; the scene controller owns later changes.
     (() => {
@@ -32,26 +32,30 @@
     </section>
 
     <section class="controls" aria-label="牌桌操作">
-      <div class="main-controls">
+      <div class="main-controls" aria-label="玻璃桌面控制块">
         <div class="glass-dock">
           <span id="selected-label" class="sr-only">选中一张桌上的牌</span>
-          <div class="context-actions" aria-label="当前牌操作">
+          <div class="context-actions">
             <button id="reveal" class="reveal-action" aria-describedby="selected-label" disabled>翻开</button>
-            <button id="return" disabled>放回</button>
+            <button id="meaning" class="reveal-action" aria-controls="reader-details" aria-expanded="false" hidden>牌义 ↗</button>
           </div>
           <button id="reset" class="reset-action" disabled><span aria-hidden="true">↻</span> 重洗</button>
-          <details class="table-tools" id="table-tools" name="table-popover">
-            <summary>工具 <span aria-hidden="true">⌃</span></summary>
-            <div class="tool-body">
-              <div class="tool-group"><span class="tool-heading">挑牌</span><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">放到桌面</button></div></div>
-              <div class="tool-group"><span class="tool-heading">摆放</span><div class="table-actions"><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button></div></div>
-              <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><button id="view-home" disabled>恢复视角</button><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
-              <p class="tool-help">空白拖动调整视角 · 滚轮或加减键缩放 · Esc 取消拖动</p>
-            </div>
-          </details>
-          <details class="drawn-cards" id="drawn-cards" name="table-popover"><summary>已抽 <span aria-hidden="true">⌃</span></summary><ol id="placed-list" aria-label="桌上的牌"></ol></details>
+          <span id="dock-count" class="dock-count">已揭示 0 张</span>
+          <button id="tools-toggle" aria-label="牌桌工具" aria-expanded="false" aria-controls="table-tools">···</button>
         </div>
       </div>
+      <button id="view-recover" class="view-recover" hidden>回到牌桌</button>
+      <details class="table-tools" id="table-tools" name="table-popover">
+        <summary class="sr-only" tabindex="-1">牌桌工具</summary>
+        <div class="tool-body">
+          <div class="tool-group"><span class="tool-heading">桌上</span><button id="drawn-toggle" aria-expanded="false" aria-controls="drawn-cards">查看已抽牌</button></div>
+          <div class="tool-group"><span class="tool-heading">挑牌</span><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">放到桌面</button></div></div>
+          <div class="tool-group"><span class="tool-heading">摆放</span><div class="table-actions"><button id="return" disabled>放回</button><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button></div></div>
+          <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><button id="view-home" disabled>恢复视角</button><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
+          <p class="tool-help">空白拖动调整视角 · 滚轮或加减键缩放 · Esc 收起</p>
+        </div>
+      </details>
+      <details class="drawn-cards" id="drawn-cards" name="table-popover"><summary class="sr-only" tabindex="-1">桌上的牌</summary><ol id="placed-list" tabindex="-1" aria-label="桌上的牌"></ol></details>
       <p id="progress" class="progress" role="status">先抽三张，再按自己的顺序揭晓。</p>
     </section>
 
@@ -74,7 +78,7 @@
       </div>
     </aside>
   </main>
-  <footer><span>自由摆放 · 双击翻开</span><span>本地试作 07 · 刷新后重新开始 <a href="./">洗牌试作 ↗</a></span></footer>
+  <footer><span>自由摆放 · 双击翻开</span><span>本地试作 08 · 刷新后重新开始 <a href="./">洗牌试作 ↗</a></span></footer>
   <script type="module" src="./reading.mjs"></script>
 </body>
 </html>

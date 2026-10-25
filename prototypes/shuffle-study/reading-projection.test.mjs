@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { DEFAULT_VIEW, VIEW_LIMITS } from './reading-view.mjs';
-import { createReadingProjection, getReadingPerspectiveFrame, getReadingDockAnchor, projectReadingPlane, READING_PROJECTION_ENVELOPE } from './reading-projection.mjs';
+import { createReadingProjection, getReadingPerspectiveFrame, projectReadingPlane, READING_PROJECTION_VOLUMES, DEFAULT_READING_PADDING } from './reading-projection.mjs';
 import { createReadingFan } from './reading-fan.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
+import { createReadingGlassGeometry } from './reading-glass.mjs';
+import { createReadingDockGeometry, READING_DOCK, READING_DOCK_LABEL_PLANE } from './reading-dock.mjs';
 
 const near = (a, b, epsilon = 1e-9) => assert.ok(Math.abs(a - b) < epsilon, `${a} differs from ${b}`);
 const project = (camera, x, y, z) => new THREE.Vector3(x, y, z).project(camera);
@@ -26,14 +28,13 @@ test('low-angle reading has genuine near-larger perspective, without reversing p
 
 test('glass and elevated cards fit the safe viewport at all accepted orbit extremes', () => {
   const projection = createReadingProjection();
-  const b = READING_PROJECTION_ENVELOPE;
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 1024, height: 768 }, { width: 760, height: 900 }, { width: 390, height: 700 }, { width: 2200, height: 800 }]) {
     for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
       for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, VIEW_LIMITS.elevation.max]) {
         for (const zoom of [0.75, 1]) {
           const view = { yaw, elevation, zoom };
           const frame = getReadingPerspectiveFrame(view, viewport), camera = projection.update(view, viewport);
-          for (const x of [b.minX, b.maxX]) for (const y of [b.minY, b.maxY]) for (const z of [b.minZ, b.maxZ]) {
+          for (const b of READING_PROJECTION_VOLUMES) for (const x of [b.minX, b.maxX]) for (const y of [b.minY, b.maxY]) for (const z of [b.minZ, b.maxZ]) {
             const ndc = project(camera, x, y, z);
             assert.ok(ndc.x >= frame.safeBounds.minX - 1e-10 && ndc.x <= frame.safeBounds.maxX + 1e-10);
             assert.ok(ndc.y >= frame.safeBounds.minY - 1e-10 && ndc.y <= frame.safeBounds.maxY + 1e-10);
@@ -143,31 +144,41 @@ test('malformed viewports and view values produce finite recoverable cameras', (
   }
 });
 
-test('floating dock follows the near rim and clears the full fan at desktop overview angles', () => {
-  const projection = createReadingProjection(), fan = createReadingFan(Array.from({ length: 78 }, (_, id) => id));
-  for (const viewport of [{ width: 1125, height: 954 }, { width: 1440, height: 1000 }, { width: 1024, height: 768 }]) {
-    for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, VIEW_LIMITS.elevation.max]) {
+test('actual glass and physical dock geometry plus labels remain visible at overview angles', () => {
+  const projection = createReadingProjection();
+  const glass = createReadingGlassGeometry(), dock = createReadingDockGeometry();
+  const point = new THREE.Vector3();
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 1440, height: 1000 }, { width: 760, height: 900 }]) {
+    for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2]) {
       for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
         const camera = projection.update({ ...DEFAULT_VIEW, elevation, yaw }, viewport);
-        const anchor = getReadingDockAnchor(camera, viewport, fan, 83, 56);
-        assert.ok(anchor.top >= anchor.fanBottom + 12, 'dock blocks the overview fan');
-        assert.ok(anchor.bottom >= 25 && anchor.top + 83 <= viewport.height - 25);
-        assert.ok(anchor.top > 100);
+        for (const [geometry, x, z] of [[glass, 0, 0], [dock, READING_DOCK.x, READING_DOCK.z]]) {
+          const positions = geometry.attributes.position;
+          for (let index = 0; index < positions.count; index++) {
+            point.fromBufferAttribute(positions, index); point.x += x; point.z += z; point.project(camera);
+            assert.ok(Math.abs(point.x) <= 1 && Math.abs(point.y) <= 1 && Math.abs(point.z) <= 1);
+          }
+        }
+        const labels = projectReadingPlane(camera, viewport, READING_DOCK_LABEL_PLANE);
+        assert.ok(Object.values(labels).every(point => point.visible));
       }
     }
   }
+  glass.dispose(); dock.dispose();
 });
 
-test('dock remains recoverable at bounded inspection zoom and compact viewports', () => {
-  const projection = createReadingProjection(), fan = createReadingFan(Array.from({ length: 78 }, (_, id) => id));
-  for (const viewport of [{ width: 390, height: 700 }, { width: 1440, height: 620 }]) {
-    const camera = projection.update({ ...DEFAULT_VIEW, zoom: 1.8 }, viewport);
-    const anchor = getReadingDockAnchor(camera, viewport, fan, 83, 56);
-    assert.ok(Number.isFinite(anchor.bottom) && anchor.bottom >= 25);
-    assert.ok(anchor.top + 83 <= viewport.height - 25);
+test('overhead framing uses safe vertical space without shrinking around the old off-center target', () => {
+  const projection = createReadingProjection();
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 1440, height: 1000 }]) {
+    const camera = projection.update({ ...DEFAULT_VIEW, elevation: Math.PI / 2 }, viewport);
+    const surface = Object.values(projectReadingPlane(camera, viewport, { x: 0, y: -0.008, z: -0.6, width: 14.8, length: 11.2 }));
+    const top = Math.min(...surface.map(point => point.y)), bottom = Math.max(...surface.map(point => point.y));
+    const usable = viewport.height - DEFAULT_READING_PADDING.top - DEFAULT_READING_PADDING.bottom;
+    assert.ok(bottom - top > usable * 0.94);
+    assert.ok(top >= DEFAULT_READING_PADDING.top && bottom <= viewport.height - DEFAULT_READING_PADDING.bottom);
+    assert.ok(Math.abs((top - DEFAULT_READING_PADDING.top) - (viewport.height - DEFAULT_READING_PADDING.bottom - bottom)) < 12);
   }
 });
-
 
 test('physical toolbar plane projects far edge first with finite screen coordinates', () => {
   const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };

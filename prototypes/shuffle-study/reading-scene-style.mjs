@@ -1,68 +1,66 @@
 import * as THREE from 'three';
 import { createReadingGlass } from './reading-glass.mjs';
+import { createReadingBack } from './reading-back.mjs';
+
+export { createReadingBack } from './reading-back.mjs';
 
 // Only materials and lights vary. No card, camera or reading-state references.
 const PALETTES = {
-  light: { background: 0xeeedf0, ground: 0xc7c7ce, surface: 0xffffff, hem: 0xc4c2cf, edge: 0x9c99ab, sky: 0xf3f2ff, bounce: 0x9693a3, ambient: 1.6, key: 2.3, rim: 0.9, shadow: 0.56, selection: 0x655c84 },
-  dark: { background: 0x181a22, ground: 0x11141b, surface: 0x333844, hem: 0x55586b, edge: 0x454957, sky: 0xd5dcee, bounce: 0x292b3e, ambient: 1.1, key: 2.1, rim: 0.9, shadow: 0.75, selection: 0xd5cde7 },
+  light: { background: 0xeeedf0, sky: 0xf0eff7, bounce: 0x827c8a, ambient: 0.9, key: 2.65, rim: 1.15, pool: 52, coolPool: 20, shadow: 0.66, selection: 0x786745, paperEdge: 0xd1c7b5, backGlow: 0.08 },
+  dark: { background: 0x181a22, sky: 0xd3dce4, bounce: 0x1f252d, ambient: 0.64, key: 2.25, rim: 1.25, pool: 48, coolPool: 25, shadow: 0.84, selection: 0xd0b98d, paperEdge: 0xb8aa90, backGlow: 0.16 },
 };
-
-/** An original symmetric instrument motif; never a substitute for source faces. */
-export function createReadingBack() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 768; canvas.height = 1264;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Card-back canvas unavailable.');
-  ctx.fillStyle = '#a2a2a5'; ctx.fillRect(0, 0, 768, 1264);
-  // Deterministic, quiet paper grain with no foliage or directional lettering.
-  for (let y = 0; y < 1264; y += 3) for (let x = 0; x < 768; x += 3) {
-    const a = ((Math.imul(x + 31, 374761393) ^ Math.imul(y + 7, 668265263)) >>> 0) % 7;
-    ctx.fillStyle = `rgba(255,255,255,${a / 250})`; ctx.fillRect(x, y, 1, 1);
-  }
-  ctx.strokeStyle = '#ebe8e3'; ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.roundRect(29, 29, 710, 1206, 24); ctx.stroke();
-  ctx.globalAlpha = 0.5; ctx.lineWidth = 1.2;
-  ctx.beginPath(); ctx.roundRect(42, 42, 684, 1180, 16); ctx.stroke();
-  ctx.translate(384, 632);
-  const ellipse = (rx, ry, angle = 0) => { ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, angle, 0, Math.PI * 2); ctx.stroke(); };
-  ellipse(224, 430); ellipse(224, 430, 0.13);
-  ctx.beginPath(); ctx.moveTo(0, -492); ctx.lineTo(0, 492); ctx.stroke();
-  ctx.globalAlpha = 0.9; ctx.lineWidth = 2.2;
-  ellipse(153, 153); ellipse(135, 135);
-  ctx.beginPath(); ctx.moveTo(0, -112); ctx.lineTo(14, -14); ctx.lineTo(88, 0); ctx.lineTo(14, 14); ctx.lineTo(0, 112); ctx.lineTo(-14, 14); ctx.lineTo(-88, 0); ctx.lineTo(-14, -14); ctx.closePath(); ctx.stroke();
-  for (const sign of [-1, 1]) {
-    for (const [y, radius] of [[246, 16], [332, 38], [462, 6]]) {
-      ctx.beginPath(); ctx.arc(0, y * sign, radius, 0, Math.PI * 2); ctx.stroke();
-    }
-  }
-  return canvas;
-}
 
 export function createReadingSceneStyle(scene, renderer, texture) {
   const hemisphere = new THREE.HemisphereLight(); scene.add(hemisphere);
-  const key = new THREE.DirectionalLight(0xfff4e7, 2.5);
-  key.position.set(-3.5, 8, 5.5); key.castShadow = true;
+  const key = new THREE.DirectionalLight(0xfff0db, 2.65);
+  key.position.set(-4.5, 9, 4.5); key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   Object.assign(key.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: 0.5, far: 25 });
-  key.shadow.bias = 0.0002; key.shadow.normalBias = 0.012; scene.add(key);
-  const rim = new THREE.DirectionalLight(0xd3d9ff, 1.25); rim.position.set(4, 5, -4); scene.add(rim);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.12 }));
+  key.shadow.bias = 0.00016; key.shadow.normalBias = 0.009;
+  key.shadow.radius = 3; scene.add(key);
+  const rim = new THREE.DirectionalLight(0xd1d9ef, 1.15); rim.position.set(5, 4.5, -5.5); scene.add(rim);
+  // One stationary broad pool gives the transmitted backing a directional
+  // light gradient; no animated particles, visible fixture or extra shadows.
+  const pool = new THREE.SpotLight(0xffedda, 42, 30, 0.72, 0.92, 1.6);
+  pool.position.set(-4.8, 8, 3.8); pool.target.position.set(-1.6, -0.1, -1.1);
+  scene.add(pool, pool.target);
+  const coolPool = new THREE.SpotLight(0xd0dcff, 20, 26, 0.64, 1, 1.6);
+  coolPool.position.set(5.5, 6, -3.6); coolPool.target.position.set(2.8, -0.1, 1.8);
+  scene.add(coolPool, coolPool.target);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.14 }));
   ground.rotation.x = -Math.PI / 2; ground.position.y = -0.18; ground.receiveShadow = true; scene.add(ground);
   const glass = createReadingGlass(renderer); scene.add(glass);
-  const back = new THREE.MeshStandardMaterial({ map: texture(createReadingBack()), color: 0x999999, roughness: 0.76, metalness: 0.06 });
+  // Each print is generated/uploaded once and shared by all 78 meshes.
+  const backMaps = Object.fromEntries(['light', 'dark'].map(theme => [theme, texture(createReadingBack(theme))]));
+  const back = new THREE.MeshStandardMaterial({
+    map: backMaps.light, color: 0xffffff, roughness: 0.8, metalness: 0.035,
+    emissiveMap: backMaps.light, emissive: 0xffffff, emissiveIntensity: 0.08,
+  });
   const blank = new THREE.MeshStandardMaterial({ color: 0xe6e2df, roughness: 0.9 });
-  const edge = new THREE.MeshStandardMaterial({ color: 0xd5cfca, roughness: 0.86, metalness: 0 });
+  const edge = new THREE.MeshStandardMaterial({ color: 0xd1c7b5, roughness: 0.72, metalness: 0.035 });
+  let disposed = false;
   return {
     materials: [back, blank, edge],
-    dispose() { glass.userData.dispose(); ground.geometry.dispose(); ground.material.dispose(); back.map.dispose(); back.dispose(); blank.dispose(); edge.dispose(); },
+    // Borrowed texture: its lifetime is owned only by reading-glass.
+    environmentTexture: glass.userData.environmentTexture,
+    dispose() {
+      if (disposed) return; disposed = true;
+      scene.remove(hemisphere, key, rim, pool, pool.target, coolPool, coolPool.target, ground, glass);
+      key.shadow.dispose(); glass.userData.dispose(); ground.geometry.dispose(); ground.material.dispose();
+      for (const map of Object.values(backMaps)) map.dispose();
+      back.dispose(); blank.dispose(); edge.dispose();
+    },
     apply(theme, outline) {
-      const p = PALETTES[theme] || PALETTES.light;
+      const resolved = theme === 'dark' ? 'dark' : 'light';
+      const p = PALETTES[resolved];
       scene.background = null; scene.fog = null;
       renderer.setClearColor(p.background, 0);
-      ground.material.opacity = theme === 'dark' ? 0.3 : 0.12;
-      glass.userData.applyAppearance(theme);
+      ground.material.opacity = resolved === 'dark' ? 0.32 : 0.14;
+      glass.userData.applyAppearance(resolved);
       hemisphere.color.setHex(p.sky); hemisphere.groundColor.setHex(p.bounce); hemisphere.intensity = p.ambient;
-      key.intensity = p.key; key.shadow.intensity = p.shadow; rim.intensity = p.rim;
+      key.intensity = p.key; key.shadow.intensity = p.shadow; rim.intensity = p.rim; pool.intensity = p.pool; coolPool.intensity = p.coolPool;
+      back.map = backMaps[resolved]; back.emissiveMap = backMaps[resolved]; back.emissiveIntensity = p.backGlow;
+      edge.color.setHex(p.paperEdge);
       if (outline) outline.material.color.setHex(p.selection);
     },
   };

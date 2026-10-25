@@ -75,35 +75,31 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .invitation > span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; line-height: 1.8; max-width: 340px; }
 .has-cards .invitation h1 { display: none; }
 .table-note { position: absolute; z-index: 1; top: 106px; right: 3.4%; color: var(--muted); font-size: 10px; letter-spacing: .04em; text-align: right; pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
-.deck-hint { position: absolute; z-index: 1; bottom: calc(var(--dock-bottom) + var(--dock-height) + 9px); left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 10px; line-height: 1.8; letter-spacing: .06em; white-space: nowrap; pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
+.deck-hint { position: absolute; z-index: 1; top: var(--dock-hint-top,75%); left: var(--dock-center-x,50%); transform: translateX(-50%); color: var(--muted); font-size: 10px; line-height: 1.8; letter-spacing: .06em; white-space: nowrap; pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
 .is-resetting .invitation, .is-resetting .table-note, .is-resetting .deck-hint { opacity: 0; }
-.reset-message { position: absolute; z-index: 2; bottom: calc(var(--dock-bottom) + var(--dock-height) + 9px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 12px; white-space: nowrap; color: var(--ink); pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
+.reset-message { position: absolute; z-index: 2; top: var(--dock-hint-top,75%); left: var(--dock-center-x,50%); transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 12px; white-space: nowrap; color: var(--ink); pointer-events: none; text-shadow: 0 1px 8px var(--text-halo); }
 .reset-message button { pointer-events: auto; font-size: 11px; border: 1px solid var(--glass-edge); border-radius: 22px; background: var(--reader-ground); box-shadow: 0 3px 15px var(--glass-shadow); }
 .cover { position: absolute; z-index: 5; inset: 0; background: var(--page); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; text-align: center; padding: 24px; pointer-events: auto; }
 .cover h2 { font: 400 24px/1.5 "Songti SC",serif; color: var(--ink); margin-bottom: 4px; }
 .cover p { line-height: 1.8; }
 .cover button { border: 1px solid var(--line); margin-top: 12px; }
 
-/* A small floating control layer. Popovers open above it, never resize the scene. */
-.controls { position: fixed; z-index: 5; bottom: var(--dock-bottom); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 40px); pointer-events: none; }
-.main-controls { display: flex; justify-content: center; }
-.glass-dock, .context-actions { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 3px; padding: 6px 8px; min-height: 56px; border: 1px solid var(--glass-edge); border-radius: 999px; background: linear-gradient(145deg,var(--glass-top),var(--glass-bottom)); box-shadow: inset 0 1px 2px var(--inset),inset 0 -1px 1px #aaa0d32e,0 8px 30px var(--glass-shadow),1px 0 1px #b4c4f174,-1px 0 1px #e6c5ed56; backdrop-filter: blur(20px) saturate(1.15); -webkit-backdrop-filter: blur(20px) saturate(1.15); pointer-events: auto; }
-.glass-dock > button, .glass-dock > details > summary, .context-actions > button { display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; min-height: 41px; padding: 10px 17px; font-size: 12px; line-height: 1.6; white-space: nowrap; letter-spacing: .03em; }
-.glass-dock .reveal-action:not(:disabled) { background: var(--hover); box-shadow: 0 1px 5px var(--glass-shadow),inset 0 1px 0 var(--inset); }
-.reset-action > span { font-size: 21px; line-height: 12px; }
-/* Context may disappear after a turn; permanent targets must not recenter. */
-.context-actions { position: absolute; right: calc(100% + 12px); top: 50%; transform: translateY(-50%); width: max-content; }
-.context-actions:not(:has(button:not([hidden]))) { display: none; }
-.context-actions:has(#return[hidden]):has(#reveal:disabled) { display: none; }
-.reading-workspace:has(#table[data-reading-state="empty"]) .context-actions,
-.reading-workspace:has(#table[data-reading-state="resetting"]) .context-actions,
-.reading-workspace:has(#table[data-reading-state="error"]) .context-actions { display: none; }
-.glass-dock > details { position: static; }
-.glass-dock > details > summary > span { font-size: 14px; color: var(--muted); }
-.glass-dock > details[open] > summary { background: var(--hover); }
-.glass-dock > details[open] > summary > span { transform: rotate(180deg); }
-.progress { font-size: 10px; line-height: 1.8; color: var(--muted); text-align: center; min-height: 18px; margin: 9px 0 0; text-shadow: 0 1px 8px var(--text-halo); pointer-events: none; }
-.tool-body, #placed-list { position: absolute; bottom: calc(100% + 13px); left: 50%; transform: translateX(-50%); width: min(520px,calc(100vw - 44px)); max-height: min(50svh,390px,calc(100svh - var(--dock-bottom) - 130px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border: 1px solid var(--glass-edge); border-radius: 22px; padding: 22px; margin: 0; background: var(--reader-ground); box-shadow: inset 0 1px 1px var(--inset),0 12px 40px var(--glass-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); color: var(--ink); }
+/* Native controls share the world-space top plane of the real glass mesh.
+   The matrix comes from the same camera as the table; popovers stay readable. */
+.controls { position: fixed; z-index: 5; inset: 0; pointer-events: none; }
+.main-controls { position: absolute; top: 0; left: 0; width: 1000px; height: 110px; transform-origin: 0 0; will-change: transform; pointer-events: none; }
+.glass-dock { display: grid; grid-template-columns: 260px 250px 320px 170px; align-items: center; width: 100%; height: 100%; pointer-events: none; }
+.glass-dock button { width: 100%; height: 100%; min-height: 0; padding: 10px 8px; font-size: 45px; font-weight: 500; letter-spacing: .03em; border-radius: 100px; line-height: 1.2; white-space: nowrap; pointer-events: auto; text-shadow: 0 1px 4px var(--text-halo); }
+.context-actions { height: 100%; padding: 6px; }
+.context-actions > button:not(:disabled) { background: var(--hover); box-shadow: inset 0 2px 2px var(--inset),0 2px 8px var(--glass-shadow); }
+.reset-action { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.reset-action > span { font-size: 52px; }
+.dock-count { font-size: 38px; color: var(--muted); text-align: center; border-left: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; }
+#tools-toggle { font-size: 62px; letter-spacing: .08em; }
+.glass-dock button[aria-expanded="true"] { background: var(--hover); }
+.progress { position: absolute; top: var(--dock-caption-top,85%); left: var(--dock-center-x,50%); transform: translateX(-50%); font-size: 10px; line-height: 1.8; color: var(--muted); text-align: center; margin: 0; white-space: nowrap; text-shadow: 0 1px 8px var(--text-halo); pointer-events: none; }
+.tool-body, #placed-list { position: absolute; bottom: var(--popover-bottom,120px); left: var(--popover-left,50%); transform: translateX(-50%); width: min(520px,calc(100vw - 44px)); max-height: min(60svh,390px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border: 1px solid var(--glass-edge); border-radius: 22px; padding: 22px; margin: 0; background: var(--reader-ground); box-shadow: inset 0 1px 1px var(--inset),0 12px 40px var(--glass-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); color: var(--ink); pointer-events: auto; }
+.view-recover { position: absolute; bottom: 45px; left: 50%; transform: translateX(-50%); pointer-events: auto; background: var(--reader-ground); border: 1px solid var(--glass-edge); border-radius: 30px; box-shadow: 0 6px 22px var(--glass-shadow); }
 .tool-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 9px; }
 .tool-heading { min-width: 30px; font-size: 10px; color: var(--muted); }
 .deck-navigation, .table-actions, .view-controls, .zoom-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; }
@@ -137,6 +133,7 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .reader-theme { margin: 18px 0 19px; font-size: 13px; line-height: 1.7; color: var(--muted); text-shadow: 0 1px 8px var(--text-halo); }
 .reader-theme > span:first-child { display: none; }
 #reader-details { max-width: 100%; }
+#reader-details:not([open]) > summary { display: none; }
 #reader-details > summary { display: inline-flex; align-items: center; gap: 25px; min-height: 40px; padding: 9px 1px; font-size: 12px; line-height: 1.7; border-bottom: 1px solid var(--line); color: var(--ink); text-shadow: 0 1px 8px var(--text-halo); }
 #reader-details > summary:hover { background: transparent; color: var(--selected); }
 #reader-details > summary > span:last-child { font-size: 18px; }
@@ -177,14 +174,8 @@ footer a:hover { text-decoration: underline; }
   .invitation h1 { font-size: 20px; }
   .invitation > span { max-width: 200px; font-size: 10px; }
   .table-note { right: 5%; top: 82px; max-width: 100px; font-size: 9px; }
-  .controls { bottom: var(--dock-bottom); max-width: calc(100% - 20px); }
-  .glass-dock, .context-actions { gap: 1px; padding: 5px; min-height: 50px; }
-  .context-actions { right: auto; left: 50%; top: auto; bottom: calc(100% + 11px); transform: translateX(-50%); }
-  .glass-dock:has(> details[open]) .context-actions { visibility: hidden; pointer-events: none; }
-  .glass-dock > button, .glass-dock > details > summary, .context-actions > button { gap: 4px; padding: 8px 10px; font-size: 11px; min-height: 38px; }
-  .reset-action > span { font-size: 18px; }
-  .progress { font-size: 9px; max-width: 310px; margin: 8px auto 0; }
-  .deck-hint, .reset-message { bottom: calc(var(--dock-bottom) + var(--dock-height) + 9px); font-size: 9px; }
+  .progress { font-size: 9px; }
+  .deck-hint, .reset-message { font-size: 9px; }
   .reset-message { gap: 10px; }
   .tool-body, #placed-list { padding: 16px; width: min(480px,calc(100vw - 28px)); }
   .tool-group { gap: 6px; }

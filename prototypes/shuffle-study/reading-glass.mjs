@@ -41,20 +41,28 @@ export function createReadingGlassGeometry() {
 // are never added to the reading scene, and introduce no visible room props.
 function createGlassEnvironment(renderer) {
   const environment = new THREE.Scene();
-  environment.background = new THREE.Color(0x6c6c76);
+  environment.background = new THREE.Color(0x080b13);
   const resources = [];
   function softbox(width, height, color, position) {
     const geometry = new THREE.PlaneGeometry(width, height);
-    const material = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide });
+    const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Glass light canvas unavailable.');
+    ctx.scale(2, 1);
+    const glow = ctx.createRadialGradient(64, 64, 8, 64, 64, 64);
+    glow.addColorStop(0, '#ffffff'); glow.addColorStop(0.52, '#c9c9c9'); glow.addColorStop(1, '#000000');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, 128, 128);
+    const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
+    const material = new THREE.MeshBasicMaterial({ color, map, side: THREE.DoubleSide });
     const panel = new THREE.Mesh(geometry, material);
     panel.position.set(...position);
     panel.lookAt(0, 0, 0);
     environment.add(panel);
-    resources.push(geometry, material);
+    resources.push(geometry, material, map);
   }
-  softbox(12, 8, new THREE.Color(5.5, 5.4, 5.8), [-7, 10, 4]);
-  softbox(4, 15, new THREE.Color(1.8, 2.0, 2.6), [10, 5, -6]);
-  softbox(16, 5, new THREE.Color(1.2, 1.05, 1.3), [-2, 6, -12]);
+  softbox(10, 5, new THREE.Color(6.2, 5.8, 5.3), [-5, 10, -6]);
+  softbox(2.2, 11, new THREE.Color(0.8, 1.1, 1.8), [10, 5, -6]);
+  softbox(8, 2, new THREE.Color(0.45, 0.4, 0.6), [-2, 6, -12]);
   softbox(22, 22, new THREE.Color(0.055, 0.06, 0.08), [0, -8, 0]);
   const generator = new THREE.PMREMGenerator(renderer);
   try {
@@ -63,6 +71,33 @@ function createGlassEnvironment(renderer) {
     for (const resource of resources) resource.dispose();
     generator.dispose();
   }
+}
+
+/** Static soft illumination under the volume; real lights and card shadows
+ * still act on this backing. The subtle field prevents a uniformly flat slab. */
+function createBackingLightField(theme) {
+  const dark = theme === 'dark';
+  const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Glass backing canvas unavailable.');
+  const base = ctx.createLinearGradient(0, 0, 512, 512);
+  base.addColorStop(0, dark ? '#34333b' : '#d4cfc8');
+  base.addColorStop(0.48, dark ? '#242b36' : '#bcbfc9');
+  base.addColorStop(1, dark ? '#303b4d' : '#c6cbd9');
+  ctx.fillStyle = base; ctx.fillRect(0, 0, 512, 512);
+  function pool(x, y, rx, ry, color, opacity) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(rx, ry);
+    const gradient = ctx.createRadialGradient(0, 0, 0.08, 0, 0, 1);
+    gradient.addColorStop(0, `rgba(${color},${opacity})`);
+    gradient.addColorStop(0.45, `rgba(${color},${opacity * 0.48})`);
+    gradient.addColorStop(1, `rgba(${color},0)`);
+    ctx.fillStyle = gradient; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+  }
+  pool(95, 125, 320, 210, dark ? '136,118,89' : '255,247,225', dark ? 0.25 : 0.4);
+  pool(440, 390, 220, 340, dark ? '87,111,160' : '213,226,255', dark ? 0.32 : 0.28);
+  const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
+  map.repeat.set(1 / CLOTH_WIDTH, 1 / CLOTH_LENGTH); map.offset.set(0.5, 0.5);
+  return map;
 }
 
 /** One solid glass table, with a flat, legible center and rounded optical edge. */
@@ -96,26 +131,33 @@ export function createReadingGlass(renderer) {
   const backingGeometry = new THREE.ShapeGeometry(roundedRectangle(CLOTH_WIDTH - 0.08, CLOTH_LENGTH - 0.08, RADIUS), 16);
   backingGeometry.rotateX(-Math.PI / 2);
   backingGeometry.translate(0, TOP - DEPTH - BEVEL * 2 - 0.002, CLOTH_CENTER_Z);
-  const backingMaterial = new THREE.MeshBasicMaterial({ color: 0xe4e2e9, toneMapped: false });
+  const backingMaps = { light: createBackingLightField('light'), dark: createBackingLightField('dark') };
+  const backingMaterial = new THREE.MeshStandardMaterial({ map: backingMaps.light, color: 0xffffff, roughness: 0.94, metalness: 0 });
   const backing = new THREE.Mesh(backingGeometry, backingMaterial);
   backing.name = 'glass-neutral-backing';
   backing.castShadow = true;
+  backing.receiveShadow = true;
   group.add(backing);
 
   group.userData.maxSurfaceHeight = TOP;
+  // Borrowers may share this environment; this group alone disposes it.
+  group.userData.environmentTexture = environment.texture;
   group.userData.applyAppearance = theme => {
     const dark = theme === 'dark';
-    surface.color.setHex(dark ? 0x424a5b : 0xe9e7f1);
+    surface.color.setHex(dark ? 0x424b5b : 0xf2eff8);
     surface.attenuationColor.setHex(dark ? 0x5c657b : 0xe4e0fa);
-    surface.transmission = dark ? 0.86 : 0.82;
-    surface.roughness = dark ? 0.25 : 0.2;
-    surface.clearcoat = dark ? 0.5 : 0.8;
-    surface.envMapIntensity = dark ? 0.15 : 0.35;
-    edge.color.setHex(dark ? 0xabb2c6 : 0xefedf9);
+    surface.transmission = dark ? 0.84 : 0.8;
+    surface.roughness = dark ? 0.19 : 0.15;
+    surface.clearcoat = dark ? 0.72 : 0.85;
+    surface.envMapIntensity = dark ? 0.6 : 0.68;
+    surface.clearcoatRoughness = dark ? 0.22 : 0.18;
+    edge.color.setHex(dark ? 0x6e7789 : 0xd5d1db);
     edge.attenuationColor.setHex(dark ? 0x7c869f : 0xcfc8e7);
-    edge.envMapIntensity = dark ? 0.48 : 0.35;
-    edge.clearcoat = dark ? 0.65 : 0.5;
-    backingMaterial.color.setHex(dark ? 0x1d222c : 0xe4e2e9);
+    edge.envMapIntensity = dark ? 0.38 : 0.28;
+    edge.clearcoat = 0.4;
+    edge.roughness = 0.15;
+    edge.iridescence = 0.035;
+    backingMaterial.map = backingMaps[dark ? 'dark' : 'light'];
   };
   let disposed = false;
   group.userData.dispose = () => {
@@ -123,6 +165,7 @@ export function createReadingGlass(renderer) {
     disposed = true;
     body.geometry.dispose(); backingGeometry.dispose();
     surface.dispose(); edge.dispose(); backingMaterial.dispose();
+    backingMaps.light.dispose(); backingMaps.dark.dispose();
     environment.dispose();
   };
   return group;

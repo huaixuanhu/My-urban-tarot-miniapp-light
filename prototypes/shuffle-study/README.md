@@ -69,3 +69,11 @@ The glass action dock, original-card meanings and keyboard/view utilities share 
 ## Local trial 07 — floating interface
 
 Derived from governance/STATE.md stage2.4, scope: the local UI refinement only. Full-viewport rendering replaces the prior split reader layout. Stable permanent controls and contextual card actions float over the table; native disclosures are mutually exclusive and close with Esc. The first local commit (97d40218) contains the glass/floating UI; the second adds reading-projection.mjs and its tests. Reading uses true perspective; reset retains its exact original orthographic frame via a native perspective lens transition. A projected-edge anchor keeps the stable dock close to the surface and clear of the overview fan. Original images/data and gameplay remain unchanged.
+
+## Local trial 08 — overhead view and physical glass controls
+
+Derived from governance/STATE.md stage2.4.6; scope: implementation/evidence notes only, not a separate plan. DESIGN.md revision 15 owns the current candidate contract; the preceding trial sections describe their historical implementations.
+
+The view reaches exactly 90 degrees without a pole flip. Reading and reset share one native perspective camera and retain chosen angles; zoom alone may return to 100% for reset. Physical table/card/dock volumes drive overview fitting. `reading-back.mjs` creates paired 1024 × 1688 prints, leaving original face images unchanged. `reading-dock.mjs` supplies a separate low glass capsule and tested four-corner mapping of native controls to its actual top plane. Long meanings and utilities stay screen-aligned. Close inspection keeps a screen-level Home recovery action if the physical dock leaves view. List buttons retain identity/focus through selection, and Escape returns to an available control.
+
+Materials add static asymmetrical warm/cool light, soft reflections and contact shadows. No continuous lighting loop, new dependencies or Blender asset is required. Only appearance preference is stored; question/history work remains deferred. Evidence: [local trial 08 review](../../docs/design/stage2.4.6/README.md).

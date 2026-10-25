@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-26 — local trial 08 camera, backs and physical controls
+
+Executor: Codex (GPT-6), with bounded camera/material/dock agents and read-only integration review. Saved accepted checkpoint 4 as `0bdb04f7`, then committed the stable camera slice as `a555a294`. Implemented the requested physical control surface, paired reference-led backs and static light/shadow refinements. Read-only review caught list-button replacement losing focus/double-click identity; keyed nodes and disclosure focus routing repair it. STATE.md remains current-state owner; bounded evidence is under docs/design/stage2.4.6/. No push, deployment or access changes.
+
+
 ## 2026-10-25 — checkpoint 4 acceptance
 
 Executor: Codex (GPT-6). Verified HEAD55fbfc91 and only the 65 original dirty/generated files. Recorded explicit user acceptance of trial 07 and the new bounded stage2.4.6 authority. Existing 98-test/runtime evidence remains applicable to unchanged product source; refreshed the aggregate gate. No product edit, push or deployment in this checkpoint.

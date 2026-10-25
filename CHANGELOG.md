@@ -1,5 +1,13 @@
 # Change history
 
+## 2026-10-26 — local trial 08
+
+- Enables exact overhead viewing and keeps reading/reset under the same perspective and chosen angle.
+- Recreates the reference card-back motif in matching day/night palettes while preserving Urban Tarot faces.
+- Adds a real glass control block that follows the table, localized reflections/contact shadows, readable popovers and stable keyboard list focus.
+- Checkpoint 4 is `0bdb04f7`; camera changes are separately committed as `a555a294`. New visual treatment awaits local review.
+
+
 ## 2026-10-25 — local checkpoint 4
 
 Recorded user acceptance of trial 07 at 55fbfc91 before the next camera/back/control refinements. Product code was already committed in two local batches; this checkpoint is an acceptance record only.

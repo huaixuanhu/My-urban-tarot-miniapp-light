@@ -1,10 +1,21 @@
 import * as THREE from 'three';
 import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z, READING_ENVELOPE } from './reading-layout.mjs';
 import { DEFAULT_VIEW, VIEW_TARGET, clampView, getViewPosition, getViewBasis } from './reading-view.mjs';
-import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
+import { READING_DOCK } from './reading-dock.mjs';
 
 export const READING_FOV = 42;
-export const DEFAULT_READING_PADDING = Object.freeze({ top: 96, right: 28, bottom: 140, left: 28 });
+export const DEFAULT_READING_PADDING = Object.freeze({ top: 96, right: 28, bottom: 80, left: 28 });
+// Keep the real volumes separate. A high card at the outer glass edge is not
+// part of the accepted scene; merging everything into one box wastes framing.
+export const READING_PROJECTION_VOLUMES = Object.freeze([
+  READING_ENVELOPE,
+  Object.freeze({ minX: -CLOTH_WIDTH / 2, maxX: CLOTH_WIDTH / 2, minY: -0.14, maxY: -0.008,
+    minZ: CLOTH_CENTER_Z - CLOTH_LENGTH / 2, maxZ: CLOTH_CENTER_Z + CLOTH_LENGTH / 2 }),
+  Object.freeze({ minX: READING_DOCK.x - READING_DOCK.width / 2, maxX: READING_DOCK.x + READING_DOCK.width / 2,
+    minY: READING_DOCK.bottom, maxY: READING_DOCK.top + 0.003,
+    minZ: READING_DOCK.z - READING_DOCK.length / 2, maxZ: READING_DOCK.z + READING_DOCK.length / 2 }),
+]);
+// Overall extents remain available for summaries; fitting uses the volumes above.
 export const READING_PROJECTION_ENVELOPE = Object.freeze({
   minX: Math.min(READING_ENVELOPE.minX, -CLOTH_WIDTH / 2),
   maxX: Math.max(READING_ENVELOPE.maxX, CLOTH_WIDTH / 2),
@@ -16,9 +27,9 @@ export const READING_PROJECTION_ENVELOPE = Object.freeze({
 
 const target = new THREE.Vector3(VIEW_TARGET.x, VIEW_TARGET.y, VIEW_TARGET.z);
 const corners = [];
-for (const x of [READING_PROJECTION_ENVELOPE.minX, READING_PROJECTION_ENVELOPE.maxX]) {
-  for (const y of [READING_PROJECTION_ENVELOPE.minY, READING_PROJECTION_ENVELOPE.maxY]) {
-    for (const z of [READING_PROJECTION_ENVELOPE.minZ, READING_PROJECTION_ENVELOPE.maxZ]) corners.push(new THREE.Vector3(x, y, z));
+for (const bounds of READING_PROJECTION_VOLUMES) {
+  for (const x of [bounds.minX, bounds.maxX]) for (const y of [bounds.minY, bounds.maxY]) {
+    for (const z of [bounds.minZ, bounds.maxZ]) corners.push(new THREE.Vector3(x, y, z));
   }
 }
 
@@ -39,7 +50,7 @@ export function getReadingPerspectiveFrame(view = DEFAULT_VIEW, viewport, paddin
   const top = inset('top', size.height), bottom = inset('bottom', size.height);
   const spanX = (size.width - left - right) / size.width;
   const spanY = (size.height - top - bottom) / size.height;
-  const centerX = (left - right) / size.width, centerY = (bottom - top) / size.height;
+  const safeCenterX = (left - right) / size.width, safeCenterY = (bottom - top) / size.height;
   const original = getViewPosition(current);
   let distance = new THREE.Vector3(original.x, original.y, original.z).distanceTo(target);
   const basis = getViewBasis(current);
@@ -47,15 +58,37 @@ export function getReadingPerspectiveFrame(view = DEFAULT_VIEW, viewport, paddin
   const cameraRight = new THREE.Vector3(basis.right.x, basis.right.y, basis.right.z);
   const cameraUp = new THREE.Vector3(basis.up.x, basis.up.y, basis.up.z);
   const tangent = Math.tan(READING_FOV * Math.PI / 360);
-  for (const corner of corners) {
-    const relative = corner.clone().sub(target), depthOffset = relative.dot(back);
-    // Solve the perspective inequalities directly; the near edge is not fitted
-    // as if it were at the target's depth. A small margin covers roundoff/edges.
-    distance = Math.max(distance,
-      depthOffset + Math.abs(relative.dot(cameraRight)) * 1.025 / (tangent * aspect * spanX),
-      depthOffset + Math.abs(relative.dot(cameraUp)) * 1.025 / (tangent * spanY),
-      depthOffset + 1);
+  const offsets = corners.map(corner => {
+    const relative = corner.clone().sub(target);
+    return { x: relative.dot(cameraRight), y: relative.dot(cameraUp), z: relative.dot(back) };
+  });
+  function rangeAt(radius) {
+    const range = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity };
+    for (const point of offsets) {
+      const depth = radius - point.z;
+      const x = point.x / (depth * tangent * aspect), y = point.y / (depth * tangent);
+      range.minX = Math.min(range.minX, x); range.maxX = Math.max(range.maxX, x);
+      range.minY = Math.min(range.minY, y); range.maxY = Math.max(range.maxY, y);
+    }
+    return range;
   }
+  const fits = range => (range.maxX - range.minX) * 1.025 <= spanX * 2 && (range.maxY - range.minY) * 1.025 <= spanY * 2;
+  // Fit projected spans instead of mirroring the longer far half around the
+  // historical target. The table then uses the safe area evenly at exact90.
+  if (!fits(rangeAt(distance))) {
+    let low = distance, high = distance * 2;
+    while (!fits(rangeAt(high))) high *= 2;
+    for (let step = 0; step < 36; step += 1) {
+      const middle = (low + high) / 2;
+      if (fits(rangeAt(middle))) high = middle; else low = middle;
+    }
+    distance = high;
+  }
+  const range = rangeAt(distance);
+  // Zoom remains optical and centered on the fitted scene, not an empty part
+  // of the historical target. No current card/reset state enters this fit.
+  const centerX = safeCenterX - (range.minX + range.maxX) / 2 * current.zoom;
+  const centerY = safeCenterY - (range.minY + range.maxY) / 2 * current.zoom;
   return {
     view: current, aspect, width: size.width, height: size.height,
     fov: READING_FOV, near: 0.1, far: Math.max(100, distance + 40), distance,
@@ -90,29 +123,6 @@ export function projectReadingPlane(camera, viewport, { x, y, z, width, length }
     topLeft: point(-width / 2, -length / 2), topRight: point(width / 2, -length / 2),
     bottomRight: point(width / 2, length / 2), bottomLeft: point(-width / 2, length / 2),
   };
-}
-
-/** Keep the floating dock attached to the near rim, below the fan's pick area. */
-export function getReadingDockAnchor(camera, viewport, fanPoses, controlsHeight, dockHeight) {
-  const size = viewportSize(viewport);
-  const screenY = point => (1 - point.project(camera).y) * size.height / 2;
-  const edgeY = screenY(new THREE.Vector3(0, 0, CLOTH_CENTER_Z + CLOTH_LENGTH / 2));
-  const rotation = new THREE.Quaternion(), point = new THREE.Vector3();
-  let fanBottom = 0;
-  // Include every original fan slot, even when drawn, so selecting/revealing a
-  // card cannot move the permanent controls under an ongoing pointer click.
-  for (const pose of fanPoses) {
-    rotation.setFromEuler(new THREE.Euler(pose.rx, pose.ry, pose.rz, 'XYZ'));
-    for (const x of [-CARD_WIDTH / 2 - 0.06, CARD_WIDTH / 2 + 0.06]) {
-      for (const z of [-CARD_LENGTH / 2 - 0.06, CARD_LENGTH / 2 + 0.06]) {
-        point.set(x, 0, z).applyQuaternion(rotation).add(new THREE.Vector3(pose.x, pose.y, pose.z));
-        fanBottom = Math.max(fanBottom, screenY(point));
-      }
-    }
-  }
-  const desiredTop = Math.max(edgeY - dockHeight / 2, fanBottom + 36);
-  const top = Math.min(Math.max(100, desiredTop), size.height - controlsHeight - 25);
-  return { bottom: Math.max(25, size.height - top - controlsHeight), top, fanBottom, edgeY };
 }
 
 /**

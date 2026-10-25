@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-10-26 — one camera and physical glass controls
+
+Source: the user’s four requested refinements after checkpoint 4. The prior lens transition is superseded: reading and reset retain one perspective and the chosen elevation/yaw, with optional zoom normalization only. Exact vertical viewing uses stable camera axes. Native controls share the physical glass top plane; expanded reading/utilities stay screen-aligned for legibility. Original Urban Tarot faces, identity/reversal and shuffle/reveal choreography remain authoritative. The supplied back and glass-block references guide materials; the implementation remains a candidate for local user review.
+
+
 ## 2026-10-25 — trial 07 checkpoint and next local refinement
 
 The user accepts the current trial as a checkpoint, while explicitly requesting further changes to elevation/reset projection, card backs and a table-mounted glass control block. Preserve 55fbfc91 as the product baseline. Acceptance does not freeze its camera transition or materials against the specifically requested changes. Local batch commits remain permitted; no push/deployment.
