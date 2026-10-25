@@ -1,0 +1,440 @@
+{
+  "status": "PASS",
+  "passed": 8,
+  "total": 8,
+  "foregroundTolerance": "exact RGBA bytes at sixteen 5x5 artwork probes and opaque white center",
+  "cases": [
+    {
+      "theme": "light",
+      "dpr": 1,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        420,
+        280
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 336,
+        "changed": 327
+      },
+      "outside": {
+        "samples": 87840,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "light",
+      "dpr": 1,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        620,
+        390
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 714,
+        "changed": 689
+      },
+      "outside": {
+        "samples": 198344,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "light",
+      "dpr": 2,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        840,
+        560
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 1450,
+        "changed": 1414
+      },
+      "outside": {
+        "samples": 353376,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "light",
+      "dpr": 2,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        1240,
+        780
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 3010,
+        "changed": 2929
+      },
+      "outside": {
+        "samples": 796828,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 1,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        420,
+        280
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 336,
+        "changed": 327
+      },
+      "outside": {
+        "samples": 87840,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 1,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        620,
+        390
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 714,
+        "changed": 689
+      },
+      "outside": {
+        "samples": 198344,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 2,
+      "viewport": [
+        420,
+        280
+      ],
+      "framebuffer": [
+        840,
+        560
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 1450,
+        "changed": 1414
+      },
+      "outside": {
+        "samples": 353376,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    },
+    {
+      "theme": "dark",
+      "dpr": 2,
+      "viewport": [
+        620,
+        390
+      ],
+      "framebuffer": [
+        1240,
+        780
+      ],
+      "pass": true,
+      "artOverRoom": {
+        "samples": 400,
+        "changed": 0
+      },
+      "artOverLens": {
+        "samples": 400,
+        "changed": 0
+      },
+      "whitePreserved": true,
+      "whiteFlat": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteRoom": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "whiteLens": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "background": {
+        "samples": 3010,
+        "changed": 2929
+      },
+      "outside": {
+        "samples": 796828,
+        "changed": 0
+      },
+      "renderedAfterInputChange": true,
+      "cachedStatic": true,
+      "cameraInvalidated": true,
+      "cameraCached": true,
+      "cameraRestored": true,
+      "rendererStatePreserved": true
+    }
+  ]
+}

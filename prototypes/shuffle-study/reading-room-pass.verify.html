@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Augurwell · Room pass GPU verification</title>
+  <style>
+    :root{font:14px/1.5 system-ui,sans-serif;color:#20232c;background:#f0f0f4}body{margin:24px;max-width:1100px}h1{font-size:22px;font-weight:550}p{max-width:850px}button{padding:10px 16px;font:inherit;background:white;border:1px solid #888c9a;border-radius:8px;cursor:pointer}button:disabled{opacity:.5;cursor:wait}button:focus-visible{outline:2px solid #6658b6;outline-offset:3px}#status{margin-left:14px;font-weight:600}#stage{width:max-content;max-width:100%;margin-top:20px;overflow:auto}canvas{display:block}pre{font:12px/1.5 ui-monospace,monospace;background:#fafaff;padding:16px;border:1px solid #c8cbd4;white-space:pre-wrap;overflow-wrap:anywhere}.limit{font-size:12px;color:#565b6a}
+  </style>
+</head>
+<body>
+  <h1>Room-only blur: foreground color preservation</h1>
+  <p>This isolated fixture renders synthetic untonemapped color artwork and white reference patches over a flat background, a blurred room, and finally the clear-glass control compositor. The room is rendered separately; no reading state, storage or application scene is imported.</p>
+  <button id="run" type="button">Run room GPU verification</button><span id="status" role="status">Ready</span>
+  <div id="stage" aria-label="Last room verification case"></div><pre id="results">No run yet.</pre>
+  <p class="limit">Eight cases exercise light/dark, DPR 1/2 and two sizes. Colored art interiors and white patches must remain exact RGBA matches. Background pixels must change, room cache must invalidate on view/size/theme changes, and the control pass must preserve all pixels outside its bounded capture region. This verifies this browser/GPU, not visual acceptance or cross-device performance.</p>
+  <script type="module" src="./reading-room-pass.verify.mjs"></script>
+</body>
+</html>

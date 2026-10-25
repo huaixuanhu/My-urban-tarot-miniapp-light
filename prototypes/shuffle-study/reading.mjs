@@ -12,6 +12,8 @@ import { createReadingReader } from './reading-reader.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
 import { createReadingProjection } from './reading-projection.mjs';
 import { createScreenGlass } from './reading-screen-glass.mjs';
+import { createReadingRoom } from './reading-room.mjs';
+import { createReadingRoomPass } from './reading-room-pass.mjs';
 import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
@@ -32,7 +34,7 @@ function freshReading(order = shuffleDeck(ids)) {
 }
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
-let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass;
+let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass;
 let appearanceController;
 let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
@@ -217,6 +219,7 @@ function frame(now) {
     const pose = currentPoses.get(selected.id);
     outline.position.set(pose.x, pose.y + 0.024, pose.z);
   }
+  if (roomPass) { roomPass.render(camera); scene.background = roomPass.texture; }
   if (screenGlass) screenGlass.render(scene, camera);
   else renderer.render(scene, camera);
   if (animating) invalidate();
@@ -455,6 +458,8 @@ try {
   projection = createReadingProjection();
   applyView(DEFAULT_VIEW);
   sceneStyle = createReadingSceneStyle(scene, renderer, texture);
+  room = createReadingRoom(); scene.add(room.foreground);
+  roomPass = createReadingRoomPass(renderer, room.group);
   screenGlass = createScreenGlass(renderer);
   meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [...sceneStyle.materials]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
   const outlineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.69, 0, -1.09), new THREE.Vector3(0.69, 0, -1.09), new THREE.Vector3(0.69, 0, 1.09), new THREE.Vector3(-0.69, 0, 1.09)]);
@@ -492,6 +497,7 @@ appearanceController = createAppearancePreference({
     $('appearance').value = preference;
     sceneStyle?.apply(theme, outline);
     screenGlass?.applyAppearance(theme);
+    room?.applyAppearance(theme); roomPass?.applyAppearance(theme);
     invalidate();
   },
 });
@@ -543,5 +549,5 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { cancelAnimationFrame(scheduled); scheduled = 0; }
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); screenGlass?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

@@ -111,3 +111,7 @@ Checkpoint 6 records the user’s acceptance of trial 09 at d3aaa4a8. The new ro
 ## 2026-10-26 — clear-lens local batch
 
 Refine reference optics with an untinted center, a thinner refractive rim and softer displaced shadow; retain the screen-fixed lower-center controls. Room composition will be verified separately in stage2.4.10.2, using the same lens over the real background.
+
+## 2026-10-26 — cottage environment local batch
+
+For stage2.4.10.2, adapt only cottage architecture/vegetation in plain Three.js. Keep room blur separate from original card rendering and cache the static room to avoid re-rendering it throughout every shuffle frame. Remove the opaque glass backing and keep a low stone dish on the floor after rendered review rejected the conspicuous stand. Room shadow/caustic accents are bounded approximations. Local candidate only; no push/deployment.

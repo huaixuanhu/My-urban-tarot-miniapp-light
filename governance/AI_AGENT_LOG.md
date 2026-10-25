@@ -183,3 +183,7 @@ Executing host: Codex; model: GPT-6. Recorded checkpoint 6 acceptance at unchang
 ## 2026-10-26 — clear-lens local batch
 
 Executing host: Codex; model: GPT-6. Completed stage2.4.10.1 lens-only batch after checkpoint 6 (47b67ea4). Six lens tests and eight actual GPU cases passed, preserving outside-region bytes and source-white color. Browser observed empty/selected states. Room module preparation is separate and not included in this lens commit. No push/deployment.
+
+## 2026-10-26 — cottage environment local batch
+
+Executing host: Codex; model: GPT-6. Completed stage2.4.10.2 room environment candidate after checkpoint 47b67ea4 and lens batch 5db4c7bd. Read actual cottage sources; source repo remains clean at e71fe3fa. Added room-only linear blur/cache, clear foreground and original artwork, floor relationship and restrained props. 117 study tests and eight actual room GPU cases passed; independent source review found no functional blocker. Native draw-three/reveal/meaning/theme/orbit/overhead/reset checks passed in observed desktop states. One tool wait deadline expired during normal reset; subsequent state confirmed completion and no console errors. Evidence and remaining visual/performance limits are in docs/design/stage2.4.10/README.md. No push/deployment.

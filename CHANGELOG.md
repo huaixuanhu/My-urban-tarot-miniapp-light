@@ -86,3 +86,7 @@ Record trial 09 as local checkpoint 6, with the user-authorized next clear-lens 
 ## 2026-10-26 — clear-lens local batch
 
 Refine local trial 10 control lens: clearer center, narrow optical edge, warm/violet catches and softer shadow; retain all card actions.
+
+## 2026-10-26 — cottage environment local batch
+
+Local trial 10 adds a blurred cottage-derived room beneath the floating clear-glass table: pale oak, windows, curtains, restrained foliage, low stone dish and static light/shadow accents. Original card artwork, free placement, camera bounds and accepted shuffle/reveal behavior remain unchanged.
