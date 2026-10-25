@@ -10,8 +10,8 @@ import { createReadingCardFace } from './reading-art.mjs';
 import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
 import { createReadingReader } from './reading-reader.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
-import { createReadingProjection, projectReadingPlane } from './reading-projection.mjs';
-import { createReadingDock, READING_DOCK_LABEL_PLANE, planarCssTransform } from './reading-dock.mjs';
+import { createReadingProjection } from './reading-projection.mjs';
+import { createScreenGlass } from './reading-screen-glass.mjs';
 import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
@@ -32,7 +32,7 @@ function freshReading(order = shuffleDeck(ids)) {
 }
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
-let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, physicalDock;
+let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass;
 let appearanceController;
 let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
@@ -96,7 +96,6 @@ function updateUI() {
   $('reveal').hidden = isOpened(selected);
   $('meaning').hidden = !isOpened(selected);
   $('meaning').disabled = busy;
-  $('view-recover').disabled = busy;
   $('return').hidden = !selected || selected.faceUp;
   $('reveal').textContent = pendingReveals.has(selected?.id) ? '准备牌面…' : flips.has(selected?.id) ? '正在翻开' : '翻开';
   $('reveal').disabled = busy || !selected || selected.faceUp || pendingReveals.has(selected?.id);
@@ -218,7 +217,8 @@ function frame(now) {
     const pose = currentPoses.get(selected.id);
     outline.position.set(pose.x, pose.y + 0.024, pose.z);
   }
-  renderer.render(scene, camera);
+  if (screenGlass) screenGlass.render(scene, camera);
+  else renderer.render(scene, camera);
   if (animating) invalidate();
 }
 
@@ -260,7 +260,7 @@ function finishReset() {
   if (!reset) return;
   viewTransition = null; zoomTarget = 1; applyView({ ...view, zoom: 1 });
   reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
-  updateOverlayAnchor();
+  updateControlBounds();
   hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
   deckFocusId = reading.order[0]; flips.clear(); updateUI(); invalidate();
 }
@@ -381,28 +381,21 @@ function placeFocused() {
 function updateProjection() {
   const box = $('scene').getBoundingClientRect();
   camera = projection.update(view, { width: box.width, height: box.height });
-  updateOverlayAnchor();
+  updateControlBounds();
 }
-function updateOverlayAnchor() {
-  if (!camera) return;
+function updateControlBounds() {
   const box = $('scene').getBoundingClientRect();
-  const corners = projectReadingPlane(camera, box, READING_DOCK_LABEL_PLANE);
-  const points = Object.values(corners);
-  const minX = Math.min(...points.map(p => p.x)), maxX = Math.max(...points.map(p => p.x));
-  const minY = Math.min(...points.map(p => p.y)), maxY = Math.max(...points.map(p => p.y));
-  const dock = document.querySelector('.main-controls');
-  dock.style.transform = planarCssTransform(corners, 1000, 110);
-  const inFrame = points.every(p => p.visible) && minX >= 12 && maxX <= box.width - 12 && minY >= 70 && maxY <= box.height - 25;
-  dock.hidden = !inFrame;
-  $('view-recover').hidden = inFrame;
-  $('deck-hint').hidden = !inFrame;
-  $('progress').hidden = !inFrame;
+  const dock = document.querySelector('.main-controls').getBoundingClientRect();
+  // This is a screen-space control surface; orbit, shuffle and zoom never move it.
+  screenGlass?.setBounds({ left: dock.left - box.left, top: dock.top - box.top,
+    width: dock.width, height: dock.height, viewportWidth: box.width, viewportHeight: box.height });
   const style = document.documentElement.style;
-  style.setProperty('--dock-center-x', `${(minX + maxX) / 2}px`);
-  style.setProperty('--dock-hint-top', `${clamp(minY - 28, 130, box.height - 100)}px`);
-  style.setProperty('--dock-caption-top', `${Math.min(box.height - 27, maxY + 16)}px`);
-  style.setProperty('--popover-left', `${clamp((minX + maxX) / 2, Math.min(282, box.width / 2), Math.max(box.width - 282, box.width / 2))}px`);
-  style.setProperty('--popover-bottom', `${clamp(box.height - minY + 18, 95, box.height - 180)}px`);
+  const center = dock.left + dock.width / 2;
+  style.setProperty('--dock-center-x', `${center}px`);
+  style.setProperty('--dock-hint-top', `${Math.max(130, dock.top - 29)}px`);
+  style.setProperty('--dock-caption-top', `${Math.min(box.height - 27, dock.bottom + 13)}px`);
+  style.setProperty('--popover-left', `${clamp(center, Math.min(282, box.width / 2), Math.max(box.width - 282, box.width / 2))}px`);
+  style.setProperty('--popover-bottom', `${clamp(box.height - dock.top + 18, 95, box.height - 180)}px`);
 }
 function applyView(next) {
   view = clampView(next);
@@ -442,7 +435,7 @@ function fit() {
   if (!renderer || failed) return;
   cancelDrag(); if (!viewTransition) zoomTarget = view.zoom;
   const box = $('scene').getBoundingClientRect();
-  updateProjection(); updateOverlayAnchor(true); renderer.setSize(box.width, box.height); invalidate();
+  updateProjection(); updateControlBounds(); renderer.setSize(box.width, box.height); invalidate();
 }
 function fail(error) {
   failed = true; cancelAnimationFrame(scheduled); scheduled = 0;
@@ -462,8 +455,7 @@ try {
   projection = createReadingProjection();
   applyView(DEFAULT_VIEW);
   sceneStyle = createReadingSceneStyle(scene, renderer, texture);
-  physicalDock = createReadingDock({ environmentTexture: sceneStyle.environmentTexture });
-  scene.add(physicalDock.group);
+  screenGlass = createScreenGlass(renderer);
   meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [...sceneStyle.materials]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
   const outlineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.69, 0, -1.09), new THREE.Vector3(0.69, 0, -1.09), new THREE.Vector3(0.69, 0, 1.09), new THREE.Vector3(-0.69, 0, 1.09)]);
   outline = new THREE.LineLoop(outlineGeometry, new THREE.LineBasicMaterial({ color: 0xd2b882, transparent: true, opacity: 0.8 })); scene.add(outline);
@@ -499,7 +491,7 @@ appearanceController = createAppearancePreference({
     document.documentElement.dataset.theme = theme;
     $('appearance').value = preference;
     sceneStyle?.apply(theme, outline);
-    physicalDock?.applyAppearance(theme);
+    screenGlass?.applyAppearance(theme);
     invalidate();
   },
 });
@@ -510,7 +502,6 @@ $('reveal').addEventListener('click', event => {
   reveal(reading.selectedId);
 });
 $('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
-$('view-recover').addEventListener('click', () => { if (!reset && !failed) homeView(); });
 for (const [buttonId, detailsId] of [['tools-toggle', 'table-tools'], ['drawn-toggle', 'drawn-cards']]) {
   $(buttonId).addEventListener('click', () => {
     $(detailsId).open = !$(detailsId).open;
@@ -552,5 +543,5 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { cancelAnimationFrame(scheduled); scheduled = 0; }
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); physicalDock?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); screenGlass?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

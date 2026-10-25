@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-10-26 — preserve scene colors while adding clear controls
+
+The fixed control lens renders after the existing scene and samples its already-rendered pixels, rather than rendering every object into a new globally tone-mapped pipeline. This preserves the distinction between original unlit card faces and lit surroundings. The physical control mesh is no longer rendered; its framing extent stays unchanged to avoid a camera change. The lower-center position was explicitly confirmed by the user.
+
+
 ## 2026-10-26 — retain trial 08, replace its button treatment
 
 The user accepts the surrounding scene/camera/backs and requests a checkpoint, then asks to return controls to a fixed screen position with clear concept-led glass optics. The asynchronous answer confirms lower-center placement. This supersedes only the table-mounted control contract; it does not reopen the accepted cards, camera or motion.

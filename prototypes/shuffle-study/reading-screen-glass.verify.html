@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Augurwell · Screen glass GPU verification</title>
+  <style>
+    :root { font: 14px/1.5 system-ui,sans-serif; color:#20232c; background:#f0f0f4; }
+    body { margin:24px; max-width:1100px; }
+    h1 { font-size:22px; font-weight:550; margin:0 0 12px; }
+    p { max-width:850px; }
+    button { padding:10px 16px; font:inherit; border:1px solid #888c9a; border-radius:8px; background:white; color:inherit; cursor:pointer; }
+    button:disabled { opacity:.5; cursor:wait; }
+    button:focus-visible { outline:2px solid #6658b6; outline-offset:3px; }
+    #status { display:inline-block; margin-left:14px; font-weight:600; }
+    #stage { width:max-content; max-width:100%; margin-top:20px; background:#eeedf0; overflow:auto; }
+    canvas { display:block; }
+    pre { font:12px/1.5 ui-monospace,monospace; padding:16px; border:1px solid #c8cbd4; background:#fafaff; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .limit { color:#565b6a; font-size:12px; }
+  </style>
+</head>
+<body>
+  <h1>Screen glass: direct-framebuffer preservation</h1>
+  <p>This local fixture compares the actual GPU output of a direct scene render with the glass compositor. The scene includes untonemapped color artwork, a white reference patch, a lit PBR object and transparent background. It does not load or change a tarot reading.</p>
+  <button id="run" type="button">Run GPU verification</button><span id="status" role="status">Ready</span>
+  <div id="stage" aria-label="Last rendered verification case"></div>
+  <pre id="results" aria-live="polite">No run yet.</pre>
+  <p class="limit">Eight cases reuse the compositor across light/dark, DPR 1/2 and two canvas sizes. Pixels outside its 24 CSS-pixel capture padding plus one framebuffer pixel must remain byte-identical; pixels inside the capsule must visibly change. This checks the current browser/GPU, not cross-device visual acceptance.</p>
+  <script type="module" src="./reading-screen-glass.verify.mjs"></script>
+</body>
+</html>

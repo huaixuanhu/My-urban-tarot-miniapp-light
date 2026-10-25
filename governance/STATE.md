@@ -183,11 +183,14 @@ Implemented candidate: local trial 08/design revision 15. Camera batch `a555a294
 
 #### stage2.4.7 — local checkpoint 5, bounded acceptance
 
-Source: the user’s 2026-10-26 feedback accepts trial 08 except its table-mounted button treatment and explicitly asks for a commit before replacing it. Product baseline is `c9e3ff1c`, already locally committed. This checkpoint records acceptance of the camera, reset consistency, card backs and surrounding table treatment; it does not accept the physical button block. Existing 106-test/build/browser evidence is retained for unchanged source. The checkpoint receipt is the Git commit carrying this entry.
+Source: the user’s 2026-10-26 feedback accepts trial 08 except its table-mounted button treatment and explicitly asks for a commit before replacing it. Product baseline is `c9e3ff1c`, already locally committed. This checkpoint records acceptance of the camera, reset consistency, card backs and surrounding table treatment; it does not accept the physical button block. Existing 106-test/build/browser evidence is retained for unchanged source. Checkpoint receipt: `d496918b`.
 
 #### stage2.4.8 — fixed clear-glass controls
 
 Source: the same request replaces the moving table-mounted block with fixed screen-position glass controls, with clearer and more realistic light/refraction following the supplied concept. The user explicitly confirmed horizontal center in the lower-middle part of the viewport, close to the concept and away from the principal placement area. Local implementation is authorized. Preserve the accepted scene/camera/card/motion behavior and original Urban Tarot faces/data. Button shape, optical treatment and readability are the bounded redesign surface; no new gameplay or flow. Prior local batch-commit authority continues after verification; no push/deployment. New treatment remains subject to local review.
+
+Implemented candidate: trial 09/design revision 16 replaces the world-space control mesh with fixed native controls and a bounded screen-space glass pass. The original scene renders first with unchanged camera, artwork and color settings; only pixels around the controls are copied for refraction and local highlights. The initial CPU checks cover region mapping/DPR, render-pass ordering and resource lifetime. Validation: 112 study tests and both prototype build entries passed. Eight actual GPU cases across themes/DPR/resize preserved outside-region RGBA bytes exactly and retained unlit artwork color. Native browser checks covered fixed bounds under orbit/zoom, draw/reveal/meaning, theme preservation, tools/home and reset/Skip across desktop sizes. Aggregate results and evidence limits are in `docs/design/stage2.4.8/README.md`. The local implementation remains a candidate for user visual review; no publication authority is inferred.
+
 
 ### stage2.5 — full flow and local continuity
 

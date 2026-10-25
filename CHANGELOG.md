@@ -1,5 +1,10 @@
 # Change history
 
+## 2026-10-26 — local trial 09 fixed glass controls
+
+Replaces the unaccepted moving button block with a stable lower-center glass strip. Clear local refraction samples the actual scene, with a restrained optical edge and warm/cool highlights; labels and utility popovers remain upright. The accepted table/camera/card treatment is unchanged.
+
+
 ## 2026-10-26 — local checkpoint 5
 
 Recorded user acceptance of trial 08’s non-button treatment at c9e3ff1c. The table-mounted button block remains unaccepted and is explicitly replaced by the next fixed-position clear-glass trial.

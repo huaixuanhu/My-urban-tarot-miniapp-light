@@ -77,3 +77,11 @@ Derived from governance/STATE.md stage2.4.6; scope: implementation/evidence note
 The view reaches exactly 90 degrees without a pole flip. Reading and reset share one native perspective camera and retain chosen angles; zoom alone may return to 100% for reset. Physical table/card/dock volumes drive overview fitting. `reading-back.mjs` creates paired 1024 × 1688 prints, leaving original face images unchanged. `reading-dock.mjs` supplies a separate low glass capsule and tested four-corner mapping of native controls to its actual top plane. Long meanings and utilities stay screen-aligned. Close inspection keeps a screen-level Home recovery action if the physical dock leaves view. List buttons retain identity/focus through selection, and Escape returns to an available control.
 
 Materials add static asymmetrical warm/cool light, soft reflections and contact shadows. No continuous lighting loop, new dependencies or Blender asset is required. Only appearance preference is stored; question/history work remains deferred. Evidence: [local trial 08 review](../../docs/design/stage2.4.6/README.md).
+
+## Local trial 09 — fixed clear-glass controls
+
+Derived from governance/STATE.md stage2.4.8; scope: implementation/evidence notes only, not a separate plan. DESIGN.md revision 16 owns the current candidate. Checkpoint 5 (`d496918b`, product `c9e3ff1c`) accepts the preceding non-button treatment.
+
+`reading-screen-glass.mjs` keeps the original scene render, copies only the native dock rectangle plus 24 CSS pixels of padding, and draws a raw screen-space glass lens over that region. The control strip stays fixed at lower center, with a clear center, edge refraction and localized light/shadow. Original tone/color settings are untouched; outside pixels must remain identical. Native buttons retain full input/focus behavior. No world-space glass button mesh or projected CSS label plane is rendered in trial 09. The old projection extent stays fixed for camera continuity.
+
+The separate `reading-screen-glass.verify.html` page exercises the real GPU before/after pixels at multiple appearances and pixel ratios; it is a local diagnostic, not a product route or build entry. Evidence: [trial 09 review](../../docs/design/stage2.4.8/README.md).

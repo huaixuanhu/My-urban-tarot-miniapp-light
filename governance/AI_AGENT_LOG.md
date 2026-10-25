@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-26 — local trial 09 screen-space glass
+
+Executor: Codex (GPT-6), with bounded CSS and glass-rendering agents plus actual GPU verification. Checkpoint 5 was committed as d496918b before product edits. Removed the world-space control instance, retained accepted camera/framing and introduced cropped framebuffer refraction with native fixed controls. STATE.md and the bounded evidence record own verification/limits. No new dependencies, Blender asset, push or deployment.
+
+
 ## 2026-10-26 — checkpoint 5 before fixed-control refinement
 
 Executor: Codex (GPT-6). Verified HEAD c9e3ff1c and the same 65 pre-existing generated changes. Recorded bounded user acceptance and the fixed lower-center control request before product edits. Existing prototype evidence applies to unchanged product source. No push/deployment.

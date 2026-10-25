@@ -84,18 +84,19 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .cover p { line-height: 1.8; }
 .cover button { border: 1px solid var(--line); margin-top: 12px; }
 
-/* Native controls share the world-space top plane of the real glass mesh.
-   The matrix comes from the same camera as the table; popovers stay readable. */
+/* Fixed lower-center controls. The WebGL lens beneath these native targets
+   supplies live refraction; this layer keeps labels crisp and hit areas stable. */
 .controls { position: fixed; z-index: 5; inset: 0; pointer-events: none; }
-.main-controls { position: absolute; top: 0; left: 0; width: 1000px; height: 110px; transform-origin: 0 0; will-change: transform; pointer-events: none; }
-.glass-dock { display: grid; grid-template-columns: 260px 250px 320px 170px; align-items: center; width: 100%; height: 100%; pointer-events: none; }
-.glass-dock button { width: 100%; height: 100%; min-height: 0; padding: 10px 8px; font-size: 45px; font-weight: 500; letter-spacing: .03em; border-radius: 100px; line-height: 1.2; white-space: nowrap; pointer-events: auto; text-shadow: 0 1px 4px var(--text-halo); }
-.context-actions { height: 100%; padding: 6px; }
-.context-actions > button:not(:disabled) { background: var(--hover); box-shadow: inset 0 2px 2px var(--inset),0 2px 8px var(--glass-shadow); }
-.reset-action { display: flex; align-items: center; justify-content: center; gap: 14px; }
-.reset-action > span { font-size: 52px; }
-.dock-count { font-size: 38px; color: var(--muted); text-align: center; border-left: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; }
-#tools-toggle { font-size: 62px; letter-spacing: .08em; }
+.main-controls { position: absolute; top: auto; left: 50%; bottom: clamp(56px,12vh,130px); width: min(500px,calc(100vw - 40px)); height: 64px; transform: translateX(-50%); pointer-events: none; }
+.glass-dock { display: grid; grid-template-columns: 1.2fr 1.15fr 1.55fr .75fr; align-items: center; width: 100%; height: 100%; padding: 6px; border: 0; border-radius: 999px; background: transparent; box-shadow: none; pointer-events: auto; }
+.glass-dock button { width: 100%; height: 100%; min-height: 44px; padding: 9px 8px; font-size: 13px; font-weight: 500; letter-spacing: .03em; border-radius: 999px; line-height: 1.2; white-space: nowrap; pointer-events: auto; text-shadow: 0 1px 3px var(--text-halo); }
+.context-actions { height: 100%; padding: 3px; }
+.context-actions > button:not(:disabled) { background: #ffffff30; box-shadow: inset 0 1px 0 #ffffff66,0 1px 5px #5d607010; }
+:root[data-theme="dark"] .context-actions > button:not(:disabled) { background: #ffffff12; box-shadow: inset 0 1px 0 #ffffff24,0 1px 5px #00000014; }
+.reset-action { display: flex; align-items: center; justify-content: center; gap: 7px; }
+.reset-action > span { font-size: 20px; }
+.dock-count { font-size: 12px; line-height: 1.5; color: var(--muted); text-align: center; border-left: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; }
+#tools-toggle { font-size: 22px; letter-spacing: .1em; }
 .glass-dock button[aria-expanded="true"] { background: var(--hover); }
 .progress { position: absolute; top: var(--dock-caption-top,85%); left: var(--dock-center-x,50%); transform: translateX(-50%); font-size: 10px; line-height: 1.8; color: var(--muted); text-align: center; margin: 0; white-space: nowrap; text-shadow: 0 1px 8px var(--text-halo); pointer-events: none; }
 .tool-body, #placed-list { position: absolute; bottom: var(--popover-bottom,120px); left: var(--popover-left,50%); transform: translateX(-50%); width: min(520px,calc(100vw - 44px)); max-height: min(60svh,390px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border: 1px solid var(--glass-edge); border-radius: 22px; padding: 22px; margin: 0; background: var(--reader-ground); box-shadow: inset 0 1px 1px var(--inset),0 12px 40px var(--glass-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); color: var(--ink); pointer-events: auto; }
@@ -174,6 +175,14 @@ footer a:hover { text-decoration: underline; }
   .invitation h1 { font-size: 20px; }
   .invitation > span { max-width: 200px; font-size: 10px; }
   .table-note { right: 5%; top: 82px; max-width: 100px; font-size: 9px; }
+  .main-controls { width: calc(100vw - 32px); max-width: 500px; height: 56px; bottom: clamp(52px,10vh,86px); }
+  .glass-dock { padding: 4px; grid-template-columns: 1.2fr 1.15fr 1.55fr .75fr; }
+  .glass-dock button { font-size: 12px; padding: 8px 5px; min-height: 40px; }
+  .context-actions { padding: 2px; }
+  .reset-action { gap: 5px; }
+  .reset-action > span { font-size: 18px; }
+  .dock-count { font-size: 11px; }
+  #tools-toggle { font-size: 21px; }
   .progress { font-size: 9px; }
   .deck-hint, .reset-message { font-size: 9px; }
   .reset-message { gap: 10px; }
