@@ -103,3 +103,7 @@ Source: explicit user request and supplied standing project rules. Move the dire
 Use one local governance package because the user intends continued development. Recover the current interface as observed revision 1; do not infer approval of an early demo. Keep original personal changes, avoid embedding private email addresses or secrets in tracked documents, and separate local adoption from commit/push/deployment.
 
 The original and destination are on the same filesystem; a directory rename preserves identity and avoids copy/delete risks. A before/after manifest verified the migration. The current GitHub account path resolves to the same imported main commit.
+
+## 2026-10-26 — checkpoint 6 and room refinement authority
+
+Checkpoint 6 records the user’s acceptance of trial 09 at d3aaa4a8. The new room/environment request reopens the prior no-foliage constraint and authorizes bounded source reuse from 萱敏小屋, with local batch commits only. Current scope is STATE.md stage2.4.10.

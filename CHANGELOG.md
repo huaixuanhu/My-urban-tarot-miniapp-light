@@ -78,3 +78,7 @@ Replaced reserved columns/control rows with a full-viewport scene and floating g
 - Added 15 access regressions and a compiled Node entrypoint smoke check; verified actual login and bounded anonymous/direct-origin rejection.
 - Completed Vercel CLI installation/login and managed MCP login; current chat connector team-read limits remain explicit in governance/STATE.md.
 - Added the user's subsequent authorization to commit/push the bounded migration/access change set; full gameplay reconstruction remains deferred to the new project chat.
+
+## 2026-10-26 — checkpoint 6 and room refinement authority
+
+Record trial 09 as local checkpoint 6, with the user-authorized next clear-lens and blurred-cottage refinement scoped in STATE.md. Product behavior unchanged.

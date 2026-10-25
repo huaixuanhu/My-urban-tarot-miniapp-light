@@ -175,3 +175,7 @@ Completed directory rename and compared all original entries and file hashes. Gi
 Source review found in-memory gameplay state and existing generated dependency launchers referring to an older Downloads/urban-tarot path. The post-move TypeScript check passed without incremental-cache writes; the final build must determine whether these historical launcher strings cause a real problem. No global cache permissions were changed.
 
 No commit, push, gameplay reconstruction, independent review, physical-phone acceptance, or historical design approval is claimed. Continue from STATE.md.
+
+## 2026-10-26 — checkpoint 6 and room refinement authority
+
+Executing host: Codex; model: GPT-6. Recorded checkpoint 6 acceptance at unchanged trial 09 product baseline d3aaa4a8 before implementation. Preserved 65 existing generated-file changes by entry hashes. Previous 112 study tests, eight GPU checks and browser evidence remain applicable; the aggregate gate is rerun for this documentation checkpoint. No push/deployment. Continue through STATE.md stage2.4.10.

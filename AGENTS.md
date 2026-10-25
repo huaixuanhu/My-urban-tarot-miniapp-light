@@ -24,3 +24,5 @@ Governance root: this repository. Coverage: all project files. Working tier: Tie
 The subsequent request to batch substantial UI changes authorizes bounded local UI commits after verification. Keep the glass/floating UI batch and the perspective correction reviewable as separate local commits. No push or deployment is authorized.
 
 The latest request records checkpoint 5 at the trial 08 product baseline c9e3ff1c, accepting its non-button treatment, and authorizes stage2.4.8 fixed lower-center clear-glass controls. Follow STATE.md; preserve original faces, state and access protections.
+
+The latest 2026-10-26 request accepts trial 09 at d3aaa4a8 as checkpoint 6 and authorizes stage2.4.10 clear-glass/blurred-cottage local refinement with verified batch commits. The new restrained-foliage request supersedes the old no-leaves constraint. Read STATE.md for current scope; no push or deployment.
