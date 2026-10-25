@@ -11,7 +11,7 @@ export const DEFAULT_VIEW = Object.freeze({ yaw: 0, elevation: Math.atan2(10.4, 
 export const ZOOM_LIMITS = Object.freeze({ min: 0.75, max: 1.8 });
 export const VIEW_LIMITS = Object.freeze({
   yaw: Object.freeze({ min: radians(-18), max: radians(18) }),
-  elevation: Object.freeze({ min: radians(34), max: radians(60) }),
+  elevation: Object.freeze({ min: radians(34), max: Math.PI / 2 }),
 });
 
 export function clampView(view = DEFAULT_VIEW) {
@@ -47,12 +47,25 @@ export function wheelZoom(zoom, deltaY, deltaMode = 0, pageHeight = 800) {
   return clamp(current * Math.exp(-pixels * 0.0015), ZOOM_LIMITS.min, ZOOM_LIMITS.max);
 }
 
+/** Stable camera axes, including the exact vertical pole where world-up fails. */
+export function getViewBasis(view = DEFAULT_VIEW) {
+  const current = clampView(view);
+  const sinYaw = Math.sin(current.yaw), cosYaw = Math.cos(current.yaw);
+  const sinElevation = Math.sin(current.elevation);
+  const cosElevation = current.elevation === Math.PI / 2 ? 0 : Math.cos(current.elevation);
+  return {
+    right: { x: cosYaw, y: 0, z: -sinYaw },
+    up: { x: -sinElevation * sinYaw, y: cosElevation, z: -sinElevation * cosYaw },
+    back: cosElevation === 0 ? { x: 0, y: 1, z: 0 } : { x: cosElevation * sinYaw, y: sinElevation, z: cosElevation * cosYaw },
+  };
+}
+
 export function getViewPosition(view = DEFAULT_VIEW) {
   const current = clampView(view);
-  // Preserve the original camera coordinates exactly for initial/reset framing.
+  // Preserve the historical default coordinates; reset now keeps chosen angles.
   if (hasDefaultAngles(current)) return { x: 0, y: 10.5, z: 11.7 };
-  const horizontal = RADIUS * Math.cos(current.elevation);
-  return { x: VIEW_TARGET.x + horizontal * Math.sin(current.yaw), y: VIEW_TARGET.y + RADIUS * Math.sin(current.elevation), z: VIEW_TARGET.z + horizontal * Math.cos(current.yaw) };
+  const { back } = getViewBasis(current);
+  return { x: VIEW_TARGET.x + RADIUS * back.x, y: VIEW_TARGET.y + RADIUS * back.y, z: VIEW_TARGET.z + RADIUS * back.z };
 }
 
 /** Retained shuffle framing; offscreen card handoffs depend on this envelope. */

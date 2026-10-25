@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, getViewPosition, fitViewSize } from './reading-view.mjs';
-import { createReadingProjection, getReadingPerspectiveFrame, getReadingDockAnchor, READING_PROJECTION_ENVELOPE } from './reading-projection.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS } from './reading-view.mjs';
+import { createReadingProjection, getReadingPerspectiveFrame, getReadingDockAnchor, projectReadingPlane, READING_PROJECTION_ENVELOPE } from './reading-projection.mjs';
 import { createReadingFan } from './reading-fan.mjs';
+import { pickFan } from './reading-picking.mjs';
+import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
 
 const near = (a, b, epsilon = 1e-9) => assert.ok(Math.abs(a - b) < epsilon, `${a} differs from ${b}`);
 const project = (camera, x, y, z) => new THREE.Vector3(x, y, z).project(camera);
@@ -55,52 +57,76 @@ test('optical zoom retains camera position and is bounded by the existing view c
   near(camera.zoom, 0.75);
 });
 
-test('the reset endpoint preserves the accepted orthographic camera and framing exactly', () => {
+test('exact90 flat cards remain rectangles with their actual aspect ratio at every yaw', () => {
+  const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };
+  const vector = (a, b) => new THREE.Vector2(b.x - a.x, b.y - a.y);
+  for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    const camera = projection.update({ ...DEFAULT_VIEW, yaw, elevation: Math.PI / 2 }, viewport);
+    const direction = camera.getWorldDirection(new THREE.Vector3());
+    near(direction.x, 0); near(direction.y, -1); near(direction.z, 0);
+    for (const [x, z] of [[-3, -2], [0, 0], [3, 0.5]]) {
+      const points = projectReadingPlane(camera, viewport, { x, y: 0.08, z, width: CARD_WIDTH, length: CARD_LENGTH });
+      const top = vector(points.topLeft, points.topRight), side = vector(points.topLeft, points.bottomLeft);
+      const bottom = vector(points.bottomLeft, points.bottomRight), otherSide = vector(points.topRight, points.bottomRight);
+      near(top.dot(side), 0, 1e-8);
+      near(top.length() / side.length(), CARD_WIDTH / CARD_LENGTH);
+      assert.ok(top.distanceTo(bottom) < 1e-9 && side.distanceTo(otherSide) < 1e-9);
+      assert.ok(Object.values(points).every(point => point.visible));
+    }
+  }
+});
+
+test('camera orientation approaches exact90 continuously without a pole flip', () => {
+  const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };
+  for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    const before = project(projection.update({ ...DEFAULT_VIEW, yaw, elevation: Math.PI / 2 - 1e-7 }, viewport), 4, 0.08, 2);
+    const after = project(projection.update({ ...DEFAULT_VIEW, yaw, elevation: Math.PI / 2 }, viewport), 4, 0.08, 2);
+    const pixelDelta = Math.hypot((before.x - after.x) * viewport.width / 2, (before.y - after.y) * viewport.height / 2);
+    assert.ok(pixelDelta < 0.001);
+  }
+});
+
+test('reset progress cannot change the perspective camera, framing or chosen angle', () => {
   const projection = createReadingProjection();
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 760, height: 900 }]) {
-    const actual = projection.update(DEFAULT_VIEW, viewport, 1), size = fitViewSize(viewport.width / viewport.height);
-    const expected = new THREE.OrthographicCamera(-size.width / 2, size.width / 2, size.height / 2, -size.height / 2, 0.1, 100);
-    const point = getViewPosition(DEFAULT_VIEW);
-    expected.position.set(point.x, point.y, point.z); expected.lookAt(VIEW_TARGET.x, VIEW_TARGET.y, VIEW_TARGET.z); expected.updateMatrixWorld();
-    assert.equal(actual.isOrthographicCamera, true);
-    assert.deepEqual(actual.projectionMatrix.elements, expected.projectionMatrix.elements);
-    assert.deepEqual(actual.matrixWorld.elements, expected.matrixWorld.elements);
-    near(widths(actual).near, widths(actual).far);
+    for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2]) {
+      const view = { yaw: VIEW_LIMITS.yaw.max, elevation, zoom: 1.3 };
+      const camera = projection.update(view, viewport, 0);
+      const matrix = camera.projectionMatrix.clone(), world = camera.matrixWorld.clone();
+      for (const progress of [0, 0.1, 0.25, 0.5, 0.8, 0.999, 1]) {
+        const next = projection.update(view, viewport, progress);
+        assert.equal(next, camera);
+        assert.equal(next.isPerspectiveCamera, true);
+        assert.deepEqual(next.projectionMatrix.elements, matrix.elements);
+        assert.deepEqual(next.matrixWorld.elements, world.elements);
+      }
+      assert.deepEqual(view, { yaw: VIEW_LIMITS.yaw.max, elevation, zoom: 1.3 });
+    }
   }
 });
 
-test('reset projection transitions remain finite, continuous at entry and subpixel at the ortho endpoint', () => {
-  const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };
-  const sample = t => project(projection.update(DEFAULT_VIEW, viewport, t), 4, 0.05, 2);
-  const screenDistance = (a, b) => Math.hypot((a.x - b.x) * viewport.width / 2, (a.y - b.y) * viewport.height / 2);
-  assert.ok(screenDistance(sample(0), sample(1e-8)) < 1e-4);
-  const b = READING_PROJECTION_ENVELOPE;
-  for (const x of [b.minX, b.maxX]) for (const y of [b.minY, b.maxY]) for (const z of [b.minZ, b.maxZ]) {
-    const before = project(projection.update(DEFAULT_VIEW, viewport, 1 - 1e-8), x, y, z);
-    const after = project(projection.update(DEFAULT_VIEW, viewport, 1), x, y, z);
-    assert.ok(screenDistance(before, after) < 1);
-  }
-  for (let i = 0; i <= 100; i++) {
-    const camera = projection.update(DEFAULT_VIEW, viewport, i / 100);
-    assert.ok(camera.projectionMatrix.elements.every(Number.isFinite));
-    assert.ok(camera.projectionMatrixInverse.elements.every(Number.isFinite));
-    const point = project(camera, 0, 1, 0);
-    assert.ok(point.toArray().every(Number.isFinite) && point.z > -1 && point.z < 1);
-  }
-});
-
-test('native ray casts match the displayed plane in reading and intermediate lenses', () => {
+test('native rays and all fan IDs stay correct through exact90 and both zoom limits', () => {
   const projection = createReadingProjection(), raycaster = new THREE.Raycaster();
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.05);
+  const order = Array.from({ length: 78 }, (_, ordinal) => (ordinal * 37 + 11) % 78);
+  const fan = createReadingFan(order), candidates = order.map((id, ordinal) => ({ id, pose: fan[ordinal] }));
+  const rayThrough = (camera, point) => {
+    const ndc = point.clone().project(camera);
+    raycaster.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), camera);
+    return raycaster.ray;
+  };
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 760, height: 900 }]) {
     for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
-      for (const zoom of [0.75, 1, 1.8]) {
-        for (const progress of [0, 0.25, 0.8, 0.999, 1]) {
-        const camera = projection.update({ yaw, elevation: VIEW_LIMITS.elevation.min, zoom }, viewport, progress);
-        const original = new THREE.Vector3(1.4, 0.05, -0.8), ndc = original.clone().project(camera);
-        raycaster.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), camera);
-        const hit = raycaster.ray.intersectPlane(plane, new THREE.Vector3());
-        assert.ok(hit && hit.distanceTo(original) < 1e-7);
+      for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2 - 1e-7, Math.PI / 2]) {
+        for (const zoom of [0.75, 1, 1.8]) {
+          const camera = projection.update({ yaw, elevation, zoom }, viewport);
+          const original = new THREE.Vector3(1.4, 0.05, -0.8);
+          const hit = rayThrough(camera, original).intersectPlane(plane, new THREE.Vector3());
+          assert.ok(hit && hit.distanceTo(original) < 1e-7);
+          for (const card of candidates) {
+            const point = new THREE.Vector3(card.pose.x, card.pose.y, card.pose.z);
+            assert.equal(pickFan(rayThrough(camera, point), candidates), card.id);
+          }
         }
       }
     }
@@ -140,4 +166,26 @@ test('dock remains recoverable at bounded inspection zoom and compact viewports'
     assert.ok(Number.isFinite(anchor.bottom) && anchor.bottom >= 25);
     assert.ok(anchor.top + 83 <= viewport.height - 25);
   }
+});
+
+
+test('physical toolbar plane projects far edge first with finite screen coordinates', () => {
+  const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };
+  const body = { x: 0, y: 0.22, z: 4.45, width: 7.4, length: 1 };
+  const width = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2]) {
+    const camera = projection.update({ ...DEFAULT_VIEW, elevation }, viewport);
+    const points = projectReadingPlane(camera, viewport, body);
+    assert.ok(points.topLeft.x < points.topRight.x && points.bottomLeft.x < points.bottomRight.x);
+    assert.ok(points.topLeft.y < points.bottomLeft.y && points.topRight.y < points.bottomRight.y);
+    assert.ok(Object.values(points).every(point => [point.x, point.y, point.depth].every(Number.isFinite)));
+    const nearWidth = width(points.bottomLeft, points.bottomRight), farWidth = width(points.topLeft, points.topRight);
+    if (elevation === Math.PI / 2) near(nearWidth, farWidth);
+    else assert.ok(nearWidth > farWidth);
+    const ndc = project(camera, -body.width / 2, body.y, body.z - body.length / 2);
+    near(points.topLeft.x, (ndc.x + 1) * viewport.width / 2);
+    near(points.topLeft.y, (1 - ndc.y) * viewport.height / 2);
+  }
+  assert.throws(() => projectReadingPlane(projection.camera, viewport, { ...body, width: -1 }), RangeError);
+  assert.throws(() => projectReadingPlane(projection.camera, viewport, { ...body, y: NaN }), RangeError);
 });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, clampView, dragView, getViewPosition, isDefaultView, fitViewSize, getViewSize, getFramedViewSize, ZOOM_LIMITS, wheelZoom } from './reading-view.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, clampView, dragView, getViewPosition, getViewBasis, isDefaultView, fitViewSize, getViewSize, getFramedViewSize, ZOOM_LIMITS, wheelZoom } from './reading-view.mjs';
 import { READING_ENVELOPE } from './reading-layout.mjs';
 
 const near = (a, b, tolerance = 1e-12) => assert.ok(Math.abs(a - b) <= tolerance, `${a} differs from ${b}`);
@@ -28,7 +28,7 @@ test('large drags and absolute view inputs respect both angular limits', () => {
   near(VIEW_LIMITS.yaw.min, -18 * Math.PI / 180);
   near(VIEW_LIMITS.yaw.max, 18 * Math.PI / 180);
   near(VIEW_LIMITS.elevation.min, 34 * Math.PI / 180);
-  near(VIEW_LIMITS.elevation.max, 60 * Math.PI / 180);
+  near(VIEW_LIMITS.elevation.max, Math.PI / 2);
   assert.deepEqual(dragView(DEFAULT_VIEW, 1e8, 1e8), { zoom: 1, yaw: VIEW_LIMITS.yaw.min, elevation: VIEW_LIMITS.elevation.max });
   assert.deepEqual(dragView(DEFAULT_VIEW, -1e8, -1e8), { zoom: 1, yaw: VIEW_LIMITS.yaw.max, elevation: VIEW_LIMITS.elevation.min });
   assert.deepEqual(clampView({ yaw: 100, elevation: -100 }), { zoom: 1, yaw: VIEW_LIMITS.yaw.max, elevation: VIEW_LIMITS.elevation.min });
@@ -40,7 +40,7 @@ test('orbit positions preserve radius, remain above the table and mirror horizon
     for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
       const p = getViewPosition({ yaw, elevation });
       near(Math.hypot(p.x - VIEW_TARGET.x, p.y - VIEW_TARGET.y, p.z - VIEW_TARGET.z), radius);
-      assert.ok(p.y > VIEW_TARGET.y && p.z > VIEW_TARGET.z);
+      assert.ok(p.y > VIEW_TARGET.y && p.z >= VIEW_TARGET.z);
       const mirror = getViewPosition({ yaw: -yaw, elevation });
       near(p.x, -mirror.x); near(p.y, mirror.y); near(p.z, mirror.z);
     }
@@ -107,7 +107,7 @@ test('all conservative table-card corners fit at extreme views and aspect ratios
         const length = Math.hypot(...direction), normal = direction.map(value => value / length);
         // Derive camera right/up independently from its position and world up.
         const rightLength = Math.hypot(normal[0], normal[2]);
-        const right = [normal[2] / rightLength, 0, -normal[0] / rightLength];
+        const right = elevation === Math.PI / 2 ? [Math.cos(yaw), 0, -Math.sin(yaw)] : [normal[2] / rightLength, 0, -normal[0] / rightLength];
         const up = [normal[1] * right[2], normal[2] * right[0] - normal[0] * right[2], -normal[1] * right[0]];
         for (const x of [READING_ENVELOPE.minX, READING_ENVELOPE.maxX]) for (const y of [READING_ENVELOPE.minY, READING_ENVELOPE.maxY]) for (const z of [READING_ENVELOPE.minZ, READING_ENVELOPE.maxZ]) {
           const relative = [x - VIEW_TARGET.x, y - VIEW_TARGET.y, z - VIEW_TARGET.z];
@@ -155,4 +155,23 @@ test('orbit preserves zoom, home distinguishes scale, and zoom does not alter ca
   assert.deepEqual(getViewSize(zoomed, 2), getViewSize(DEFAULT_VIEW, 2));
   near(clampView({ zoom: 999 }).zoom, ZOOM_LIMITS.max);
   near(clampView({ zoom: -999 }).zoom, ZOOM_LIMITS.min);
+});
+
+
+test('the exact overhead pole retains yaw without an ambiguous world-up axis', () => {
+  for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    const view = { yaw, elevation: Math.PI / 2 }, basis = getViewBasis(view), position = getViewPosition(view);
+    assert.deepEqual(basis.back, { x: 0, y: 1, z: 0 });
+    near(position.x, VIEW_TARGET.x); near(position.z, VIEW_TARGET.z);
+    near(basis.right.x, Math.cos(yaw)); near(basis.right.z, -Math.sin(yaw));
+    near(basis.up.x, -Math.sin(yaw)); near(basis.up.y, 0); near(basis.up.z, -Math.cos(yaw));
+    for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2 - 1e-7, Math.PI / 2]) {
+      const axes = getViewBasis({ yaw, elevation });
+      const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+      for (const axis of Object.values(axes)) near(dot(axis, axis), 1);
+      near(dot(axes.right, axes.up), 0); near(dot(axes.right, axes.back), 0); near(dot(axes.up, axes.back), 0);
+    }
+    const approaching = getViewBasis({ yaw, elevation: Math.PI / 2 - 1e-7 });
+    for (const key of ['right', 'up', 'back']) for (const axis of ['x', 'y', 'z']) near(approaching[key][axis], basis[key][axis], 2e-7);
+  }
 });

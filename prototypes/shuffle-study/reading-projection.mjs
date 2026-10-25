@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z, READING_ENVELOPE } from './reading-layout.mjs';
-import { DEFAULT_VIEW, VIEW_TARGET, clampView, getViewPosition, fitViewSize } from './reading-view.mjs';
+import { DEFAULT_VIEW, VIEW_TARGET, clampView, getViewPosition, getViewBasis } from './reading-view.mjs';
 import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
 
 export const READING_FOV = 42;
@@ -41,11 +41,11 @@ export function getReadingPerspectiveFrame(view = DEFAULT_VIEW, viewport, paddin
   const spanY = (size.height - top - bottom) / size.height;
   const centerX = (left - right) / size.width, centerY = (bottom - top) / size.height;
   const original = getViewPosition(current);
-  const back = new THREE.Vector3(original.x, original.y, original.z).sub(target);
-  let distance = back.length();
-  back.normalize();
-  const cameraRight = new THREE.Vector3(back.z, 0, -back.x).normalize();
-  const cameraUp = new THREE.Vector3().crossVectors(back, cameraRight);
+  let distance = new THREE.Vector3(original.x, original.y, original.z).distanceTo(target);
+  const basis = getViewBasis(current);
+  const back = new THREE.Vector3(basis.back.x, basis.back.y, basis.back.z);
+  const cameraRight = new THREE.Vector3(basis.right.x, basis.right.y, basis.right.z);
+  const cameraUp = new THREE.Vector3(basis.up.x, basis.up.y, basis.up.z);
   const tangent = Math.tan(READING_FOV * Math.PI / 360);
   for (const corner of corners) {
     const relative = corner.clone().sub(target), depthOffset = relative.dot(back);
@@ -59,17 +59,37 @@ export function getReadingPerspectiveFrame(view = DEFAULT_VIEW, viewport, paddin
   return {
     view: current, aspect, width: size.width, height: size.height,
     fov: READING_FOV, near: 0.1, far: Math.max(100, distance + 40), distance,
-    position: target.clone().addScaledVector(back, distance),
+    position: target.clone().addScaledVector(back, distance), up: cameraUp, right: cameraRight, back,
     centerX, centerY,
     safeBounds: { minX: -1 + 2 * left / size.width, maxX: 1 - 2 * right / size.width,
       minY: -1 + 2 * bottom / size.height, maxY: 1 - 2 * top / size.height },
   };
 }
 
-function pointCamera(camera, position) {
+function pointCamera(camera, position, up) {
   camera.position.copy(position);
+  camera.up.copy(up);
   camera.lookAt(target);
   camera.updateMatrixWorld();
+}
+
+/** Project a horizontal physical plane; far edge first, then clockwise. */
+export function projectReadingPlane(camera, viewport, { x, y, z, width, length }) {
+  if (![x, y, z, width, length].every(Number.isFinite) || width <= 0 || length <= 0) {
+    throw new RangeError('A projected reading plane needs finite coordinates and positive dimensions.');
+  }
+  const size = viewportSize(viewport);
+  const point = (dx, dz) => {
+    const ndc = new THREE.Vector3(x + dx, y, z + dz).project(camera);
+    return {
+      x: (ndc.x + 1) * size.width / 2, y: (1 - ndc.y) * size.height / 2, depth: ndc.z,
+      visible: Math.abs(ndc.x) <= 1 && Math.abs(ndc.y) <= 1 && ndc.z >= -1 && ndc.z <= 1,
+    };
+  };
+  return {
+    topLeft: point(-width / 2, -length / 2), topRight: point(width / 2, -length / 2),
+    bottomRight: point(width / 2, length / 2), bottomLeft: point(-width / 2, length / 2),
+  };
 }
 
 /** Keep the floating dock attached to the near rim, below the fan's pick area. */
@@ -96,60 +116,27 @@ export function getReadingDockAnchor(camera, viewport, fanPoses, controlsHeight,
 }
 
 /**
- * Reading uses a true perspective camera, including its native ray casting.
- * The reset choreography retains its exact original orthographic endpoint.
- * A native perspective dolly/long-lens transition approaches that endpoint,
- * keeping physical-material view directions consistent with the actual lens.
- * The caller still keeps reset picking disabled as in the existing reader.
+ * Reading and reset share one physical perspective camera and lens. Reset
+ * progress never changes projection or silently moves to another viewpoint.
+ * The controller owns chosen angles/zoom and may ease zoom alone before reset.
  */
 export function createReadingProjection({ padding = DEFAULT_READING_PADDING } = {}) {
   const perspective = new THREE.PerspectiveCamera(READING_FOV, 1, 0.1, 100);
-  const orthographic = new THREE.OrthographicCamera(-6.4, 6.4, 3.8, -3.8, 0.1, 100);
-  const transition = new THREE.PerspectiveCamera(READING_FOV, 1, 0.1, 100);
-  let camera = perspective;
 
   return {
-    get camera() { return camera; },
-    update(view = DEFAULT_VIEW, viewport, shuffleFraming = 0) {
+    get camera() { return perspective; },
+    update(view = DEFAULT_VIEW, viewport) {
       const frame = getReadingPerspectiveFrame(view, viewport, padding);
-      const t = Number.isFinite(shuffleFraming) ? Math.max(0, Math.min(1, shuffleFraming)) : 0;
       perspective.aspect = frame.aspect; perspective.zoom = frame.view.zoom;
       perspective.near = frame.near; perspective.far = frame.far;
-      pointCamera(perspective, frame.position);
+      pointCamera(perspective, frame.position, frame.up);
       perspective.updateProjectionMatrix();
       // Shift the optical center up from the bottom dock without tilting or
       // moving the table. Native PerspectiveCamera unprojection still applies.
       perspective.projectionMatrix.elements[8] = -frame.centerX;
       perspective.projectionMatrix.elements[9] = -frame.centerY;
       perspective.projectionMatrixInverse.copy(perspective.projectionMatrix).invert();
-      if (t === 0) { camera = perspective; return camera; }
-
-      const shuffle = fitViewSize(frame.aspect), original = getViewPosition(frame.view);
-      orthographic.left = -shuffle.width / 2; orthographic.right = shuffle.width / 2;
-      orthographic.top = shuffle.height / 2; orthographic.bottom = -shuffle.height / 2;
-      orthographic.zoom = frame.view.zoom;
-      pointCamera(orthographic, new THREE.Vector3(original.x, original.y, original.z));
-      orthographic.updateProjectionMatrix();
-      if (t === 1) { camera = orthographic; return camera; }
-
-      // Approach parallel projection by moving away while narrowing the lens.
-      // Keep a finite ceiling to avoid floating-point depth loss. At the ceiling
-      // the endpoint's residual perspective is below one desktop pixel; switching
-      // to the exact original ortho camera also restores its original clip range.
-      const distance = Math.min(6000, frame.distance / (1 - t));
-      const direction = frame.position.clone().sub(target).normalize();
-      const position = target.clone().addScaledVector(direction, distance);
-      const halfHeight = frame.distance * Math.tan(READING_FOV * Math.PI / 360) * (1 - t) + shuffle.height / 2 * t;
-      transition.fov = 2 * Math.atan(halfHeight / distance) * 180 / Math.PI;
-      transition.near = Math.max(0.1, distance - 40); transition.far = distance + 40;
-      transition.aspect = frame.aspect; transition.zoom = frame.view.zoom;
-      pointCamera(transition, position);
-      transition.updateProjectionMatrix();
-      transition.projectionMatrix.elements[8] = -frame.centerX * (1 - t);
-      transition.projectionMatrix.elements[9] = -frame.centerY * (1 - t);
-      transition.projectionMatrixInverse.copy(transition.projectionMatrix).invert();
-      camera = transition;
-      return camera;
+      return perspective;
     },
   };
 }

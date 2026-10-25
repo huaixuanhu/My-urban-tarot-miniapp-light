@@ -47,7 +47,6 @@ const loadFace = createCardLoader(async id => {
 });
 const hoverOffsets = ids.map(() => ({ x: 0, y: 0 }));
 let previousFrameTime = 0, view = { ...DEFAULT_VIEW }, viewDrag = null, viewTransition = null, zoomTarget = 1;
-let shuffleFraming = 0;
 const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2(), tablePlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.05);
 const SETTLE_MS = 520;
 
@@ -146,9 +145,9 @@ function frame(now) {
   previousFrameTime = now;
   if (viewTransition) {
     const u = clamp((now - viewTransition.started) / 320, 0, 1), t = smooth(u);
-    shuffleFraming = viewTransition.frameFrom + (viewTransition.frameTo - viewTransition.frameFrom) * t;
-    applyView({ zoom: viewTransition.from.zoom + (1 - viewTransition.from.zoom) * t, yaw: viewTransition.from.yaw * (1 - t), elevation: viewTransition.from.elevation + (DEFAULT_VIEW.elevation - viewTransition.from.elevation) * t });
-    if (u === 1) { viewTransition = null; applyView(DEFAULT_VIEW); if (reset) reset.lastTime = now; updateUI(); }
+    const { from, to } = viewTransition;
+    applyView(Object.fromEntries(['zoom', 'yaw', 'elevation'].map(key => [key, from[key] + (to[key] - from[key]) * t])));
+    if (u === 1) { viewTransition = null; applyView(to); if (reset) reset.lastTime = now; updateUI(); }
     else animating = true;
   }
   if (!viewTransition && !reset && Math.abs(view.zoom - zoomTarget) > 0) {
@@ -157,15 +156,11 @@ function frame(now) {
     if (next !== zoomTarget) animating = true;
   }
   if (reset) {
-    // The accepted shuffle starts only after its original framing is restored.
+    // Zoom out enough for the shuffle while retaining the chosen viewing direction.
     if (viewTransition) reset.lastTime = now;
     reset.elapsed += Math.max(0, now - reset.lastTime); reset.lastTime = now;
     if (reset.elapsed >= RESET_DURATION_MS + SETTLE_MS) finishReset();
     else {
-      if (reset.elapsed > RESET_DURATION_MS) {
-        shuffleFraming = 1 - smooth((reset.elapsed - RESET_DURATION_MS) / SETTLE_MS);
-        updateProjection();
-      }
       animating = true;
     }
   }
@@ -247,13 +242,13 @@ function beginReset() {
   reset = { elapsed: 0, lastTime: performance.now(), run: createReadingReset({ seed, order, snapshot, deckIds: reading.order.filter(id => !reading.placed[id]) }), next: freshReading(order) };
   reset.nextFan = createReadingFan(reset.next.order);
   flips.clear();
-  homeView();
+  transitionView({ ...view, zoom: 1 });
   if ($('reduce').checked) finishReset();
   updateUI(); invalidate();
 }
 function finishReset() {
   if (!reset) return;
-  viewTransition = null; zoomTarget = 1; shuffleFraming = 0; applyView(DEFAULT_VIEW);
+  viewTransition = null; zoomTarget = 1; applyView({ ...view, zoom: 1 });
   reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
   updateOverlayAnchor();
   hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
@@ -375,7 +370,7 @@ function placeFocused() {
 }
 function updateProjection() {
   const box = $('scene').getBoundingClientRect();
-  camera = projection.update(view, { width: box.width, height: box.height }, shuffleFraming);
+  camera = projection.update(view, { width: box.width, height: box.height });
   updateOverlayAnchor();
 }
 function updateOverlayAnchor(force = false) {
@@ -391,12 +386,17 @@ function applyView(next) {
   view = clampView(next);
   updateProjection(); invalidate();
 }
-function homeView() {
-  cancelDrag(); hoverId = null; lastTap = null; zoomTarget = 1;
-  const frameTo = reset ? 1 : 0;
-  if ($('reduce').checked || (isDefaultView(view) && shuffleFraming === frameTo)) { viewTransition = null; shuffleFraming = frameTo; applyView(DEFAULT_VIEW); }
-  else viewTransition = { from: { ...view }, frameFrom: shuffleFraming, frameTo, started: performance.now() };
+function transitionView(target) {
+  const to = clampView(target);
+  zoomTarget = to.zoom;
+  if ($('reduce').checked || ['zoom', 'yaw', 'elevation'].every(key => Math.abs(view[key] - to[key]) < 0.00001)) {
+    viewTransition = null; applyView(to);
+  } else viewTransition = { from: { ...view }, to, started: performance.now() };
   updateUI(); invalidate();
+}
+function homeView() {
+  cancelDrag(); hoverId = null; lastTap = null;
+  transitionView(DEFAULT_VIEW);
 }
 function updateViewDrag(event) {
   const dx = event.clientX - viewDrag.startX, dy = event.clientY - viewDrag.startY;
@@ -495,7 +495,7 @@ $('skip').addEventListener('click', finishReset);
 $('previous').addEventListener('click', () => stepDeck(-1));
 $('next').addEventListener('click', () => stepDeck(1));
 $('place').addEventListener('click', placeFocused);
-$('reduce').addEventListener('change', () => { if ($('reduce').checked) { if (viewTransition) { viewTransition = null; zoomTarget = 1; applyView(DEFAULT_VIEW); } else applyView({ ...view, zoom: zoomTarget }); flips.clear(); if (reset) finishReset(); updateUI(); invalidate(); } });
+$('reduce').addEventListener('change', () => { if ($('reduce').checked) { if (viewTransition) { const target = viewTransition.to; viewTransition = null; zoomTarget = target.zoom; applyView(target); } else applyView({ ...view, zoom: zoomTarget }); flips.clear(); if (reset) finishReset(); updateUI(); invalidate(); } });
 $('retry').addEventListener('click', () => location.reload());
 const floatingDisclosures = ['reader-details', 'table-tools', 'drawn-cards'].map($);
 for (const disclosure of floatingDisclosures) disclosure.addEventListener('toggle', () => {
