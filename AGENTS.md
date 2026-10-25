@@ -22,3 +22,5 @@ Generated/adapted from human-ai-governance v0.8.4
 Governance root: this repository. Coverage: all project files. Working tier: Tier 3 for the private hosted app and its access configuration; no financial or external-account execution authority. Browser gameplay has no verified cloud persistence. Protect production access independently of local gameplay.
 
 The subsequent request to batch substantial UI changes authorizes bounded local UI commits after verification. Keep the glass/floating UI batch and the perspective correction reviewable as separate local commits. No push or deployment is authorized.
+
+The latest request accepts trial 07 at 55fbfc91 as local checkpoint 4 and authorizes stage2.4.6 top-down/projection, reference-based card backs and physical glass controls. Follow STATE.md; preserve original faces, state and access protections.

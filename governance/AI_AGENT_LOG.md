@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-25 — checkpoint 4 acceptance
+
+Executor: Codex (GPT-6). Verified HEAD55fbfc91 and only the 65 original dirty/generated files. Recorded explicit user acceptance of trial 07 and the new bounded stage2.4.6 authority. Existing 98-test/runtime evidence remains applicable to unchanged product source; refreshed the aggregate gate. No product edit, push or deployment in this checkpoint.
+
+
 ## 2026-10-25 — trial 07 perspective refinement, second local batch
 
 Executor: Codex (GPT-6), with a bounded projection implementation agent and independent read-only reviewer. Committed the first glass/floating batch as 97d40218 under explicit batch-commit authority. Added a native perspective camera, safe overview framing, stable fan-aware dock anchor and exact old reset endpoint through a perspective lens transition. Actual GPU/interaction verification and final checks are recorded in STATE.md and the existing evidence document; the commit carrying this entry records the second batch. No source-deck, access configuration, push/deployment or deferred flow work.

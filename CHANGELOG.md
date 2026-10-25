@@ -1,5 +1,10 @@
 # Change history
 
+## 2026-10-25 — local checkpoint 4
+
+Recorded user acceptance of trial 07 at 55fbfc91 before the next camera/back/control refinements. Product code was already committed in two local batches; this checkpoint is an acceptance record only.
+
+
 ## 2026-10-25 — reading perspective and table-edge controls
 
 Corrected the low-angle depth impression by adding genuine perspective with safe overview framing. Kept native ray picking, existing zoom/orbit bounds and the exact original shuffle-camera endpoint. Floating controls now follow the near table edge, freeze while utilities are open and retain source-fan clearance.

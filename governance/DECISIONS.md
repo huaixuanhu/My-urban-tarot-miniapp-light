@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-10-25 — trial 07 checkpoint and next local refinement
+
+The user accepts the current trial as a checkpoint, while explicitly requesting further changes to elevation/reset projection, card backs and a table-mounted glass control block. Preserve 55fbfc91 as the product baseline. Acceptance does not freeze its camera transition or materials against the specifically requested changes. Local batch commits remain permitted; no push/deployment.
+
+
 ## 2026-10-25 — real reading depth with retained shuffle framing
 
 Source: explicit low-angle perspective feedback. The old orthographic camera gave equal-size objects no distance scaling; there was no source evidence of an inverse projection. Add native perspective for reading, and approach the original orthographic shuffle camera with a continuous dolly/long-lens transition so glass view vectors stay coherent. Reuse physical bounds, identity, reversal, motion and zoom/orbit limits. Anchor the dock to the projected near edge, clearing all original fan slots so card selection/removal cannot move the permanent targets. First local UI batch is 97d40218; this second batch remains local-only.
