@@ -208,6 +208,26 @@ Lens batch committed locally as `5db4c7bd`. Local candidate: a narrower optical 
 
 Implemented local candidate: cottage-derived oak/window/curtain/sofa geometry and curved leaves, with a newly authored low stone dish/pebbles. The original cottage remains unchanged. A bounded room-only linear render/blur pass is cached by camera, size and theme; cards remain in the unchanged foreground color path. The opaque table backing is removed, with bounded card-contact shadows and soft displaced floor shadow/light accents below the floating glass. First rendered review removed a tall prop support and softened the floor/window contrast. 117 study tests and eight room GPU cases passed; these complement the eight lens GPU cases. Native browser checks exercised drag-three/place/side-reveal/original meanings, day/night identity preservation, low-angle/exact-overhead views and full reset. Both prototype build entries and pnpm check:all passed, including 15 access tests. Final screenshots and evidence limits are recorded in docs/design/stage2.4.10/README.md. Source provenance is bounded by cottage-source.md there. This is a local visual candidate; no claim of exact reference-image optics, formal phone usability or measured performance. All inherited gameplay/access boundaries remain.
 
+#### stage2.4.11 — local checkpoint 7
+
+Source: the user's 2026-10-26 request to save the current version before fixing daylight table visibility, cottage fidelity and camera freedom. Product baseline `076d1d12` is already committed. This checkpoint is a recoverable trial 10 baseline, not acceptance of the criticized room fidelity or glass visibility. The receipt is the commit carrying this entry. Existing 117-test/16-GPU-case/browser evidence remains applicable to unchanged product code; preserve all65 old generated-file changes. No push/deployment.
+
+#### stage2.4.12 — daylight visibility, faithful cottage and freer camera
+
+Source: the same request. Local work and verified batch commits are authorized. Improve day-mode glass edge/height cues without obscuring original card art. Replace the loosely reconstructed room with the actual cottage modeling as faithfully as feasible, preserving source geometry/proportions/material detail instead of inventing another simplified room. Inspect the source scene and actual rendered view, choose a concrete table anchor and record exact reused/excluded elements; the cottage itself remains read-only. Allow wider camera exploration with an always-visible one-action return to the default reading view. Keep card identity/orientation, original artwork, accepted shuffle/reveal and access protection. No question/record/history work, push or deployment is authorized.
+
+##### stage2.4.12.1 — legible daylight glass
+
+Strengthen selective edge reflection, thickness/underside separation and soft cast shadow against the light floor, retaining a clear central playing surface. Check both themes, low angle and overhead without changing the footprint or cards.
+
+##### stage2.4.12.2 — actual cottage scene
+
+Inspect the canonical full scene components/assets and use direct geometry extraction or a faithful source-preserving snapshot where practical. Preserve source proportions and recognizable objects. Avoid importing application gates/navigation, secrets or private source photos. Record source revision, adaptation boundary, room/table alignment and actual rendered comparison. Do not claim full-room fidelity from a handful of similar props.
+
+##### stage2.4.12.3 — freer recoverable view
+
+Expand camera direction/elevation/zoom under the user's explicit request and add a visible 回正 action outside the hidden tool menu. Keep a stable overhead pole and keep the camera above the tabletop. Bounds must be chosen with the actual room placement to avoid wall penetration and preserve card picking; verify drag/wheel/keyboard, low-angle/side-view reset and one-action recovery.
+
 ### stage2.5 — full flow and local continuity
 
 Deferred until the UI redesign is reviewed. This receives the unimplemented question/reflection/record/revisit work previously discussed in stage2.3.2. Exact spread semantics, local-record ownership, storage/recovery behavior and source-content translation remain to be aligned. AI and cross-device synchronization stay deferred. No implementation authority is inferred.

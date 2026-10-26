@@ -187,3 +187,7 @@ Executing host: Codex; model: GPT-6. Completed stage2.4.10.1 lens-only batch aft
 ## 2026-10-26 — cottage environment local batch
 
 Executing host: Codex; model: GPT-6. Completed stage2.4.10.2 room environment candidate after checkpoint 47b67ea4 and lens batch 5db4c7bd. Read actual cottage sources; source repo remains clean at e71fe3fa. Added room-only linear blur/cache, clear foreground and original artwork, floor relationship and restrained props. 117 study tests and eight actual room GPU cases passed; independent source review found no functional blocker. Native draw-three/reveal/meaning/theme/orbit/overhead/reset checks passed in observed desktop states. One tool wait deadline expired during normal reset; subsequent state confirmed completion and no console errors. Evidence and remaining visual/performance limits are in docs/design/stage2.4.10/README.md. No push/deployment.
+
+## 2026-10-26 — checkpoint 7
+
+Executing host: Codex; model: GPT-6. Verified product HEAD076d1d12 and65 prior generated-file changes. Recorded user-requested checkpoint7 before product edits. Prior117-test/16-GPU-case evidence applies to unchanged code; rerunning aggregate gate. Next current scope is STATE.md stage2.4.12. No push/deployment.

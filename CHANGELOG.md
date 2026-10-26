@@ -90,3 +90,7 @@ Refine local trial 10 control lens: clearer center, narrow optical edge, warm/vi
 ## 2026-10-26 — cottage environment local batch
 
 Local trial 10 adds a blurred cottage-derived room beneath the floating clear-glass table: pale oak, windows, curtains, restrained foliage, low stone dish and static light/shadow accents. Original card artwork, free placement, camera bounds and accepted shuffle/reveal behavior remain unchanged.
+
+## 2026-10-26 — checkpoint 7
+
+Record recoverable trial10 checkpoint7 before the requested glassvisibility, cottagefidelity and camera refinements.
