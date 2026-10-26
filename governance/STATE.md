@@ -228,6 +228,8 @@ Inspect the canonical full scene components/assets and use direct geometry extra
 
 Expand camera direction/elevation/zoom under the user's explicit request and add a visible 回正 action outside the hidden tool menu. Keep a stable overhead pole and keep the camera above the tabletop. Bounds must be chosen with the actual room placement to avoid wall penetration and preserve card picking; verify drag/wheel/keyboard, low-angle/side-view reset and one-action recovery.
 
+Camera batch implemented locally: full horizontal orbit with continuous wrapping, elevation12–90 degrees, optical zoom65–220%, and an always-visible 回正 button beside appearance. Card gestures retain priority. The118 existing/focused study tests passed before room integration; room placement and low-angle wall checks continue in stage2.4.12.2. This batch has no shuffle, card-content or access change.
+
 ### stage2.5 — full flow and local continuity
 
 Deferred until the UI redesign is reviewed. This receives the unimplemented question/reflection/record/revisit work previously discussed in stage2.3.2. Exact spread semantics, local-record ownership, storage/recovery behavior and source-content translation remain to be aligned. AI and cross-device synchronization stay deferred. No implementation authority is inferred.

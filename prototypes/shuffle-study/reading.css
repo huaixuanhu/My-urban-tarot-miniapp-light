@@ -65,6 +65,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .masthead { position: fixed; z-index: 4; top: 27px; left: 3.4%; right: 3.4%; display: flex; align-items: center; justify-content: space-between; gap: 20px; pointer-events: none; }
 .wordmark { color: var(--ink); display: flex; align-items: center; gap: 13px; font: 18px Georgia,serif; letter-spacing: .28em; text-decoration: none; pointer-events: auto; text-shadow: 0 1px 8px var(--text-halo); }
 .wordmark > span { font: 29px Georgia,serif; color: var(--muted); letter-spacing: 0; }
+.view-and-appearance { display: flex; align-items: center; gap: 12px; }
+.view-home { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 76px; padding: 9px 12px; border: 1px solid var(--glass-edge); border-radius: 22px; background: linear-gradient(145deg,var(--glass-top),var(--glass-bottom)); box-shadow: inset 0 1px 1px var(--inset),0 3px 15px var(--glass-shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); pointer-events: auto; white-space: nowrap; }
+.view-home svg { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; }
+.view-home:disabled { opacity: .6; }
 .appearance-control { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; pointer-events: auto; }
 .appearance-control > span { text-shadow: 0 1px 7px var(--text-halo); }
 .appearance-control select { color: var(--ink); background: linear-gradient(145deg,var(--glass-top),var(--glass-bottom)); border: 1px solid var(--glass-edge); border-radius: 22px; padding: 9px 13px; min-height: 38px; font-size: 11px; cursor: pointer; box-shadow: inset 0 1px 1px var(--inset),0 3px 15px var(--glass-shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
@@ -169,6 +173,8 @@ footer a:hover { text-decoration: underline; }
   .masthead { top: 17px; left: 5%; right: 5%; gap: 12px; }
   .wordmark { font-size: 13px; letter-spacing: .15em; gap: 7px; }
   .wordmark > span { font-size: 24px; }
+  .view-and-appearance { gap: 6px; }
+  .view-home { min-width: 61px; min-height: 34px; padding: 7px 8px; gap: 5px; font-size: 10px; }
   .appearance-control > span { display: none; }
   .appearance-control select { font-size: 10px; padding: 7px 9px; min-height: 34px; }
   .invitation { top: 78px; left: 5%; }

@@ -1,4 +1,4 @@
-/** Bounded reading-table camera; angles are radians and drag distances pixels. */
+/** Recoverable reading-table camera; angles are radians and drag distances pixels. */
 import { READING_ENVELOPE } from './reading-layout.mjs';
 const radians = degrees => degrees * Math.PI / 180;
 const RADIUS = Math.hypot(10.4, 11.4);
@@ -8,16 +8,24 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export const VIEW_TARGET = Object.freeze({ x: 0, y: 0.1, z: 0.3 });
 export const DEFAULT_VIEW = Object.freeze({ yaw: 0, elevation: Math.atan2(10.4, 11.4), zoom: 1 });
-export const ZOOM_LIMITS = Object.freeze({ min: 0.75, max: 1.8 });
+export const ZOOM_LIMITS = Object.freeze({ min: 0.65, max: 2.2 });
 export const VIEW_LIMITS = Object.freeze({
-  yaw: Object.freeze({ min: radians(-18), max: radians(18) }),
-  elevation: Object.freeze({ min: radians(34), max: Math.PI / 2 }),
+  // Yaw wraps through the seam instead of stopping at either end.
+  yaw: Object.freeze({ min: -Math.PI, max: Math.PI }),
+  elevation: Object.freeze({ min: radians(12), max: Math.PI / 2 }),
 });
+
+function wrapYaw(value) {
+  const angle = finiteOr(value, DEFAULT_VIEW.yaw) % (Math.PI * 2);
+  if (angle >= Math.PI) return angle - Math.PI * 2;
+  if (angle < -Math.PI) return angle + Math.PI * 2;
+  return angle === 0 ? 0 : angle;
+}
 
 export function clampView(view = DEFAULT_VIEW) {
   return {
     zoom: clamp(finiteOr(view?.zoom, 1), ZOOM_LIMITS.min, ZOOM_LIMITS.max),
-    yaw: clamp(finiteOr(view?.yaw, DEFAULT_VIEW.yaw), VIEW_LIMITS.yaw.min, VIEW_LIMITS.yaw.max),
+    yaw: wrapYaw(view?.yaw),
     elevation: clamp(finiteOr(view?.elevation, DEFAULT_VIEW.elevation), VIEW_LIMITS.elevation.min, VIEW_LIMITS.elevation.max),
   };
 }

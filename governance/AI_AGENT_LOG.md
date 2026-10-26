@@ -191,3 +191,7 @@ Executing host: Codex; model: GPT-6. Completed stage2.4.10.2 room environment ca
 ## 2026-10-26 — checkpoint 7
 
 Executing host: Codex; model: GPT-6. Verified product HEAD076d1d12 and65 prior generated-file changes. Recorded user-requested checkpoint7 before product edits. Prior117-test/16-GPU-case evidence applies to unchanged code; rerunning aggregate gate. Next current scope is STATE.md stage2.4.12. No push/deployment.
+
+## 2026-10-26 — stage2.4.12.3 camera batch
+
+Executing host: Codex; model: GPT-6. After checkpoint1dc33e53, completed the bounded wider-camera/visible-home batch.118 study tests passed and native browser observed low-angle orbit plus visible recovery. Actual-room camera containment is checked in the following room batch. No push/deployment.

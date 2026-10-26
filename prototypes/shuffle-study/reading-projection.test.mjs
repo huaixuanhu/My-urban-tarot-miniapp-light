@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { DEFAULT_VIEW, VIEW_LIMITS } from './reading-view.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, ZOOM_LIMITS } from './reading-view.mjs';
 import { createReadingProjection, getReadingPerspectiveFrame, projectReadingPlane, READING_PROJECTION_VOLUMES, DEFAULT_READING_PADDING } from './reading-projection.mjs';
 import { createReadingFan } from './reading-fan.mjs';
 import { pickFan } from './reading-picking.mjs';
@@ -29,9 +29,9 @@ test('low-angle reading has genuine near-larger perspective, without reversing p
 test('glass and elevated cards fit the safe viewport at all accepted orbit extremes', () => {
   const projection = createReadingProjection();
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 1024, height: 768 }, { width: 760, height: 900 }, { width: 390, height: 700 }, { width: 2200, height: 800 }]) {
-    for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
       for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, VIEW_LIMITS.elevation.max]) {
-        for (const zoom of [0.75, 1]) {
+        for (const zoom of [ZOOM_LIMITS.min, 1]) {
           const view = { yaw, elevation, zoom };
           const frame = getReadingPerspectiveFrame(view, viewport), camera = projection.update(view, viewport);
           for (const b of READING_PROJECTION_VOLUMES) for (const x of [b.minX, b.maxX]) for (const y of [b.minY, b.maxY]) for (const z of [b.minZ, b.maxZ]) {
@@ -52,16 +52,16 @@ test('optical zoom retains camera position and is bounded by the existing view c
   const before = widths(camera);
   projection.update({ ...DEFAULT_VIEW, zoom: 999 }, viewport);
   assert.deepEqual(camera.position.toArray(), position.toArray());
-  near(camera.zoom, 1.8);
-  near(widths(camera).near / before.near, 1.8);
+  near(camera.zoom, ZOOM_LIMITS.max);
+  near(widths(camera).near / before.near, ZOOM_LIMITS.max);
   projection.update({ ...DEFAULT_VIEW, zoom: -999 }, viewport);
-  near(camera.zoom, 0.75);
+  near(camera.zoom, ZOOM_LIMITS.min);
 });
 
 test('exact90 flat cards remain rectangles with their actual aspect ratio at every yaw', () => {
   const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };
   const vector = (a, b) => new THREE.Vector2(b.x - a.x, b.y - a.y);
-  for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+  for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
     const camera = projection.update({ ...DEFAULT_VIEW, yaw, elevation: Math.PI / 2 }, viewport);
     const direction = camera.getWorldDirection(new THREE.Vector3());
     near(direction.x, 0); near(direction.y, -1); near(direction.z, 0);
@@ -79,7 +79,7 @@ test('exact90 flat cards remain rectangles with their actual aspect ratio at eve
 
 test('camera orientation approaches exact90 continuously without a pole flip', () => {
   const projection = createReadingProjection(), viewport = { width: 1440, height: 1000 };
-  for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+  for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
     const before = project(projection.update({ ...DEFAULT_VIEW, yaw, elevation: Math.PI / 2 - 1e-7 }, viewport), 4, 0.08, 2);
     const after = project(projection.update({ ...DEFAULT_VIEW, yaw, elevation: Math.PI / 2 }, viewport), 4, 0.08, 2);
     const pixelDelta = Math.hypot((before.x - after.x) * viewport.width / 2, (before.y - after.y) * viewport.height / 2);
@@ -117,9 +117,9 @@ test('native rays and all fan IDs stay correct through exact90 and both zoom lim
     return raycaster.ray;
   };
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 760, height: 900 }]) {
-    for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
       for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2 - 1e-7, Math.PI / 2]) {
-        for (const zoom of [0.75, 1, 1.8]) {
+        for (const zoom of [ZOOM_LIMITS.min, 1, ZOOM_LIMITS.max]) {
           const camera = projection.update({ yaw, elevation, zoom }, viewport);
           const original = new THREE.Vector3(1.4, 0.05, -0.8);
           const hit = rayThrough(camera, original).intersectPlane(plane, new THREE.Vector3());
@@ -150,7 +150,7 @@ test('actual glass and physical dock geometry plus labels remain visible at over
   const point = new THREE.Vector3();
   for (const viewport of [{ width: 1280, height: 720 }, { width: 1440, height: 1000 }, { width: 760, height: 900 }]) {
     for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, Math.PI / 2]) {
-      for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+      for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
         const camera = projection.update({ ...DEFAULT_VIEW, elevation, yaw }, viewport);
         for (const [geometry, x, z] of [[glass, 0, 0], [dock, READING_DOCK.x, READING_DOCK.z]]) {
           const positions = geometry.attributes.position;

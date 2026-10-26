@@ -18,7 +18,10 @@
 <body>
   <header class="masthead">
     <a href="./reading.html" class="wordmark"><span aria-hidden="true">✧</span> AUGURWELL</a>
-    <label class="appearance-control" for="appearance"><span>外观</span><select id="appearance" aria-label="外观模式"><option value="system">跟随系统</option><option value="light">日间</option><option value="dark">夜间</option></select></label>
+    <div class="view-and-appearance">
+      <button id="view-home" class="view-home" title="恢复默认视角和缩放" disabled><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="10" cy="10" r="5.5"/><path d="M10 1.5v4M10 14.5v4M1.5 10h4M14.5 10h4"/></svg><span>回正</span></button>
+      <label class="appearance-control" for="appearance"><span>外观</span><select id="appearance" aria-label="外观模式"><option value="system">跟随系统</option><option value="light">日间</option><option value="dark">夜间</option></select></label>
+    </div>
   </header>
   <main class="reading-workspace">
     <section class="table" id="table" aria-label="自由摆牌桌">
@@ -28,7 +31,7 @@
       <div id="deck-hint" class="deck-hint" aria-live="polite">沿牌带慢慢挑选</div>
       <div id="reset-message" class="reset-message" hidden><span>收起这一刻，再开始。</span><button id="skip">跳过动作</button></div>
       <div id="loading" class="cover">正在准备牌桌…</div>
-      <div id="failure" class="cover" hidden><h2>这次没能打开三维牌桌</h2><p>请启用浏览器的图形加速后重试。</p><button id="retry">重新打开</button></div>
+      <div id="failure" class="cover" hidden><h2>这次没能打开牌桌</h2><p>牌桌或房间未能载入。请重试；若仍无法打开，请检查本地服务和浏览器的图形加速。</p><button id="retry">重新打开</button></div>
     </section>
 
     <section class="controls" aria-label="牌桌操作">
@@ -50,7 +53,7 @@
           <div class="tool-group"><span class="tool-heading">桌上</span><button id="drawn-toggle" aria-expanded="false" aria-controls="drawn-cards">查看已抽牌</button></div>
           <div class="tool-group"><span class="tool-heading">挑牌</span><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">放到桌面</button></div></div>
           <div class="tool-group"><span class="tool-heading">摆放</span><div class="table-actions"><button id="return" disabled>放回</button><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button></div></div>
-          <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><button id="view-home" disabled>恢复视角</button><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
+          <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
           <p class="tool-help">空白拖动调整视角 · 滚轮或加减键缩放 · Esc 收起</p>
         </div>
       </details>

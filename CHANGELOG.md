@@ -94,3 +94,7 @@ Local trial 10 adds a blurred cottage-derived room beneath the floating clear-gl
 ## 2026-10-26 — checkpoint 7
 
 Record recoverable trial10 checkpoint7 before the requested glassvisibility, cottagefidelity and camera refinements.
+
+## 2026-10-26 — stage2.4.12.3 camera batch
+
+Expanded horizontal orbit, elevation12–90 degrees and zoom65–220%; moved 回正 beside appearance. Preserved card actions and accepted motion. Local batch only.

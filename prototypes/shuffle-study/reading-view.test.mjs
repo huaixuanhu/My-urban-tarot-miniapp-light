@@ -24,23 +24,44 @@ test('table grabbing uses documented directions without mutating pointer-down st
   assert.deepEqual(dragView(start, 0, 0), DEFAULT_VIEW);
 });
 
-test('large drags and absolute view inputs respect both angular limits', () => {
-  near(VIEW_LIMITS.yaw.min, -18 * Math.PI / 180);
-  near(VIEW_LIMITS.yaw.max, 18 * Math.PI / 180);
-  near(VIEW_LIMITS.elevation.min, 34 * Math.PI / 180);
+test('orbit wraps through full turns while elevation stays above the table', () => {
+  near(VIEW_LIMITS.yaw.min, -Math.PI);
+  near(VIEW_LIMITS.yaw.max, Math.PI);
+  near(VIEW_LIMITS.elevation.min, 12 * Math.PI / 180);
   near(VIEW_LIMITS.elevation.max, Math.PI / 2);
-  assert.deepEqual(dragView(DEFAULT_VIEW, 1e8, 1e8), { zoom: 1, yaw: VIEW_LIMITS.yaw.min, elevation: VIEW_LIMITS.elevation.max });
-  assert.deepEqual(dragView(DEFAULT_VIEW, -1e8, -1e8), { zoom: 1, yaw: VIEW_LIMITS.yaw.max, elevation: VIEW_LIMITS.elevation.min });
-  assert.deepEqual(clampView({ yaw: 100, elevation: -100 }), { zoom: 1, yaw: VIEW_LIMITS.yaw.max, elevation: VIEW_LIMITS.elevation.min });
+  for (const dx of [-1e8, -5000, -1500, 0, 1500, 5000, 1e8]) {
+    const high = dragView(DEFAULT_VIEW, dx, 1e8), low = dragView(DEFAULT_VIEW, dx, -1e8);
+    assert.ok(high.yaw >= -Math.PI && high.yaw < Math.PI);
+    assert.equal(high.elevation, Math.PI / 2);
+    assert.equal(low.elevation, VIEW_LIMITS.elevation.min);
+    near(high.yaw, low.yaw);
+  }
+  for (const angle of [-1.2, 0, 2.4]) for (const turns of [-100, -2, 1, 100]) {
+    near(clampView({ yaw: angle + turns * Math.PI * 2 }).yaw, angle);
+  }
+  assert.equal(isDefaultView({ ...DEFAULT_VIEW, yaw: 2 * Math.PI }), true);
+  assert.equal(clampView({ yaw: Math.PI }).yaw, -Math.PI);
+});
+
+test('crossing the rear seam keeps the rendered camera direction continuous', () => {
+  const epsilon = 0.00001;
+  const start = { ...DEFAULT_VIEW, yaw: -Math.PI + epsilon };
+  const before = getViewBasis(start), moved = dragView(start, 2 * epsilon / .0025, 0);
+  assert.ok(moved.yaw > 0);
+  const after = getViewBasis(moved);
+  for (const axis of ['right', 'up', 'back']) {
+    const distance = Math.hypot(...['x', 'y', 'z'].map(key => before[axis][key] - after[axis][key]));
+    assert.ok(distance < epsilon * 2.1);
+  }
 });
 
 test('orbit positions preserve radius, remain above the table and mirror horizontally', () => {
   const radius = Math.hypot(10.4, 11.4);
   for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, VIEW_LIMITS.elevation.max]) {
-    for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
       const p = getViewPosition({ yaw, elevation });
       near(Math.hypot(p.x - VIEW_TARGET.x, p.y - VIEW_TARGET.y, p.z - VIEW_TARGET.z), radius);
-      assert.ok(p.y > VIEW_TARGET.y && p.z >= VIEW_TARGET.z);
+      assert.ok(p.y > VIEW_TARGET.y);
       const mirror = getViewPosition({ yaw: -yaw, elevation });
       near(p.x, -mirror.x); near(p.y, mirror.y); near(p.z, mirror.z);
     }
@@ -97,7 +118,7 @@ test('framing transitions stay bounded, reversible, and aspect-correct', () => {
 
 test('all conservative table-card corners fit at extreme views and aspect ratios', () => {
   for (const aspect of [0.5, 360 / 470, 1, 16 / 9, 2, 3]) {
-    for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+    for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
       for (const elevation of [VIEW_LIMITS.elevation.min, DEFAULT_VIEW.elevation, VIEW_LIMITS.elevation.max]) {
         const view = { yaw, elevation }, size = getViewSize(view, aspect);
         near(size.width / size.height, aspect);
@@ -134,7 +155,8 @@ test('wheel zoom is bounded and reversible away from the bounds', () => {
   assert.ok(wheelZoom(1, -100) > 1);
   assert.ok(wheelZoom(1, 100) < 1);
   near(wheelZoom(wheelZoom(1, -100), 100), 1);
-  near(wheelZoom(1, -1e8), ZOOM_LIMITS.max);
+  assert.ok(wheelZoom(1, -1e8) <= ZOOM_LIMITS.max);
+  near(wheelZoom(wheelZoom(1, -1e8), -1e8), ZOOM_LIMITS.max);
   near(wheelZoom(1, 1e8), ZOOM_LIMITS.min);
   near(wheelZoom(ZOOM_LIMITS.max, -100), ZOOM_LIMITS.max);
   near(wheelZoom(ZOOM_LIMITS.min, 100), ZOOM_LIMITS.min);
@@ -159,7 +181,7 @@ test('orbit preserves zoom, home distinguishes scale, and zoom does not alter ca
 
 
 test('the exact overhead pole retains yaw without an ambiguous world-up axis', () => {
-  for (const yaw of [VIEW_LIMITS.yaw.min, 0, VIEW_LIMITS.yaw.max]) {
+  for (const yaw of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI - 0.00001]) {
     const view = { yaw, elevation: Math.PI / 2 }, basis = getViewBasis(view), position = getViewPosition(view);
     assert.deepEqual(basis.back, { x: 0, y: 1, z: 0 });
     near(position.x, VIEW_TARGET.x); near(position.z, VIEW_TARGET.z);
