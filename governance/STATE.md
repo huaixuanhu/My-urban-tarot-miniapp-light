@@ -230,6 +230,22 @@ Expand camera direction/elevation/zoom under the user's explicit request and add
 
 Camera batch implemented locally: full horizontal orbit with continuous wrapping, elevation12–90 degrees, optical zoom65–220%, and an always-visible 回正 button beside appearance. Card gestures retain priority. The118 existing/focused study tests passed before room integration; the integrated122 tests include1,440 sampled camera positions inside original desktop room boundaries. This batch has no shuffle, card-content or access change.
 
+#### stage2.4.13 — local checkpoint 8
+
+Source: the user's latest2026-10-26 request to commit before removing floor cards, increasing room blur, fixing the pictured view/occlusion problem and clarifying glass. Product baseline eadc2961 is already locally committed. This receipt preserves trial11 as a recoverable checkpoint; the criticized visual issues are not approved. No additional product changes at entry;65 inherited generated-file changes remain protected. The checkpoint receipt is the commit carrying this entry.
+
+#### stage2.4.14 — room distraction, view composition and glass contrast
+
+Local implementation and verified batch commits are authorized by the same request and standing batch-commit instruction. First identify the actual furniture/camera/compositing failure shown in the supplied screenshot; check furniture clearance and foreground depth relationships, not only outer room bounds. Remove only the original decorative floor cards from the imported scene, preserving the actual interactive Urban Tarot deck and source cottage. Increase photographic background defocus while keeping the interactive cards and glass sharp. Raise glass edge/surface contrast in both themes without replacing the accepted transparent design. Preserve full-orbit/home intent where compatible with a clear usable table, original art/identity/reversal and accepted motion. No push/deployment, source-cottage edits or records/history work.
+
+##### stage2.4.14.1 — scene and view repair
+
+Reproduce the pictured room obstruction, identify source objects and causes, remove duplicate floor-card decor through a reproducible adaptation, and implement a coherent camera/occlusion repair with representative low/side/back and desktop-size checks.
+
+##### stage2.4.14.2 — focus and glass refinement
+
+Select and test a stronger room-only blur method, retain clean foreground color, strengthen glass thickness/edge/local reflection contrast and inspect day/night/overhead/low-angle states. Final acceptance remains with the user after a local preview.
+
 ### stage2.5 — full flow and local continuity
 
 Deferred until the UI redesign is reviewed. This receives the unimplemented question/reflection/record/revisit work previously discussed in stage2.3.2. Exact spread semantics, local-record ownership, storage/recovery behavior and source-content translation remain to be aligned. AI and cross-device synchronization stay deferred. No implementation authority is inferred.

@@ -30,3 +30,5 @@ The latest 2026-10-26 request accepts trial 09 at d3aaa4a8 as checkpoint 6 and a
 The latest request saves trial 10 at 076d1d12 as checkpoint 7 and authorizes stage2.4.12 daylight glass visibility, faithful cottage modeling and wider recoverable camera freedom. Existing local batch-commit authority continues; no push/deployment.
 
 The current local trial11 implements stage2.4.12 with verified original static cottage assets, clearer daylight glass and full horizontal orbit/visible 回正. Continue from STATE.md and docs/design/stage2.4.12/ evidence; user visual acceptance remains pending. Source cottage stays read-only, assets are local, and push/deployment remain unauthorized.
+
+The latest2026-10-26 feedback records trial11/eadc2961 as checkpoint8 and authorizes STATE.md stage2.4.14: remove imported floor-card decor, strengthen background defocus, repair pictured camera/occlusion behavior and clarify glass. Keep original cottage read-only and original gameplay/access protections. Verified local batch commits remain authorized; no push/deployment.

@@ -123,3 +123,7 @@ Record checkpoint 7 at unchanged trial10 product076d1d12. The user identifies in
 ## 2026-10-26 — stage2.4.12 source-faithful local room
 
 Authority: the user requested clearer daytime glass, substantially more faithful cottage modeling, freer view with one-action recovery, and a checkpoint before changes. Checkpoint7 is1dc33e53. Reuse unchanged static source components fromcottagee71fe3fa via a reproducible local GLB export; keep the cottage read-only and avoid its app/navigation/private configuration. Preserve original model proportions with one uniform transform; final table anchor(1.1,.9,0) and.14metres per gameplay unit keep sampled desktop cameras inside original boundaries. Retain static floor decor. Adapt room-only exposure/blur/shadows for the reading page and record the34.31MiB asset cost. Preserve Urban Tarot faces and accepted motion. Visual acceptance remains pending; no publication authority is implied.
+
+## 2026-10-26 — checkpoint 8 and scene repair authority
+
+Save existingeadc2961 before the bounded local correction. The latest request explicitly permits removal of original floor-card decor only in the imported Tarot scene, stronger room defocus, actual view/occlusion diagnosis and clearer glass. Source cottage remains read-only; no publication authority.

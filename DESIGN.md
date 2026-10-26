@@ -113,3 +113,7 @@ The accepted14.8×11.2 footprint and card plane remain. A slightly deeper downwa
 ### stage2.4.12.2 — original static cottage integration
 
 The manual trial10 room is replaced by a direct export of the original cottage's architecture, furniture, procedural textures and idle chairs. Preserve its complete static modeling, including floor cards, under one uniform transform. The final glass center maps to cottage(1.1,.9,0), with.14metres per gameplay unit; this supersedes the initial proposal in the export investigation. Room-only blur is1.25CSS pixels. Day retains source.95 exposure; night lowers room exposure to.24 for text contrast. The original room light palettes and warm reflection field remain; the original React soft-shadow patch is not copied. The new glass receives an additional restrained soft footprint on the rug. Floating reader text uses a small borderless light field, without a separate panel. Source art, accepted choreography and gameplay state remain unchanged. Source evidence and exclusions: docs/design/stage2.4.12/. Visual acceptance remains pending.
+
+## Checkpoint 8 and bounded visual repair
+
+Trial11/design revision18 at eadc2961 is a recoverable checkpoint requested by the user. Floor-card decor, insufficient room defocus, an obstructed camera view and insufficient glass contrast remain criticized. Follow STATE.md stage2.4.14 for the authorized local repair; this supersedes revision18's requirement to retain the decorative floor cards.
