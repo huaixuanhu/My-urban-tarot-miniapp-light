@@ -119,3 +119,7 @@ For stage2.4.10.2, adapt only cottage architecture/vegetation in plain Three.js.
 ## 2026-10-26 — checkpoint 7
 
 Record checkpoint 7 at unchanged trial10 product076d1d12. The user identifies insufficient dayglassvisibility and roomfidelity; those remain open. Next work must inspect and reuse actual cottage modeling, with freer camera and visible recovery under STATE.md stage2.4.12.
+
+## 2026-10-26 — stage2.4.12 source-faithful local room
+
+Authority: the user requested clearer daytime glass, substantially more faithful cottage modeling, freer view with one-action recovery, and a checkpoint before changes. Checkpoint7 is1dc33e53. Reuse unchanged static source components fromcottagee71fe3fa via a reproducible local GLB export; keep the cottage read-only and avoid its app/navigation/private configuration. Preserve original model proportions with one uniform transform; final table anchor(1.1,.9,0) and.14metres per gameplay unit keep sampled desktop cameras inside original boundaries. Retain static floor decor. Adapt room-only exposure/blur/shadows for the reading page and record the34.31MiB asset cost. Preserve Urban Tarot faces and accepted motion. Visual acceptance remains pending; no publication authority is implied.

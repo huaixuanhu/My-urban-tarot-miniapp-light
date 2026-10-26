@@ -36,7 +36,7 @@ let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
 let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass;
 let appearanceController;
-let scheduled = 0, failed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
+let scheduled = 0, failed = false, disposed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
 const flips = new Map(), currentPoses = new Map(), pendingReveals = new Map();
 let round = 0, readerFocusRequest = null;
@@ -149,7 +149,7 @@ function updateUI() {
 
 function frame(now) {
   scheduled = 0;
-  if (failed) return;
+  if (failed || !meshes) return;
   let animating = false;
   const elapsedFrame = Math.min(40, previousFrameTime ? now - previousFrameTime : 16);
   const hoverBlend = 1 - Math.exp(-elapsedFrame / 60);
@@ -219,7 +219,13 @@ function frame(now) {
     const pose = currentPoses.get(selected.id);
     outline.position.set(pose.x, pose.y + 0.024, pose.z);
   }
-  if (roomPass) { roomPass.render(camera); scene.background = roomPass.texture; }
+  if (roomPass) {
+    roomPass.render(camera); scene.background = roomPass.texture;
+    // Day retains the cottage's .95 exposure. Night lowers only the room's
+    // exposure for quiet contrast behind the light controls and original art.
+    // Background intensity precedes the single ACES pass.
+    scene.backgroundIntensity = (room.group.userData.appearance === 'dark' ? .24 : .95) / renderer.toneMappingExposure;
+  }
   if (screenGlass) screenGlass.render(scene, camera);
   else renderer.render(scene, camera);
   if (animating) invalidate();
@@ -441,24 +447,29 @@ function fit() {
   updateProjection(); updateControlBounds(); renderer.setSize(box.width, box.height); invalidate();
 }
 function fail(error) {
+  if (disposed) return;
   failed = true; cancelAnimationFrame(scheduled); scheduled = 0;
   $('loading').hidden = true; $('failure').hidden = false; updateUI();
   console.error('Augurwell local reading study:', error);
 }
 
+async function startReading() {
 try {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
   $('scene').append(renderer.domElement);
+  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); fail(new Error('Graphics context lost')); });
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label', '牌桌：拖出抽牌，拖动摆放，双击翻开；拖动空白处调整视角，滚轮拉近拉远，Shift 加方向键调视角，加减键缩放。也可打开牌桌工具逐张挑牌。');
   scene = new THREE.Scene(); scene.background = new THREE.Color(0x111815); scene.fog = new THREE.FogExp2(0x111815, 0.035);
   projection = createReadingProjection();
   applyView(DEFAULT_VIEW);
   sceneStyle = createReadingSceneStyle(scene, renderer, texture);
-  room = createReadingRoom(); scene.add(room.foreground);
+  room = await createReadingRoom(renderer);
+  if (disposed || failed) { room.dispose(); return; }
+  scene.add(room.foreground);
   roomPass = createReadingRoomPass(renderer, room.group);
   screenGlass = createScreenGlass(renderer);
   meshes = ids.map(id => { const mesh = new THREE.Mesh(createCardGeometry(), [...sceneStyle.materials]); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.id = id; scene.add(mesh); return mesh; });
@@ -473,7 +484,6 @@ try {
     if ((drag?.pointerId === event.pointerId || viewDrag?.pointerId === event.pointerId) && !renderer.domElement.hasPointerCapture(event.pointerId)) cancelDrag();
   });
   renderer.domElement.addEventListener('pointerleave', () => { if (!drag && !viewDrag) { hoverId = null; updateUI(); invalidate(); } });
-  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); fail(new Error('Graphics context lost')); });
   renderer.domElement.addEventListener('keydown', event => {
     if (!event.ctrlKey && !event.metaKey && ['+', '=', '-'].includes(event.key)) { event.preventDefault(); changeZoom(event.key === '-' ? 120 : -120); return; }
     if (event.shiftKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
@@ -549,5 +559,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { cancelAnimationFrame(scheduled); scheduled = 0; }
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { appearanceController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+}
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+startReading().catch(fail);
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

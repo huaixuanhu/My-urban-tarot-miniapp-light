@@ -43,6 +43,6 @@ Current local trial 09 replaces only trial 08’s button treatment. `reading-scr
 
 ## 2026-10-26 — cottage environment local batch
 
-Local trial 10 adds a curated, attributed environment from 萱敏小屋 without coupling application runtimes. reading-room.mjs owns room/prop geometry and paired materials; reading-room-pass.mjs blurs only the room and caches it by view/size/theme. The original cards render directly above the sampled background. Glass has no opaque backing. Source boundaries and actual evidence: docs/design/stage2.4.10/. The prototype remains local-only.
+Local trial11 directly reuses the original static 萱敏小屋 architecture, furniture and textures. reading-room.mjs loads verified day/night GLB assets (34.31MiB combined) independently of the cottage application; reading-room-pass.mjs lightly blurs and caches only that environment. Original card art stays sharp and unchanged. Day glass edges and thickness are more visible. Source/export instructions, camera containment checks and browser evidence: docs/design/stage2.4.12/. The prototype remains local-only.
 
 The current stage2.4.12 camera supports a full horizontal orbit, elevation12–90 degrees and a visible 回正 button beside appearance. Recovery changes only view and zoom. The original gameplay and access boundaries remain.

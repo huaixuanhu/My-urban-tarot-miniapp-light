@@ -102,3 +102,7 @@ Expanded horizontal orbit, elevation12–90 degrees and zoom65–220%; moved 回
 ## 2026-10-26 — stage2.4.12.1 glass edge batch
 
 Strengthened daytime glass edge, bevel and underside separation while preserving the accepted footprint and card plane. Adjusted contact-shadow height and projection bounds. Study tests and actual day/night low-angle views passed; room integration is a separate batch. No push/deployment.
+
+## 2026-10-26 — stage2.4.12.2 original cottage batch
+
+Replaced manual room approximation with verified static source exports fromcottagee71fe3fa; preserved source geometry/material detail and recorded reproducible export provenance. Corrected final room/table placement after narrow-desktop camera containment checks. Added floor grounding, quieter night exposure and localized text contrast.122 study tests and8 current GPU cases passed; native original-art/draw-three/reveal/meaning/theme/orbit/home/reset checks completed. Both prototype entries and aggregate gate checked before commit. The65 inherited dirty files and source cottage are unchanged. Evidence: docs/design/stage2.4.12/. Local candidate, no push/deployment or claimed user visual acceptance.

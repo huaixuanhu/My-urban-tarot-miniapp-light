@@ -28,3 +28,5 @@ The latest request records checkpoint 5 at the trial 08 product baseline c9e3ff1
 The latest 2026-10-26 request accepts trial 09 at d3aaa4a8 as checkpoint 6 and authorizes stage2.4.10 clear-glass/blurred-cottage local refinement with verified batch commits. The new restrained-foliage request supersedes the old no-leaves constraint. Read STATE.md for current scope; no push or deployment.
 
 The latest request saves trial 10 at 076d1d12 as checkpoint 7 and authorizes stage2.4.12 daylight glass visibility, faithful cottage modeling and wider recoverable camera freedom. Existing local batch-commit authority continues; no push/deployment.
+
+The current local trial11 implements stage2.4.12 with verified original static cottage assets, clearer daylight glass and full horizontal orbit/visible 回正. Continue from STATE.md and docs/design/stage2.4.12/ evidence; user visual acceptance remains pending. Source cottage stays read-only, assets are local, and push/deployment remain unauthorized.

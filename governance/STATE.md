@@ -222,13 +222,13 @@ Implemented edge batch: stronger directional rim/reflection, a downward thicknes
 
 ##### stage2.4.12.2 — actual cottage scene
 
-Inspect the canonical full scene components/assets and use direct geometry extraction or a faithful source-preserving snapshot where practical. Preserve source proportions and recognizable objects. Avoid importing application gates/navigation, secrets or private source photos. Record source revision, adaptation boundary, room/table alignment and actual rendered comparison. Do not claim full-room fidelity from a handful of similar props.
+Implemented local trial11: unchanged snapshots of the original cottage Architecture/Furniture/idleActivityChairs frome71fe3fa export two self-contained GLBs. Each preserves645 meshes/158,560 triangles/13 textures; export/reload and day/night geometry checks pass. One uniform transform anchors the table at cottage(1.1,.9,0),.14metres per gameplay unit. Original static floor decor remains; avatars/cats/navigation/configuration are excluded. Added glass floor grounding, restrained1.25px room blur and adapted night exposure support the foreground.122 study tests,8 current GPU cases and native draw-three/reveal/meaning/theme/orbit/home/reset checks passed. Evidence and cost limits: docs/design/stage2.4.12/. Both assets total34.31MiB; no device-performance or full-renderer parity claim. Source cottage and65 inherited dirty files preserved. User visual review pending; no push/deployment.
 
 ##### stage2.4.12.3 — freer recoverable view
 
 Expand camera direction/elevation/zoom under the user's explicit request and add a visible 回正 action outside the hidden tool menu. Keep a stable overhead pole and keep the camera above the tabletop. Bounds must be chosen with the actual room placement to avoid wall penetration and preserve card picking; verify drag/wheel/keyboard, low-angle/side-view reset and one-action recovery.
 
-Camera batch implemented locally: full horizontal orbit with continuous wrapping, elevation12–90 degrees, optical zoom65–220%, and an always-visible 回正 button beside appearance. Card gestures retain priority. The118 existing/focused study tests passed before room integration; room placement and low-angle wall checks continue in stage2.4.12.2. This batch has no shuffle, card-content or access change.
+Camera batch implemented locally: full horizontal orbit with continuous wrapping, elevation12–90 degrees, optical zoom65–220%, and an always-visible 回正 button beside appearance. Card gestures retain priority. The118 existing/focused study tests passed before room integration; the integrated122 tests include1,440 sampled camera positions inside original desktop room boundaries. This batch has no shuffle, card-content or access change.
 
 ### stage2.5 — full flow and local continuity
 

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const MAX_WIDTH = 960;
 const MAX_HEIGHT = 1200;
-const BLUR_SIGMA_CSS = 3.4;
+const BLUR_SIGMA_CSS = 1.25;
 
 /** Keep aspect ratio while bounding the room-only offscreen cost. */
 export function roomTargetSize(width, height) {
@@ -43,7 +43,9 @@ const fragmentShader = /* glsl */`
 export function createReadingRoomPass(renderer, roomGroup) {
   const scene = new THREE.Scene();
   scene.name = 'reading-room-only';
-  scene.background = new THREE.Color(0xd8d2c6);
+  scene.background = roomGroup.userData.backgroundColor || new THREE.Color(0xd8d2c6);
+  scene.environment = roomGroup.userData.environmentTexture || null;
+  scene.environmentIntensity = roomGroup.userData.environmentIntensity ?? 1;
   scene.add(roomGroup);
   const targetOptions = {
     type: THREE.HalfFloatType, colorSpace: THREE.LinearSRGBColorSpace,
@@ -72,7 +74,8 @@ export function createReadingRoomPass(renderer, roomGroup) {
   function applyAppearance(next) {
     const resolved = next === 'dark' ? 'dark' : 'light';
     if (resolved === theme) return;
-    theme = resolved; scene.background.setHex(theme === 'dark' ? 0x131b24 : 0xd8d2c6);
+    theme = resolved;
+    if (!roomGroup.userData.backgroundColor) scene.background.setHex(theme === 'dark' ? 0x131b24 : 0xd8d2c6);
     lastKey = null;
   }
 

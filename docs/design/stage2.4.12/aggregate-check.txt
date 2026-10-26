@@ -1,0 +1,66 @@
+
+> urban-tarot@1.0.0 check:all /Users/anoria/Documents/python_coding/small_project/urban-tarot-light
+> pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm build
+
+
+> urban-tarot@1.0.0 check:governance /Users/anoria/Documents/python_coding/small_project/urban-tarot-light
+> .venv/bin/python governance/governance_package_check.py --project-root . --target . --project-lifecycle durable
+
+PASS: GOVERNANCE STRUCTURE ONLY (working tree).
+Semantic adoption, authority, design acceptance and actual instruction loading are not established.
+
+> urban-tarot@1.0.0 check /Users/anoria/Documents/python_coding/small_project/urban-tarot-light
+> tsc --noEmit
+
+
+> urban-tarot@1.0.0 check:access-runtime /Users/anoria/Documents/python_coding/small_project/urban-tarot-light
+> node scripts/check-access-runtime.mjs
+
+PASS: compiled Node ESM entrypoint loads and denies anonymous access
+
+> urban-tarot@1.0.0 test:access /Users/anoria/Documents/python_coding/small_project/urban-tarot-light
+> tsx --test tests/access.test.ts
+
+✔ valid signed application token reaches the page and static assets (44.665208ms)
+✔ missing or malformed assertions cannot reach any app path (0.923459ms)
+✔ rejects wrong issuer (0.864084ms)
+✔ rejects other application's audience (0.78775ms)
+✔ rejects expired token (0.574834ms)
+✔ rejects not yet valid token (0.591458ms)
+✔ rejects missing expiry (0.545042ms)
+✔ rejects missing subject (0.554333ms)
+✔ rejects missing identity (0.621291ms)
+✔ rejects service token (0.639125ms)
+✔ signature tampering is rejected (0.571084ms)
+✔ alternate deployment hostnames remain blocked even with a valid token (0.441375ms)
+✔ identity headers or cookies alone are not authorization (0.462334ms)
+✔ unavailable signing keys fail closed (0.451083ms)
+✔ unknown certificate paths never expose the single-page application (0.589375ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 213.520792
+
+> urban-tarot@1.0.0 build /Users/anoria/Documents/python_coding/small_project/urban-tarot-light
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+vite v7.3.1 building client environment for production...
+(!) %VITE_ANALYTICS_ENDPOINT% is not defined in env variables found in /index.html. Is the variable mistyped?
+(!) %VITE_ANALYTICS_WEBSITE_ID% is not defined in env variables found in /index.html. Is the variable mistyped?
+<script src="%VITE_ANALYTICS_ENDPOINT%/umami"> in "/index.html" can't be bundled without type="module" attribute
+transforming...
+✓ 2024 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                   0.92 kB │ gzip:   0.51 kB
+../dist/public/assets/index-DXOsJB6e.css  121.28 kB │ gzip:  19.00 kB
+../dist/public/assets/index-CeL6uKaZ.js   487.99 kB │ gzip: 156.90 kB
+✓ built in 1.16s
+
+  dist/index.js  788b 
+
+⚡ Done in 1ms

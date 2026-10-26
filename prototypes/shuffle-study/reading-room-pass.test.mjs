@@ -56,8 +56,8 @@ test('room renders separately then two linear blur passes and restores all rende
     assert.equal(target.texture.type, THREE.HalfFloatType); assert.equal(target.texture.colorSpace, THREE.LinearSRGBColorSpace);
     assert.equal(target.width, 960); assert.equal(target.height, 667); assert.equal(target.texture.generateMipmaps, false);
   }
-  assert.deepEqual(renders[1].step.toArray(), [3.4 / (2 * 1440), 0]);
-  assert.deepEqual(renders[2].step.toArray(), [0, 3.4 / (2 * 1000)]);
+  assert.deepEqual(renders[1].step.toArray(), [1.25 / (2 * 1440), 0]);
+  assert.deepEqual(renders[2].step.toArray(), [0, 1.25 / (2 * 1000)]);
   assert.deepEqual(snapshot(renderer), before);
   assert.equal(renders[1].scene.children[0].material.toneMapped, false);
   pass.dispose();

@@ -1,0 +1,65 @@
+{
+  "sourceCommit": "e71fe3fafe7aa4ab4074a6e32669e3b76779101a",
+  "palette": {
+    "phaseLabel": "常驻午后",
+    "background": "#e8dac5",
+    "ambientColor": "#fff3df",
+    "ambientIntensity": 0.22,
+    "skyColor": "#f0f6ff",
+    "groundColor": "#ac8765",
+    "hemisphereIntensity": 0.65,
+    "keyColor": "#ffe0a5",
+    "keyIntensity": 2.6,
+    "fillColor": "#e3ecff",
+    "fillIntensity": 0.5,
+    "cityTint": "#ffffff",
+    "windowTint": "#d8e7e6",
+    "nightMix": 0
+  },
+  "original": {
+    "meshes": 645,
+    "vertices": 383435,
+    "triangles": 158560,
+    "materials": 101,
+    "textures": 13,
+    "bounds": {
+      "min": [
+        -5.16964511239419,
+        -0.39000500440597535,
+        -5.047640391245203
+      ],
+      "max": [
+        5.140005111694336,
+        3.1449999976158143,
+        5.140000057220459
+      ]
+    }
+  },
+  "roundTrip": {
+    "meshes": 645,
+    "vertices": 383435,
+    "triangles": 158560,
+    "materials": 101,
+    "textures": 13,
+    "bounds": {
+      "min": [
+        -5.16964511239419,
+        -0.39000500440597535,
+        -5.047640391245203
+      ],
+      "max": [
+        5.140005111694336,
+        3.1449999976158143,
+        5.140000057220459
+      ]
+    }
+  },
+  "geometryMatches": true,
+  "boundsDelta": 0,
+  "scope": "Exact static Architecture, Furniture, idle ActivityChairs. Procedural textures embedded. Avatars, navigation, application links and photos excluded.",
+  "theme": "day",
+  "filename": "cottage-day.glb",
+  "bytes": 17989420,
+  "sha256": "aa1f37fdebd630168bd2028d0826c409230d025e2e103bc59a97d338d4d9b9c8",
+  "verifiedAt": "2026-10-26T10:41:09.348Z"
+}

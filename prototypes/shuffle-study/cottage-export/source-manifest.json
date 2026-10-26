@@ -1,0 +1,57 @@
+{
+  "derivedFrom": "governance/STATE.md stage2.4.12; source cottage plan_docs/PLAN.md stage1.16",
+  "scope": "Only original static architecture, furniture, procedural textures and idle chairs; no avatars, navigation, configuration, links or external photo assets.",
+  "sourceProject": "萱敏小屋",
+  "sourceCommit": "e71fe3fafe7aa4ab4074a6e32669e3b76779101a",
+  "sourceDirty": false,
+  "files": [
+    {
+      "source": "web/src/scene/Architecture.tsx",
+      "snapshot": "source/scene/Architecture.tsx",
+      "sha256": "99ef11f16c66ccca13eb4d38f9b2482fe269abc4597328ed387f9bc97ae32c61",
+      "bytes": 15314
+    },
+    {
+      "source": "web/src/scene/Furniture.tsx",
+      "snapshot": "source/scene/Furniture.tsx",
+      "sha256": "c3e86a2cff3430d6326509b427695b71b1ab80e31d9fe8faf16fb3f57df4013a",
+      "bytes": 32966
+    },
+    {
+      "source": "web/src/scene/textures.ts",
+      "snapshot": "source/scene/textures.ts",
+      "sha256": "59a26a52adc2b6baaf156510ec549cf7c7deea9dae85c3bc49f4c03c4d9478a9",
+      "bytes": 3703
+    },
+    {
+      "source": "web/src/scene/RoomLighting.tsx",
+      "snapshot": "source/scene/RoomLighting.tsx",
+      "sha256": "1cb056a362407fb0bf905218aa910f85ee62360603d29633a629d518481e8657",
+      "bytes": 3035
+    },
+    {
+      "source": "web/src/core/daylight.ts",
+      "snapshot": "source/core/daylight.ts",
+      "sha256": "f892efbc354f490311f053faa08a57a83ebf646e355085c80987d1636ca5ca1b",
+      "bytes": 4118
+    },
+    {
+      "source": "web/src/core/surfaces.ts",
+      "snapshot": "source/core/surfaces.ts",
+      "sha256": "a21f187e78d57c37b020c2eb7669e492c98eec8f8bea27c12d512b3794eefe0e",
+      "bytes": 1100
+    },
+    {
+      "source": "web/src/core/boardLayout.ts",
+      "snapshot": "source/core/boardLayout.ts",
+      "sha256": "0c977685550a4fc6f4c46f4e09c598789e25ed63db5acb801b6b659526bdb371",
+      "bytes": 737
+    },
+    {
+      "source": "web/src/core/types.ts",
+      "snapshot": "source/core/types.ts",
+      "sha256": "e0fb5434757699ccaa598567d3525a3c41992d333f7e3e9186eabc277500f719",
+      "bytes": 2697
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 115 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                        3.81 kB │ gzip:   1.69 kB
+dist/reading.html                                      7.21 kB │ gzip:   2.94 kB
+dist/assets/The_Seven_of_Disks-TonhHf85.webp          55.25 kB
+dist/assets/The_Moon-DaldQKW-.webp                    57.73 kB
+dist/assets/Death-ngol3YH-.webp                       67.85 kB
+dist/assets/The_Ace_of_Wands-5ArARHDf.webp            75.19 kB
+dist/assets/The_Ten_of_Swords-HbLlvmXr.webp           76.28 kB
+dist/assets/The_Prince_of_Wands-CeJiy6wH.webp         76.32 kB
+dist/assets/The_Six_of_Cups-CsaMviCm.webp             77.04 kB
+dist/assets/The_Princess_of_Wands-BOawvb_u.webp       81.65 kB
+dist/assets/The_Devil-Cd_8innl.webp                   82.98 kB
+dist/assets/The_Four_of_Swords-DqwqEH5m.webp          83.56 kB
+dist/assets/The_Three_of_Swords-Bk9tyTOw.webp         84.09 kB
+dist/assets/The_Mage-IkMWY5m_.webp                    85.21 kB
+dist/assets/The_Eight_of_Wands-BoGW9fMc.webp          85.59 kB
+dist/assets/The_Fool-CCEDBSs5.webp                    86.40 kB
+dist/assets/The_High_Priestess-BrJpCJyu.webp          87.64 kB
+dist/assets/Justice-Bt0riae4.webp                     87.73 kB
+dist/assets/Strength-DxwOavoU.webp                    87.80 kB
+dist/assets/The_Nine_of_Swords-z3NInsGw.webp          87.81 kB
+dist/assets/The_Six_of_Swords-CsvqJyqc.webp           88.61 kB
+dist/assets/The_Empress-MRpH7yzf.webp                 89.30 kB
+dist/assets/The_Knight_of_Cups-7UchD_sE.webp          89.77 kB
+dist/assets/The_Emperor-CHjA79-m.webp                 90.20 kB
+dist/assets/The_Eight_of_Cups-B3D73m7B.webp           90.43 kB
+dist/assets/The_Knight_of_Disks-BC8D7pp3.webp         91.34 kB
+dist/assets/The_Six_of_Disks-Bu6S7t5K.webp            93.27 kB
+dist/assets/The_Prince_of_Cups-BcZ_a40X.webp          94.16 kB
+dist/assets/The_Queen_of_Wands-DMs0V2UI.webp          94.46 kB
+dist/assets/The_Five_of_Disks-Do9Z4EFQ.webp           95.01 kB
+dist/assets/The_Chariot-BQFXYiep.webp                 96.67 kB
+dist/assets/The_Three_of_Wands-CHb4EhfC.webp          97.10 kB
+dist/assets/The_Five_of_Cups-BzONj6Tf.webp            97.34 kB
+dist/assets/The_Two_of_Wands-BUvV2a7P.webp            97.68 kB
+dist/assets/The_Four_of_Disks-D2BMLUGQ.webp           98.05 kB
+dist/assets/The_Two_of_Disks-Cm9nDcTE.webp            98.27 kB
+dist/assets/The_Seven_of_Swords-KZMVpqY9.webp         98.95 kB
+dist/assets/The_Hermit-Ctw2Y_wW.webp                 100.04 kB
+dist/assets/The_Lovers-nKxNqC5W.webp                 100.69 kB
+dist/assets/The_Towers-CLoxQ4Y6.webp                 101.53 kB
+dist/assets/The_Ace_of_Swords-bQ-8WREE.webp          103.18 kB
+dist/assets/The_Two_of_Cups-CsSIL-Nr.webp            103.97 kB
+dist/assets/The_Hanged_Man-CHBjuBU6.webp             104.94 kB
+dist/assets/The_Four_of_Cups-EK-uGu41.webp           105.26 kB
+dist/assets/The_Eight_of_Swords-B1g3szfz.webp        107.62 kB
+dist/assets/The_Princess_of_Disks-M04TdlTn.webp      107.86 kB
+dist/assets/The_Wheel_of_Fortune-nd87OhSr.webp       108.14 kB
+dist/assets/The_Star-DYVUvF0M.webp                   108.58 kB
+dist/assets/The_Ten_of_Cups-UUWDgY10.webp            110.89 kB
+dist/assets/The_Nine_of_Cups-xMo2PX_B.webp           111.47 kB
+dist/assets/The_Seven_of_Cups-DrW5Bw6c.webp          112.00 kB
+dist/assets/The_Ten_of_Wands-CEZ3JJVz.webp           112.63 kB
+dist/assets/The_Prince_of_Disks-CNL1w4-j.webp        113.03 kB
+dist/assets/The_Hierophant-8764Hwgc.webp             114.37 kB
+dist/assets/The_Prince_of_Swords-jYGL4mjS.webp       116.68 kB
+dist/assets/The_Princess_of_Swords-B8jsWqAK.webp     117.87 kB
+dist/assets/The_Nine_of_Wands-BdoOw9Sj.webp          119.36 kB
+dist/assets/The_Aeon-DHwfziNT.webp                   122.22 kB
+dist/assets/The_Knight_of_Wands-BZPGlo9q.webp        123.93 kB
+dist/assets/The_Two_of_Swords-BBo_AVf2.webp          124.28 kB
+dist/assets/The_Seven_of_Wands-Bhv_lng7.webp         124.29 kB
+dist/assets/The_Queen_of_Disks-CAkJgufa.webp         124.78 kB
+dist/assets/The_Six_of_Wands-Bhck8dkz.webp           125.05 kB
+dist/assets/The_Princess_of_Cups-Bx7g1QJ6.webp       126.16 kB
+dist/assets/The_Knight_of_Swords-0v3QNOHm.webp       127.15 kB
+dist/assets/The_Three_of_Cups-Bfma9pDq.webp          127.52 kB
+dist/assets/The_Sun-CI4STpHR.webp                    128.38 kB
+dist/assets/The_Eight_of_Disks-CCNo-zDZ.webp         129.06 kB
+dist/assets/The_Ten_of_Disks-4pr88QsH.webp           131.51 kB
+dist/assets/The_Five_of_Wands-BaKLv491.webp          132.46 kB
+dist/assets/The_Ace_of_Disks-BOXrLoop.webp           134.32 kB
+dist/assets/The_Queen_of_Cups-M53A7LYM.webp          136.10 kB
+dist/assets/The_Five_of_Swords-0s1Brtox.webp         137.39 kB
+dist/assets/The_Three_of_Disks-Cck3hQ__.webp         139.02 kB
+dist/assets/The_Nine_of_Disks-Bqe5p7kG.webp          142.32 kB
+dist/assets/The_Four_of_Wands-B7G1qQBd.webp          146.61 kB
+dist/assets/The_Queen_of_Swords-CVh1ZWas.webp        151.53 kB
+dist/assets/Art-CmycEBt0.webp                        155.20 kB
+dist/assets/The_Universe-BR_IYNWe.webp               165.52 kB
+dist/assets/The_Ace_of_Cups-ByyJAa_g.webp            176.71 kB
+dist/assets/cottage-day-DA6Sk8N7.glb              17,989.42 kB
+dist/assets/cottage-night-COT9Q2hW.glb            17,989.52 kB
+dist/assets/shuffle-P_B3XHkB.css                       5.81 kB │ gzip:   2.01 kB
+dist/assets/reading-DFQBinQp.css                      15.28 kB │ gzip:   4.02 kB
+dist/assets/shuffle-Cq7Vf3Iz.js                       14.61 kB │ gzip:   6.51 kB
+dist/assets/reading-BV_1dS-N.js                      142.35 kB │ gzip:  48.86 kB
+dist/assets/card-geometry-DOxKIT-A.js                615.07 kB │ gzip: 157.23 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 613ms
