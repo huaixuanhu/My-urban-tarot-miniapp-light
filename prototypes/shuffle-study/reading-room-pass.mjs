@@ -2,13 +2,38 @@ import * as THREE from 'three';
 
 const MAX_WIDTH = 960;
 const MAX_HEIGHT = 1200;
-const BLUR_SIGMA_CSS = 1.25;
+export const ROOM_BLUR_SIGMA_CSS = 12;
+const BLUR_RADIUS = 18;
+const MAX_BLUR_SIGMA_TEXELS = BLUR_RADIUS / 3;
 
 /** Keep aspect ratio while bounding the room-only offscreen cost. */
 export function roomTargetSize(width, height) {
   if (![width, height].every(value => Number.isFinite(value) && value > 0)) return null;
   const scale = Math.min(1, MAX_WIDTH / width, MAX_HEIGHT / height);
   return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+}
+
+/** Blur resolution follows CSS size, so changing DPR does not change the focus. */
+export function roomBlurTargetSize(width, height) {
+  if (![width, height].every(value => Number.isFinite(value) && value > 0)) return null;
+  const scale = Math.min(0.5, MAX_WIDTH / (2 * width), MAX_HEIGHT / (2 * height));
+  return { width: Math.max(1, Math.floor(width * scale)), height: Math.max(1, Math.floor(height * scale)) };
+}
+
+/** Center and positive-side weights; the shader samples both sides at each tap. */
+export function roomBlurWeights(sigmaTexels) {
+  if (!Number.isFinite(sigmaTexels) || sigmaTexels <= 0 || sigmaTexels > MAX_BLUR_SIGMA_TEXELS) {
+    throw new RangeError(`Room blur sigma must be positive and at most ${MAX_BLUR_SIGMA_TEXELS} texels`);
+  }
+  const weights = new Float32Array(BLUR_RADIUS + 1);
+  let total = 0;
+  for (let i = 0; i <= BLUR_RADIUS; i++) {
+    const weight = Math.exp(-0.5 * (i / sigmaTexels) ** 2);
+    weights[i] = weight;
+    total += i === 0 ? weight : 2 * weight;
+  }
+  for (let i = 0; i <= BLUR_RADIUS; i++) weights[i] /= total;
+  return weights;
 }
 
 const vertexShader = /* glsl */`
@@ -21,14 +46,15 @@ const fragmentShader = /* glsl */`
   precision highp float;
   uniform sampler2D uSource;
   uniform vec2 uStep;
+  uniform float uWeights[${BLUR_RADIUS + 1}];
   in vec2 vUv;
   out vec4 fragColor;
   void main() {
-    vec4 color = texture(uSource, vUv) * 0.2270270270;
-    color += (texture(uSource, vUv + uStep) + texture(uSource, vUv - uStep)) * 0.1945945946;
-    color += (texture(uSource, vUv + uStep * 2.0) + texture(uSource, vUv - uStep * 2.0)) * 0.1216216216;
-    color += (texture(uSource, vUv + uStep * 3.0) + texture(uSource, vUv - uStep * 3.0)) * 0.0540540541;
-    color += (texture(uSource, vUv + uStep * 4.0) + texture(uSource, vUv - uStep * 4.0)) * 0.0162162162;
+    vec4 color = texture(uSource, vUv) * uWeights[0];
+    for (int i = 1; i <= ${BLUR_RADIUS}; i++) {
+      vec2 offset = uStep * float(i);
+      color += (texture(uSource, vUv + offset) + texture(uSource, vUv - offset)) * uWeights[i];
+    }
     fragColor = color;
   }
 `;
@@ -58,7 +84,10 @@ export function createReadingRoomPass(renderer, roomGroup) {
   roomTarget.texture.name = 'room-linear-source';
   horizontalTarget.texture.name = 'room-linear-horizontal';
   outputTarget.texture.name = 'room-linear-blurred';
-  const uniforms = { uSource: { value: roomTarget.texture }, uStep: { value: new THREE.Vector2() } };
+  const uniforms = {
+    uSource: { value: roomTarget.texture }, uStep: { value: new THREE.Vector2() },
+    uWeights: { value: roomBlurWeights(MAX_BLUR_SIGMA_TEXELS) },
+  };
   const material = new THREE.RawShaderMaterial({
     glslVersion: THREE.GLSL3, vertexShader, fragmentShader, uniforms,
     toneMapped: false, depthTest: false, depthWrite: false, blending: THREE.NoBlending,
@@ -70,6 +99,7 @@ export function createReadingRoomPass(renderer, roomGroup) {
   const blurCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   const buffer = new THREE.Vector2(), cssSize = new THREE.Vector2();
   let lastKey = null, theme = 'light', disposed = false;
+  let weightsKey = null, horizontalWeights, verticalWeights;
 
   function applyAppearance(next) {
     const resolved = next === 'dark' ? 'dark' : 'light';
@@ -84,13 +114,24 @@ export function createReadingRoomPass(renderer, roomGroup) {
     renderer.getDrawingBufferSize(buffer);
     renderer.getSize(cssSize);
     const size = roomTargetSize(buffer.x, buffer.y);
-    if (!size || cssSize.x <= 0 || cssSize.y <= 0) return false;
+    const blurSize = roomBlurTargetSize(cssSize.x, cssSize.y);
+    if (!size || !blurSize) return false;
     camera.updateMatrixWorld();
-    const key = [buffer.x, buffer.y, cssSize.x, cssSize.y, theme,
+    const key = [buffer.x, buffer.y, cssSize.x, cssSize.y, theme, roomGroup.userData.cutaway?.revision ?? 0,
       ...camera.matrixWorld.elements, ...camera.projectionMatrix.elements].join(',');
     if (key === lastKey) return false;
     if (roomTarget.width !== size.width || roomTarget.height !== size.height) {
-      for (const target of [roomTarget, horizontalTarget, outputTarget]) target.setSize(size.width, size.height);
+      roomTarget.setSize(size.width, size.height);
+    }
+    if (outputTarget.width !== blurSize.width || outputTarget.height !== blurSize.height) {
+      for (const target of [horizontalTarget, outputTarget]) target.setSize(blurSize.width, blurSize.height);
+    }
+    const nextWeightsKey = [cssSize.x, cssSize.y, blurSize.width, blurSize.height].join(',');
+    if (nextWeightsKey !== weightsKey) {
+      // Clamp only affects degenerate viewports smaller than two CSS pixels.
+      horizontalWeights = roomBlurWeights(Math.min(MAX_BLUR_SIGMA_TEXELS, ROOM_BLUR_SIGMA_CSS * blurSize.width / cssSize.x));
+      verticalWeights = roomBlurWeights(Math.min(MAX_BLUR_SIGMA_TEXELS, ROOM_BLUR_SIGMA_CSS * blurSize.height / cssSize.y));
+      weightsKey = nextWeightsKey;
     }
     const previous = {
       target: renderer.getRenderTarget(), cubeFace: renderer.getActiveCubeFace(), mipLevel: renderer.getActiveMipmapLevel(),
@@ -104,11 +145,15 @@ export function createReadingRoomPass(renderer, roomGroup) {
       renderer.setRenderTarget(roomTarget);
       renderer.render(scene, camera);
       uniforms.uSource.value = roomTarget.texture;
-      uniforms.uStep.value.set(BLUR_SIGMA_CSS / (2 * cssSize.x), 0);
+      // Adjacent blur texels form a dense kernel. Enlarging sparse tap spacing
+      // instead would produce separated copies of high-contrast room edges.
+      uniforms.uStep.value.set(1 / blurSize.width, 0);
+      uniforms.uWeights.value = horizontalWeights;
       renderer.setRenderTarget(horizontalTarget);
       renderer.render(blurScene, blurCamera);
       uniforms.uSource.value = horizontalTarget.texture;
-      uniforms.uStep.value.set(0, BLUR_SIGMA_CSS / (2 * cssSize.y));
+      uniforms.uStep.value.set(0, 1 / blurSize.height);
+      uniforms.uWeights.value = verticalWeights;
       renderer.setRenderTarget(outputTarget);
       renderer.render(blurScene, blurCamera);
       lastKey = key;

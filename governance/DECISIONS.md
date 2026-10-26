@@ -127,3 +127,8 @@ Authority: the user requested clearer daytime glass, substantially more faithful
 ## 2026-10-26 — checkpoint 8 and scene repair authority
 
 Save existingeadc2961 before the bounded local correction. The latest request explicitly permits removal of original floor-card decor only in the imported Tarot scene, stronger room defocus, actual view/occlusion diagnosis and clearer glass. Source cottage remains read-only; no publication authority.
+
+
+## 2026-10-26 — focused room optics
+
+Use uniform room-only defocus to retain every interactive card sharply at freely selected viewing angles. Do not apply a physical camera depth-of-field pass to the entire card scene. A dense Gaussian at reduced resolution avoids spaced copies of sharp room edges; retain linear color and cached room rendering. Original-room reflection capture would add twelve scene captures for two themes and still lack correct near-object parallax; use a bounded existing window-shaped reflection field for the glass instead. See stage2.4.14 optical research for primary references and limits.

@@ -110,3 +110,8 @@ Replaced manual room approximation with verified static source exports fromcotta
 ## 2026-10-26 — checkpoint 8
 
 Preserved trial11 at eadc2961 before the user-requested floor-decor removal, background defocus, view/occlusion and glass-contrast repairs.
+
+
+## 2026-10-26 — room defocus and glass contrast
+
+Strengthened room-only blur while retaining sharp Urban Tarot art and controls. A cooler clear surface, brighter bevel, stronger lower boundary and softer rectangular window reflection make the floating table easier to read. Local optical batch under stage2.4.14.2; view obstruction repair follows separately.

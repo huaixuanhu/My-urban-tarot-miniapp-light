@@ -207,3 +207,8 @@ Replaced manual room approximation with verified static source exports fromcotta
 ## 2026-10-26 — checkpoint 8
 
 Executing host: Codex; model: GPT-6. Verified HEAD eadc2961 with only65 inherited dirty generated files. Saved entry hashes. Record checkpoint8 before product edits;122 study checks and8 GPU cases apply to unchanged product code. Current continuation: STATE.md stage2.4.14. No push/deployment.
+
+
+## 2026-10-26 — stage2.4.14.2 optical batch
+
+After checkpoint81fcc1a0, implemented stronger room-only defocus and clearer glass contrast/reflection. Eight focused blur tests and eight actual GPU cases passed. Both prototype builds and the aggregate gate passed; initial browser day/night/low-angle review completed. Scene obstruction repair remains a separate local batch. No push/deployment.

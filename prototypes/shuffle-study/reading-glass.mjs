@@ -43,15 +43,22 @@ function createGlassEnvironment(renderer) {
   const environment = new THREE.Scene();
   environment.background = new THREE.Color(0x080b13);
   const resources = [];
-  function softbox(width, height, color, position) {
+  function softbox(width, height, color, position, windowShape = false) {
     const geometry = new THREE.PlaneGeometry(width, height);
     const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 128;
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Glass light canvas unavailable.');
     ctx.scale(2, 1);
-    const glow = ctx.createRadialGradient(64, 64, 8, 64, 64, 64);
-    glow.addColorStop(0, '#ffffff'); glow.addColorStop(0.52, '#c9c9c9'); glow.addColorStop(1, '#000000');
-    ctx.fillStyle = glow; ctx.fillRect(0, 0, 128, 128);
+    ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, 128, 128);
+    if (windowShape) {
+      // The key reflection follows a broad window, rather than a round lamp.
+      ctx.filter = 'blur(7px)'; ctx.fillStyle = '#ffffff';
+      ctx.fillRect(10, 12, 108, 104); ctx.filter = 'none';
+    } else {
+      const glow = ctx.createRadialGradient(64, 64, 8, 64, 64, 64);
+      glow.addColorStop(0, '#ffffff'); glow.addColorStop(0.52, '#c9c9c9'); glow.addColorStop(1, '#000000');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, 128, 128);
+    }
     const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
     const material = new THREE.MeshBasicMaterial({ color, map, side: THREE.DoubleSide });
     const panel = new THREE.Mesh(geometry, material);
@@ -60,7 +67,7 @@ function createGlassEnvironment(renderer) {
     environment.add(panel);
     resources.push(geometry, material, map);
   }
-  softbox(10, 5, new THREE.Color(6.2, 5.8, 5.3), [-5, 10, -6]);
+  softbox(10, 5, new THREE.Color(6.2, 5.8, 5.3), [-5, 10, -6], true);
   softbox(2.2, 11, new THREE.Color(0.8, 1.1, 1.8), [10, 5, -6]);
   softbox(8, 2, new THREE.Color(0.45, 0.4, 0.6), [-2, 6, -12]);
   softbox(22, 22, new THREE.Color(0.055, 0.06, 0.08), [0, -8, 0]);
@@ -101,7 +108,7 @@ export function createReadingGlass(renderer) {
   const rimGeometry = new THREE.BufferGeometry().setFromPoints(rimPoints.map(p => new THREE.Vector3(p.x, TOP - .015, -p.y + CLOTH_CENTER_Z)));
   const rimColors = [];
   for (const p of rimPoints) {
-    const catchLight = .48 + .5 * Math.exp(-Math.pow((p.x + 4.8) / 3.2, 2) - Math.pow((p.y - 4.7) / 4, 2));
+    const catchLight = .64 + .35 * Math.exp(-Math.pow((p.x + 4.8) / 3.2, 2) - Math.pow((p.y - 4.7) / 4, 2));
     rimColors.push(catchLight * .94, catchLight * .97, catchLight);
   }
   rimGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rimColors, 3));
@@ -121,24 +128,26 @@ export function createReadingGlass(renderer) {
   group.userData.environmentTexture = environment.texture;
   group.userData.applyAppearance = theme => {
     const dark = theme === 'dark';
-    surface.color.setHex(dark ? 0xe4e9f2 : 0xffffff);
-    surface.attenuationColor.setHex(dark ? 0xcfdcee : 0xe4f2f1);
-    surface.transmission = dark ? 0.97 : 0.91;
-    surface.roughness = dark ? .085 : .105;
-    surface.clearcoat = dark ? .25 : .52;
-    surface.envMapIntensity = dark ? 0.12 : 0.42;
-    surface.clearcoatRoughness = 0.1;
-    edge.color.setHex(dark ? 0xc5cfdf : 0xe5f0f1);
-    edge.attenuationColor.setHex(dark ? 0xbccbea : 0xa8d0d2);
-    edge.attenuationDistance = dark ? 1.5 : .48;
-    edge.envMapIntensity = dark ? 0.95 : 1.5;
-    edge.clearcoat = dark ? .4 : .8;
-    edge.roughness = 0.065;
-    edge.transmission = dark ? .94 : .86;
+    // Cool transmitted light separates the slab from the warm cottage floor;
+    // the clear center retains the room, while its bevel carries the contrast.
+    surface.color.setHex(dark ? 0xdce6f3 : 0xe2edf6);
+    surface.attenuationColor.setHex(dark ? 0xc3d7ed : 0xd0e6f2);
+    surface.transmission = dark ? .98 : .96;
+    surface.roughness = dark ? .065 : .06;
+    surface.clearcoat = dark ? .35 : .65;
+    surface.envMapIntensity = dark ? .14 : .48;
+    surface.clearcoatRoughness = .075;
+    edge.color.setHex(dark ? 0xc3d7ed : 0xa2bdcd);
+    edge.attenuationColor.setHex(dark ? 0x8caacd : 0x7b9cba);
+    edge.attenuationDistance = dark ? .8 : .38;
+    edge.envMapIntensity = dark ? 1.25 : 1.85;
+    edge.clearcoat = dark ? .7 : 1;
+    edge.roughness = .045;
+    edge.transmission = dark ? .88 : .78;
     edge.iridescence = 0.035;
-    rimMaterial.opacity = dark ? .72 : .95;
-    lowerRim.material.color.setHex(dark ? 0xa4b7d3 : 0x50767c);
-    lowerRim.material.opacity = dark ? .15 : .38;
+    rimMaterial.opacity = dark ? .9 : 1;
+    lowerRim.material.color.setHex(dark ? 0xadc6e7 : 0x294c6c);
+    lowerRim.material.opacity = dark ? .32 : .68;
   };
   let disposed = false;
   group.userData.dispose = () => {

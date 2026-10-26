@@ -246,6 +246,8 @@ Reproduce the pictured room obstruction, identify source objects and causes, rem
 
 Select and test a stronger room-only blur method, retain clean foreground color, strengthen glass thickness/edge/local reflection contrast and inspect day/night/overhead/low-angle states. Final acceptance remains with the user after a local preview.
 
+Optical batch implemented locally: 12 CSS pixel room-only Gaussian with dense normalized taps and reduced blur targets, plus clearer glass bevel/lower edge and a broad window-shaped reflection. Eight focused blur checks and eight actual GPU cases passed, preserving source-art color and screen-control boundaries. Both prototype entries and pnpm check:all passed. Initial day/night and low-angle browser views checked. This independent optical batch is recorded before the scene-repair batch; combined interaction/occlusion verification continues in stage2.4.14.1. Evidence: docs/design/stage2.4.14/optical-research.md and room-gpu.json. No user acceptance or performance qualification is claimed.
+
 ### stage2.5 — full flow and local continuity
 
 Deferred until the UI redesign is reviewed. This receives the unimplemented question/reflection/record/revisit work previously discussed in stage2.3.2. Exact spread semantics, local-record ownership, storage/recovery behavior and source-content translation remain to be aligned. AI and cross-device synchronization stay deferred. No implementation authority is inferred.
