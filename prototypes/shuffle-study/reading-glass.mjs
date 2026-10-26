@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
+import { GLASS_WIDTH, GLASS_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
 
 const TOP = -0.008;
 const DEPTH = 0.08;
@@ -23,9 +23,9 @@ function roundedRectangle(width, length, radius) {
   return shape;
 }
 
-/** Shared accepted footprint; the bevel only rounds downward, below the cards. */
+/** Expanded physical margin; the bevel only rounds downward, below the cards. */
 export function createReadingGlassGeometry() {
-  const shape = roundedRectangle(CLOTH_WIDTH - BEVEL_WIDTH * 2, CLOTH_LENGTH - BEVEL_WIDTH * 2, RADIUS - BEVEL_WIDTH);
+  const shape = roundedRectangle(GLASS_WIDTH - BEVEL_WIDTH * 2, GLASS_LENGTH - BEVEL_WIDTH * 2, RADIUS - BEVEL_WIDTH);
   const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: DEPTH, steps: 1, curveSegments: 16,
     bevelEnabled: true, bevelThickness: BEVEL, bevelSize: BEVEL_WIDTH, bevelSegments: 6,
@@ -104,7 +104,7 @@ export function createReadingGlass(renderer) {
   body.name = 'solid-fluid-glass-surface';
   body.receiveShadow = true;
   group.add(body);
-  const rimPoints = roundedRectangle(CLOTH_WIDTH - .025, CLOTH_LENGTH - .025, RADIUS).getPoints(120);
+  const rimPoints = roundedRectangle(GLASS_WIDTH - .025, GLASS_LENGTH - .025, RADIUS).getPoints(120);
   const rimGeometry = new THREE.BufferGeometry().setFromPoints(rimPoints.map(p => new THREE.Vector3(p.x, TOP - .015, -p.y + CLOTH_CENTER_Z)));
   const rimColors = [];
   for (const p of rimPoints) {

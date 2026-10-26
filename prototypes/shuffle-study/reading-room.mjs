@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { CLOTH_WIDTH, CLOTH_LENGTH } from './reading-layout.mjs';
+import { GLASS_WIDTH, GLASS_LENGTH } from './reading-layout.mjs';
 import { excludeCottageFloorCards } from './reading-room-content.mjs';
 import { createReadingRoomVisibility } from './reading-room-visibility.mjs';
 
@@ -111,7 +111,7 @@ function createTableShadow() {
   context.beginPath();context.roundRect(40,36,432,312,24);context.fill();
   const texture=new THREE.CanvasTexture(canvas);
   const material=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:.12,depthWrite:false,toneMapped:false});
-  const shadow=new THREE.Mesh(new THREE.PlaneGeometry(CLOTH_WIDTH+2,CLOTH_LENGTH+2),material);
+  const shadow=new THREE.Mesh(new THREE.PlaneGeometry(GLASS_WIDTH+2,GLASS_LENGTH+2),material);
   shadow.name='new-glass-soft-floor-shadow';shadow.rotation.x=-Math.PI/2;
   shadow.position.set(.55,(.045-COTTAGE_ANCHOR.y)/COTTAGE_METRES_PER_UNIT,READING_TABLE_CENTER_Z+.65);
   return {shadow,dispose(){shadow.geometry.dispose();material.dispose();texture.dispose();}};

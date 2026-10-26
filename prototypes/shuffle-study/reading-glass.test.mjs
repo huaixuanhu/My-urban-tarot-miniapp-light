@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createReadingGlassGeometry } from './reading-glass.mjs';
-import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z, PLACEMENT_BOUNDS } from './reading-layout.mjs';
+import { GLASS_WIDTH, GLASS_LENGTH, CLOTH_CENTER_Z, PLACEMENT_BOUNDS } from './reading-layout.mjs';
 import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
 
 test('glass retains accepted playing area and stays below cards and above its support', () => {
@@ -10,8 +10,8 @@ test('glass retains accepted playing area and stays below cards and above its su
     const b = geometry.boundingBox;
     assert.ok(geometry.attributes.position.array.every(Number.isFinite));
     assert.ok(geometry.attributes.normal.array.every(Number.isFinite));
-    assert.ok(Math.abs(b.max.x - b.min.x - CLOTH_WIDTH) < 0.0001);
-    assert.ok(Math.abs(b.max.z - b.min.z - CLOTH_LENGTH) < 0.0001);
+    assert.ok(Math.abs(b.max.x - b.min.x - GLASS_WIDTH) < 0.0001);
+    assert.ok(Math.abs(b.max.z - b.min.z - GLASS_LENGTH) < 0.0001);
     assert.ok(Math.abs((b.min.z + b.max.z) / 2 - CLOTH_CENTER_Z) < 0.0001);
     assert.ok(b.max.y < 0, 'No glass rim protrudes into the card layer.');
     assert.ok(b.min.y > -0.18, 'Glass clears the underlying shadow receiver.');

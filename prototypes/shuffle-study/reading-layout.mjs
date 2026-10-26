@@ -1,7 +1,10 @@
-/** Shared world-space bounds for cloth, drops and reading-camera framing. */
+/** Accepted playing/framing bounds; physical glass margins are independent. */
 export const CLOTH_WIDTH = 14.8;
 export const CLOTH_LENGTH = 11.2;
 export const CLOTH_CENTER_Z = -0.6;
+// Grow only the slab, without refitting the camera or resizing/moving cards.
+export const GLASS_WIDTH = CLOTH_WIDTH * 1.05;
+export const GLASS_LENGTH = CLOTH_LENGTH * 1.05;
 export const PLACEMENT_BOUNDS = Object.freeze({ minX: -6.6, maxX: 6.6, minZ: -4.6, maxZ: 0.75 });
 export const DROP_MARGIN = 0.2;
 // Includes the full card at the placement limits, the fan and reveal lift.

@@ -2,7 +2,7 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: the user accepted trial12/design revision19 at75d45f19 and requested checkpoint9 before enlarging only the glass. stage2.4.15 records this acceptance; stage2.4.16 authorizes the bounded glass-size refinement. Stage2.5 remains deferred; no push/deployment authority.
+Current continuation: the user accepted the enlarged glass/revision20 and explicitly authorized GitHub publication to origin/main. stage2.4.17 owns this bounded commit/push and the handoff for user-led cottage integration. The new reading UI is still an independent prototype build; this push does not rewire the production entry. Stage2.5 remains deferred.
 
 ## stage1.1 — directory migration
 
@@ -258,7 +258,17 @@ Source: the user's “现在这个效果非常好！进行commit。然后把玻�
 
 #### stage2.4.16 — glass-only enlargement
 
-Source: the same request. Enlarge only the physical glass slab modestly, retaining its material, thickness, height, center and optics. Keep camera framing, card size/positions, fan, placement rules, room/cutaway/blur, controls and accepted motion unchanged. Use a separate slab footprint so enlargement does not silently pull the camera back and shrink the cards. Its floor shadow may follow the footprint. Current candidate target:10% wider and10% deeper. Verify the visible result locally; other product work remains outside scope. Standing verified local batch-commit authority remains, no push/deployment.
+Source: the same request. Enlarge only the physical glass slab modestly, retaining its material, thickness, height, center and optics. Keep camera framing, card size/positions, fan, placement rules, room/cutaway/blur, controls and accepted motion unchanged. Use a separate slab footprint so enlargement does not silently pull the camera back and shrink the cards. Its floor shadow may follow the footprint. Current candidate:5% wider and5% deeper (15.54×11.76,10.25% more area). A separate GLASS_WIDTH/GLASS_LENGTH footprint feeds only the body/rims and floor shadow. A larger10% linear increase was rejected because it cropped the default view at retained camera framing. Verify the visible result locally; other product work remains outside scope. Standing verified local batch-commit authority remains, no push/deployment.
+
+Local verification complete:130 study tests, both prototype builds and pnpm check:all passed (including15 access tests). Actual1280×720 day/night review retains the full glass outline; native drag/reveal still completes. Browser warning/error log empty;65 inherited dirty files unchanged. The user subsequently accepted this enlargement and authorized its commit/push in stage2.4.17 after checkpoint73b2fa4d. Evidence: docs/design/stage2.4.16/README.md.
+
+#### stage2.4.17 — accepted size, GitHub publication and cottage handoff
+
+Source: the user's “非常好可以进行一次推送了，然后我去隔壁项目把它接入infra集合小屋”. This accepts revision20's5% linear glass enlargement and authorizes committing the remaining accepted files and pushing the accumulated local work to the existing origin/main repository huaixuanhu/My-urban-tarot-miniapp-light. This latest request supersedes the earlier no-push restriction for this bounded publication. Preserve65 inherited generated-file changes and existing access protection. Do not modify or message the sibling project; the user will perform that integration separately.
+
+The publication commit carries the remaining glass source, its already-verified evidence and this handoff. Prior130 study tests, both prototype builds and day/night/drag/reveal review remain applicable to unchanged source. Run the aggregate gate before pushing; verify remote main equals the local publication commit afterward. The prior remote main was verified as012522b4 before publication, with21 local commits already ahead before this final commit. Remote outcome is reported separately from local commit preparation.
+
+Production boundary: the default root build still produces the legacy client in dist/public. The accepted reading UI uses prototypes/shuffle-study/reading.vite.config.mjs and produces prototypes/shuffle-study/dist/reading.html. Existing Git automation may build the root application after a main push; this task does not change its build command, routes, hostnames or access policy, nor does it manually deploy/promote the new UI. The source/build handoff is docs/design/stage2.4.17/HANDOFF.md. Do not interpret repository publication as new-UI activation at augurwell.anoriaquant.dev.
 
 ### stage2.5 — full flow and local continuity
 

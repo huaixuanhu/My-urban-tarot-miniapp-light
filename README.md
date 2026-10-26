@@ -49,3 +49,6 @@ The current stage2.4.12 camera supports a full horizontal orbit, elevation12–9
 
 
 Current local trial12 (STATE.md stage2.4.14) retains the original cottage assets and adds two bounded adapters: `reading-room-content.mjs` excludes its four duplicate floor cards; `reading-room-visibility.mjs` temporarily hides coherent furniture components that obstruct the camera-to-table corridor. `reading.mjs` updates this mask before the cached room render. The camera bounds and home behavior remain unchanged. The room pass uses12CSSpx uniform defocus, and glass edge/reflection contrast is stronger. Full evidence and approximation limits: [trial12 repair evidence](docs/design/stage2.4.14/README.md). This is local-only and awaiting visual review.
+
+
+Accepted revision20 and the user-authorized repository push are covered by STATE.md stage2.4.17. For integration in the cottage collection, start with [the source/build handoff](docs/design/stage2.4.17/HANDOFF.md): the reading prototype has a separate build and is not activated by the legacy root build.

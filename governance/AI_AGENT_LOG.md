@@ -222,3 +222,13 @@ Reproduced the pictured huge disc as the original showerhead at approximately.35
 ## 2026-10-26 — checkpoint 9
 
 Executing host: Codex; model: GPT-6. Verified HEAD75d45f19 with only65 inherited dirty files and saved entry hashes. Recorded explicit user acceptance of trial12 before the requested glass-only enlargement. Existing130 study tests,8 GPU cases and browser evidence apply to unchanged product. No push/deployment.
+
+
+## 2026-10-26 — stage2.4.16 glass-only enlargement
+
+Executing host: Codex; model: GPT-6. After checkpoint73b2fa4d, expanded slab dimensions5% each with separate footprint constants and corresponding floor-shadow footprint. Retained camera/framing/gameplay/materials. Independent dependency review avoided a camera refit and excessive cropping.130 study tests, both prototype builds and aggregate gate passed; native day/night/drag/reveal verified with no browser warnings/errors.65 inherited files unchanged. Size candidate left uncommitted for user review; no push/deployment.
+
+
+## 2026-10-26 — stage2.4.17 publication preparation
+
+Executing host: Codex; model: GPT-6. User accepted glass revision20 and explicitly authorized one push to the existing repository, then plans sibling-project integration independently. Verified origin/main at012522b4 and21 outgoing local commits before the final accepted-size commit. Retain65 inherited dirty files; reuse unchanged study/browser evidence and run aggregate gate. Added bounded handoff documenting the independent reading build versus legacy production entry. Push outcome and any automatic build status require separate verification; no manual deploy or sibling write is authorized here.

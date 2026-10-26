@@ -125,3 +125,13 @@ Removed the original room's four decorative floor cards from the Tarot view. Cor
 ## 2026-10-26 — local checkpoint 9
 
 Recorded explicit acceptance of trial12/design revision19 at75d45f19. The next authorized refinement only enlarges the glass slab; all other treatment remains.
+
+
+## 2026-10-26 — glass-only size candidate
+
+After checkpoint9 (73b2fa4d), enlarged the physical glass and its floor-shadow footprint by5% in each horizontal dimension. Camera, card scale, gameplay and accepted materials remain unchanged. Local review pending.
+
+
+## 2026-10-26 — accepted glass size and repository publication
+
+The user accepted revision20 and authorized committing/pushing the accumulated local work to main. Added source/build/access handoff for user-led cottage integration. The new reading UI remains separate from the legacy root production build.
