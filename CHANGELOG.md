@@ -120,3 +120,8 @@ Strengthened room-only blur while retaining sharp Urban Tarot art and controls. 
 ## 2026-10-26 — local trial 12 scene repair
 
 Removed the original room's four decorative floor cards from the Tarot view. Corrected the photographed showerhead obstruction with a view-dependent furniture cutaway that restores hidden components when clear. Camera freedom, one-action home, original Urban Tarot faces and accepted card motion remain.130 study tests and local browser/GPU checks pass; evidence in docs/design/stage2.4.14/. No push/deployment.
+
+
+## 2026-10-26 — local checkpoint 9
+
+Recorded explicit acceptance of trial12/design revision19 at75d45f19. The next authorized refinement only enlarges the glass slab; all other treatment remains.

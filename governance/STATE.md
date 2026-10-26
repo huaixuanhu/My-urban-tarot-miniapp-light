@@ -2,7 +2,7 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: stage2.4.14 is implemented as local trial12/design revision19, pending user visual review. Checkpoint8 is81fcc1a0; optical batch is6649fce9. Scene repair is the commit carrying its completion evidence below. Stage2.5 remains deferred; no push/deployment authority.
+Current continuation: the user accepted trial12/design revision19 at75d45f19 and requested checkpoint9 before enlarging only the glass. stage2.4.15 records this acceptance; stage2.4.16 authorizes the bounded glass-size refinement. Stage2.5 remains deferred; no push/deployment authority.
 
 ## stage1.1 — directory migration
 
@@ -251,6 +251,14 @@ Completed local trial12 candidate. Actual native-browser reproduction and origin
 Select and test a stronger room-only blur method, retain clean foreground color, strengthen glass thickness/edge/local reflection contrast and inspect day/night/overhead/low-angle states. Final acceptance remains with the user after a local preview.
 
 Optical batch implemented locally: 12 CSS pixel room-only Gaussian with dense normalized taps and reduced blur targets, plus clearer glass bevel/lower edge and a broad window-shaped reflection. Eight focused blur checks and eight actual GPU cases passed, preserving source-art color and screen-control boundaries. Both prototype entries and pnpm check:all passed. Initial day/night and low-angle browser views checked. This independent optical batch was committed as6649fce9 before the scene-repair batch; combined interaction/occlusion verification is complete in stage2.4.14.1. Evidence: docs/design/stage2.4.14/optical-research.md and room-gpu.json. No user acceptance or performance qualification is claimed.
+
+#### stage2.4.15 — local checkpoint 9
+
+Source: the user's “现在这个效果非常好！进行commit。然后把玻璃板子改大一点，别的都保持”. The user accepts the current local visual effect at75d45f19 (trial12/design revision19). Product changes were already committed in6649fce9 and75d45f19. This documentation checkpoint records that acceptance before any enlargement; the existing130-test,8-GPU-case and browser evidence applies to unchanged product code. Preserve65 inherited generated-file changes. No push/deployment.
+
+#### stage2.4.16 — glass-only enlargement
+
+Source: the same request. Enlarge only the physical glass slab modestly, retaining its material, thickness, height, center and optics. Keep camera framing, card size/positions, fan, placement rules, room/cutaway/blur, controls and accepted motion unchanged. Use a separate slab footprint so enlargement does not silently pull the camera back and shrink the cards. Its floor shadow may follow the footprint. Current candidate target:10% wider and10% deeper. Verify the visible result locally; other product work remains outside scope. Standing verified local batch-commit authority remains, no push/deployment.
 
 ### stage2.5 — full flow and local continuity
 

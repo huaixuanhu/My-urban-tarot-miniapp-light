@@ -217,3 +217,8 @@ After checkpoint81fcc1a0, implemented stronger room-only defocus and clearer gla
 ## 2026-10-26 — stage2.4.14.1 scene repair and combined verification
 
 Reproduced the pictured huge disc as the original showerhead at approximately.358m from the camera. Added bounded furniture cutaway, original-floor-card exclusion and actual-GLB regressions, retaining full orbit/home and source resources. Independent review found no blocker; added the suggested same-camera cache-revision regression.130 study tests,8 current GPU cases, both local builds and aggregate gate passed. Native exact-angle before/after and full reading/reset sequence verified; no final browser errors/warnings. Source cottage clean;65 protected dirty files unchanged. Current candidate is trial12/revision19; visual acceptance pending. No push/deployment.
+
+
+## 2026-10-26 — checkpoint 9
+
+Executing host: Codex; model: GPT-6. Verified HEAD75d45f19 with only65 inherited dirty files and saved entry hashes. Recorded explicit user acceptance of trial12 before the requested glass-only enlargement. Existing130 study tests,8 GPU cases and browser evidence apply to unchanged product. No push/deployment.
