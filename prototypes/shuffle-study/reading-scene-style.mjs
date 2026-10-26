@@ -29,7 +29,7 @@ export function createReadingSceneStyle(scene, renderer, texture) {
   coolPool.position.set(5.5, 6, -3.6); coolPool.target.position.set(2.8, -0.1, 1.8);
   scene.add(coolPool, coolPool.target);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(CLOTH_WIDTH - .1, CLOTH_LENGTH - .1), new THREE.ShadowMaterial({ opacity: 0.14 }));
-  ground.rotation.x = -Math.PI / 2; ground.position.set(0, -0.145, CLOTH_CENTER_Z); ground.receiveShadow = true; scene.add(ground);
+  ground.rotation.x = -Math.PI / 2; ground.position.set(0, -0.175, CLOTH_CENTER_Z); ground.receiveShadow = true; scene.add(ground);
   const glass = createReadingGlass(renderer); scene.add(glass);
   // Each print is generated/uploaded once and shared by all 78 meshes.
   const backMaps = Object.fromEntries(['light', 'dark'].map(theme => [theme, texture(createReadingBack(theme))]));

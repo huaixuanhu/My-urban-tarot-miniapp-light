@@ -98,3 +98,7 @@ Record recoverable trial10 checkpoint7 before the requested glassvisibility, cot
 ## 2026-10-26 — stage2.4.12.3 camera batch
 
 Expanded horizontal orbit, elevation12–90 degrees and zoom65–220%; moved 回正 beside appearance. Preserved card actions and accepted motion. Local batch only.
+
+## 2026-10-26 — stage2.4.12.1 glass edge batch
+
+Strengthened daytime glass edge, bevel and underside separation while preserving the accepted footprint and card plane. Adjusted contact-shadow height and projection bounds. Study tests and actual day/night low-angle views passed; room integration is a separate batch. No push/deployment.

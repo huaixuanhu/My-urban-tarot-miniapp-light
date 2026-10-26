@@ -105,3 +105,7 @@ The user requested a recoverable checkpoint of revision17/trial10 at076d1d12 on2
 ## Revision 18 — stage2.4.12 camera contract
 
 Derived from governance/STATE.md stage2.4.12.3 and the user's 2026-10-26 request. Horizontal orbit now wraps through a full turn, elevation spans12–90 degrees and optical zoom65–220%. The native 回正 action remains visible beside the appearance selector, restores the accepted home angles and100% zoom, and preserves cards. This supersedes earlier revision camera limits and the hidden-tools recovery location. Card dragging/double-click reveal retain precedence over blank-area camera gestures. Room placement and daylight glass refinements are being verified separately within the same revision.
+
+### stage2.4.12.1 — daylight glass edge batch
+
+The accepted14.8×11.2 footprint and card plane remain. A slightly deeper downward bevel, brighter directional upper edge, subdued lower boundary and stronger daytime edge reflection reveal the glass volume. The center stays transmissive. The card-contact shadow plane moves below the thicker volume; the projection envelope includes its underside. Floor grounding belongs to the actual-room batch. Browser compared day/night and12-degree views; geometry and projection checks pass.

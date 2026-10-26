@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
 
 const TOP = -0.008;
-const DEPTH = 0.062;
-const BEVEL = 0.03;
-const BEVEL_WIDTH = 0.038;
+const DEPTH = 0.08;
+const BEVEL = 0.04;
+const BEVEL_WIDTH = 0.065;
 const RADIUS = 0.36;
 
 function roundedRectangle(width, length, radius) {
@@ -101,12 +101,18 @@ export function createReadingGlass(renderer) {
   const rimGeometry = new THREE.BufferGeometry().setFromPoints(rimPoints.map(p => new THREE.Vector3(p.x, TOP - .015, -p.y + CLOTH_CENTER_Z)));
   const rimColors = [];
   for (const p of rimPoints) {
-    const catchLight = .2 + .65 * Math.exp(-Math.pow((p.x + 4.8) / 3.2, 2) - Math.pow((p.y - 4.7) / 4, 2));
+    const catchLight = .48 + .5 * Math.exp(-Math.pow((p.x + 4.8) / 3.2, 2) - Math.pow((p.y - 4.7) / 4, 2));
     rimColors.push(catchLight * .94, catchLight * .97, catchLight);
   }
   rimGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rimColors, 3));
   const rimMaterial = new THREE.LineBasicMaterial({vertexColors:true, transparent:true, opacity:.72, toneMapped:false});
   const rimLine = new THREE.LineLoop(rimGeometry, rimMaterial); rimLine.name = 'directional-glass-edge'; group.add(rimLine);
+  // A faint lower boundary gives the clear slab a readable thickness on a
+  // bright floor. Its offset is real geometry, so it separates at low angles.
+  const lowerRim = new THREE.LineLoop(rimGeometry.clone(), new THREE.LineBasicMaterial({
+    color: 0x50767c, transparent: true, opacity: .3, toneMapped: false,
+  }));
+  lowerRim.name = 'glass-lower-boundary'; lowerRim.position.y = -(DEPTH + BEVEL * 2 - .03); group.add(lowerRim);
 
   // The room is visible through the actual volume. No opaque backing remains;
   // the bounded shadow receiver in the scene keeps cards grounded on this top.
@@ -116,26 +122,29 @@ export function createReadingGlass(renderer) {
   group.userData.applyAppearance = theme => {
     const dark = theme === 'dark';
     surface.color.setHex(dark ? 0xe4e9f2 : 0xffffff);
-    surface.attenuationColor.setHex(dark ? 0xcfdcee : 0xf6f4ee);
-    surface.transmission = dark ? 0.97 : 0.94;
-    surface.roughness = 0.085;
-    surface.clearcoat = 0.25;
-    surface.envMapIntensity = dark ? 0.12 : 0.3;
+    surface.attenuationColor.setHex(dark ? 0xcfdcee : 0xe4f2f1);
+    surface.transmission = dark ? 0.97 : 0.91;
+    surface.roughness = dark ? .085 : .105;
+    surface.clearcoat = dark ? .25 : .52;
+    surface.envMapIntensity = dark ? 0.12 : 0.42;
     surface.clearcoatRoughness = 0.1;
-    edge.color.setHex(dark ? 0xc5cfdf : 0xf5f3f9);
-    edge.attenuationColor.setHex(dark ? 0xbccbea : 0xe5def3);
-    edge.envMapIntensity = dark ? 0.95 : 1.15;
-    edge.clearcoat = 0.4;
-    edge.roughness = 0.075;
-    edge.transmission = 0.94;
+    edge.color.setHex(dark ? 0xc5cfdf : 0xe5f0f1);
+    edge.attenuationColor.setHex(dark ? 0xbccbea : 0xa8d0d2);
+    edge.attenuationDistance = dark ? 1.5 : .48;
+    edge.envMapIntensity = dark ? 0.95 : 1.5;
+    edge.clearcoat = dark ? .4 : .8;
+    edge.roughness = 0.065;
+    edge.transmission = dark ? .94 : .86;
     edge.iridescence = 0.035;
-
+    rimMaterial.opacity = dark ? .72 : .95;
+    lowerRim.material.color.setHex(dark ? 0xa4b7d3 : 0x50767c);
+    lowerRim.material.opacity = dark ? .15 : .38;
   };
   let disposed = false;
   group.userData.dispose = () => {
     if (disposed) return;
     disposed = true;
-    body.geometry.dispose(); rimGeometry.dispose(); rimMaterial.dispose();
+    body.geometry.dispose(); rimGeometry.dispose(); rimMaterial.dispose(); lowerRim.geometry.dispose(); lowerRim.material.dispose();
     surface.dispose(); edge.dispose();
     environment.dispose();
   };

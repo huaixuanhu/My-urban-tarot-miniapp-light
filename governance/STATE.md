@@ -218,7 +218,7 @@ Source: the same request. Local work and verified batch commits are authorized. 
 
 ##### stage2.4.12.1 — legible daylight glass
 
-Strengthen selective edge reflection, thickness/underside separation and soft cast shadow against the light floor, retaining a clear central playing surface. Check both themes, low angle and overhead without changing the footprint or cards.
+Implemented edge batch: stronger directional rim/reflection, a downward thickness increase and a subtle lower boundary, with the same footprint/card plane. Contact-shadow and projection extents follow the volume. Day/night and low-angle browser views checked; geometry/projection tests pass. Floor grounding is delivered with stage2.4.12.2. Visual acceptance remains with the user.
 
 ##### stage2.4.12.2 — actual cottage scene
 

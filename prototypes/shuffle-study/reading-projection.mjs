@@ -9,7 +9,7 @@ export const DEFAULT_READING_PADDING = Object.freeze({ top: 96, right: 28, botto
 // part of the accepted scene; merging everything into one box wastes framing.
 export const READING_PROJECTION_VOLUMES = Object.freeze([
   READING_ENVELOPE,
-  Object.freeze({ minX: -CLOTH_WIDTH / 2, maxX: CLOTH_WIDTH / 2, minY: -0.14, maxY: -0.008,
+  Object.freeze({ minX: -CLOTH_WIDTH / 2, maxX: CLOTH_WIDTH / 2, minY: -0.18, maxY: -0.008,
     minZ: CLOTH_CENTER_Z - CLOTH_LENGTH / 2, maxZ: CLOTH_CENTER_Z + CLOTH_LENGTH / 2 }),
   Object.freeze({ minX: READING_DOCK.x - READING_DOCK.width / 2, maxX: READING_DOCK.x + READING_DOCK.width / 2,
     minY: READING_DOCK.bottom, maxY: READING_DOCK.top + 0.003,
@@ -19,7 +19,7 @@ export const READING_PROJECTION_VOLUMES = Object.freeze([
 export const READING_PROJECTION_ENVELOPE = Object.freeze({
   minX: Math.min(READING_ENVELOPE.minX, -CLOTH_WIDTH / 2),
   maxX: Math.max(READING_ENVELOPE.maxX, CLOTH_WIDTH / 2),
-  minY: Math.min(READING_ENVELOPE.minY, -0.14),
+  minY: Math.min(READING_ENVELOPE.minY, -0.18),
   maxY: READING_ENVELOPE.maxY,
   minZ: Math.min(READING_ENVELOPE.minZ, CLOTH_CENTER_Z - CLOTH_LENGTH / 2),
   maxZ: Math.max(READING_ENVELOPE.maxZ, CLOTH_CENTER_Z + CLOTH_LENGTH / 2),

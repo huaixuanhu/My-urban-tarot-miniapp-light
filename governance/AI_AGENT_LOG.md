@@ -195,3 +195,7 @@ Executing host: Codex; model: GPT-6. Verified product HEAD076d1d12 and65 prior g
 ## 2026-10-26 — stage2.4.12.3 camera batch
 
 Executing host: Codex; model: GPT-6. After checkpoint1dc33e53, completed the bounded wider-camera/visible-home batch.118 study tests passed and native browser observed low-angle orbit plus visible recovery. Actual-room camera containment is checked in the following room batch. No push/deployment.
+
+## 2026-10-26 — stage2.4.12.1 glass edge batch
+
+Strengthened daytime glass edge, bevel and underside separation while preserving the accepted footprint and card plane. Adjusted contact-shadow height and projection bounds. Study tests and actual day/night low-angle views passed; room integration is a separate batch. No push/deployment.
