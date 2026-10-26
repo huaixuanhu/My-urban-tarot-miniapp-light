@@ -40,3 +40,6 @@ The implementation still runs one room render and two fullscreen blur passes whe
 Focused Node verification: **8 tests passed**. New checks cover normalized light-preserving weights, positive monotonic kernel lobes, variance within 3% of the requested spread, a monotonic edge response without overshoot, identical kernels across DPR 1 and 2, and effective 11.8–12 CSS pixel spread across four representative viewport sizes. Existing render isolation, caching and disposal checks remain; failure recovery now covers all three render stages.
 
 Those numerical checks verify the selected kernel and rendering contract, not the user's aesthetic acceptance. The parent stage must run the existing real-GPU eight-case room/glass fixture and inspect day/night, low-angle and overhead views. That fixture separately checks exact foreground artwork/white-patch preservation, screen-glass capture boundaries and render-state restoration. No measured frame-rate or true photographic bokeh claim is made here.
+
+
+Parent verification completed: eight of eight actual GPU cases passed; results are saved in room-gpu.json. The combined native-browser and scene-cutaway evidence is recorded in README.md in this directory. User visual acceptance remains pending.

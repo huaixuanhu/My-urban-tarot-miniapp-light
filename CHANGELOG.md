@@ -115,3 +115,8 @@ Preserved trial11 at eadc2961 before the user-requested floor-decor removal, bac
 ## 2026-10-26 — room defocus and glass contrast
 
 Strengthened room-only blur while retaining sharp Urban Tarot art and controls. A cooler clear surface, brighter bevel, stronger lower boundary and softer rectangular window reflection make the floating table easier to read. Local optical batch under stage2.4.14.2; view obstruction repair follows separately.
+
+
+## 2026-10-26 — local trial 12 scene repair
+
+Removed the original room's four decorative floor cards from the Tarot view. Corrected the photographed showerhead obstruction with a view-dependent furniture cutaway that restores hidden components when clear. Camera freedom, one-action home, original Urban Tarot faces and accepted card motion remain.130 study tests and local browser/GPU checks pass; evidence in docs/design/stage2.4.14/. No push/deployment.

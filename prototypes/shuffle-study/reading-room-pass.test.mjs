@@ -118,9 +118,10 @@ test('12 CSS pixel room defocus stays stable across DPR and viewport sizes', () 
   }
 });
 
-test('static camera caches room output; pose, projection, appearance and resize invalidate it', () => {
+test('static camera caches room output; pose, projection, appearance, cutaway and resize invalidate it', () => {
   const { renderer, calls } = fakeRenderer();
-  const pass = createReadingRoomPass(renderer, new THREE.Group()), camera = new THREE.PerspectiveCamera();
+  const room = new THREE.Group();
+  const pass = createReadingRoomPass(renderer, room), camera = new THREE.PerspectiveCamera();
   assert.equal(pass.render(camera), true);
   const target = pass.texture;
   assert.equal(pass.render(camera), false); assert.equal(calls.filter(call => call.kind === 'render').length, 3);
@@ -132,6 +133,12 @@ test('static camera caches room output; pose, projection, appearance and resize 
   renderer.width = 1280; renderer.height = 720; renderer.cssWidth = 1280; renderer.cssHeight = 720;
   assert.equal(pass.render(camera), true); assert.equal(pass.texture, target);
   assert.equal(pass.render(camera), false);
+  const countBeforeCutaway = calls.filter(call => call.kind === 'render').length;
+  room.userData.cutaway = { revision: 1 };
+  assert.equal(pass.render(camera), true);
+  assert.equal(calls.filter(call => call.kind === 'render').length, countBeforeCutaway + 3);
+  assert.equal(pass.render(camera), false);
+  assert.equal(calls.filter(call => call.kind === 'render').length, countBeforeCutaway + 3);
   pass.dispose();
 });
 

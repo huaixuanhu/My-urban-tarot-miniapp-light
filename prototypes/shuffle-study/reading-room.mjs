@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { CLOTH_WIDTH, CLOTH_LENGTH } from './reading-layout.mjs';
+import { excludeCottageFloorCards } from './reading-room-content.mjs';
+import { createReadingRoomVisibility } from './reading-room-visibility.mjs';
 
 // Exact static cottage export; source and rendering boundary are recorded in
 // docs/design/stage2.4.12/cottage-source-and-export.md. No cottage runtime code
@@ -133,6 +135,7 @@ export async function createReadingRoom(renderer) {
       if(value.meshes!==645 || value.vertices!==383435 || value.triangles!==158560)throw new Error(`The ${theme} cottage asset does not match the verified static model.`);
     }
     for(const root of loaded)restoreStaticRuntime(root);
+    const excludedFloorCards = { light: excludeCottageFloorCards(day), dark: excludeCottageFloorCards(night) };
     environment=createOriginalEnvironment(renderer);
     const group=new THREE.Group();group.name='original-cottage-reading-environment';
     const foreground=new THREE.Group();foreground.name='cottage-reading-props';
@@ -141,6 +144,10 @@ export async function createReadingRoom(renderer) {
     physical.position.set(...cottageToReadingPosition(0,0,0));
     day.name='original-cottage-day';night.name='original-cottage-night';
     physical.add(day,night);group.add(physical);
+    const visibility = {
+      light: createReadingRoomVisibility(day, { metresPerUnit: COTTAGE_METRES_PER_UNIT }),
+      dark: createReadingRoomVisibility(night, { metresPerUnit: COTTAGE_METRES_PER_UNIT }),
+    };
     const tableShadow=createTableShadow();group.add(tableShadow.shadow);
     const ambient=new THREE.AmbientLight();
     const hemisphere=new THREE.HemisphereLight();
@@ -158,7 +165,8 @@ export async function createReadingRoom(renderer) {
     const background=new THREE.Color();
     group.userData={floorY:ROOM_FLOOR_Y,sourceRevision:COTTAGE_SOURCE_REVISION,decorativeOnly:true,
       environmentTexture:environment.texture,backgroundColor:background,environmentIntensity:1,
-      inventories,loadMilliseconds:performance.now()-start,metresPerGameplayUnit:COTTAGE_METRES_PER_UNIT};
+      inventories,excludedFloorCards,loadMilliseconds:performance.now()-start,metresPerGameplayUnit:COTTAGE_METRES_PER_UNIT,
+      cutaway:{mode:'table-focused-furniture',hiddenGroups:[],revision:0}};
     let disposed=false;
     function applyAppearance(theme){
       if(disposed)return;
@@ -172,12 +180,23 @@ export async function createReadingRoom(renderer) {
       tableShadow.shadow.material.opacity=dark?.17:.12;
       key.shadow.needsUpdate=true;
     }
+    // Invoke before the room-only pass. Theme/camera also form that pass's cache
+    // key; this controller performs no repeated raycasts at a stationary view.
+    function update(camera) {
+      if(disposed)return false;
+      const controller=visibility[group.userData.appearance];
+      const changed=controller.update(camera);
+      group.userData.cutaway.hiddenGroups=controller.hiddenGroups;
+      if(changed){group.userData.cutaway.revision++;key.shadow.needsUpdate=true;}
+      return changed;
+    }
     function dispose(){
       if(disposed)return;disposed=true;
+      for(const controller of Object.values(visibility))controller.dispose();
       disposeRoots(loaded);key.shadow.dispose();environment.dispose();tableShadow.dispose();
       group.removeFromParent();foreground.removeFromParent();physical.clear();group.clear();foreground.clear();
     }
     applyAppearance('light');
-    return {group,foreground,applyAppearance,dispose};
+    return {group,foreground,applyAppearance,update,dispose};
   }catch(error){disposeRoots(loaded);environment?.dispose();throw error;}
 }

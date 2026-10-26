@@ -2,6 +2,8 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
+Current continuation: stage2.4.14 is implemented as local trial12/design revision19, pending user visual review. Checkpoint8 is81fcc1a0; optical batch is6649fce9. Scene repair is the commit carrying its completion evidence below. Stage2.5 remains deferred; no push/deployment authority.
+
 ## stage1.1 — directory migration
 
 Complete. The existing directory was renamed on the same filesystem to /Users/anoria/Documents/python_coding/small_project/urban-tarot-light. The original Downloads path is absent; directory device/inode remain 16777233/9176440. Before any subsequent changes, 43,432 regular-file SHA-256 values, symlink targets, and 52,220 entry identities/metadata matched. See evidence/migration-2026-10-22.json. This operation made no second project copy.
@@ -242,11 +244,13 @@ Local implementation and verified batch commits are authorized by the same reque
 
 Reproduce the pictured room obstruction, identify source objects and causes, remove duplicate floor-card decor through a reproducible adaptation, and implement a coherent camera/occlusion repair with representative low/side/back and desktop-size checks.
 
+Completed local trial12 candidate. Actual native-browser reproduction and original GLB triangles identify the showerhead at .358m from the camera as the large disc. A camera-aware furniture cutaway removes near-camera/table-corridor obstructions without changing view bounds or camera matrices; objects restore when clear. This is explicit view-dependent visibility, not shared-depth physical compositing. Four decorative floor cards/eight meshes are excluded only from the imported room, with original GLBs/cottage unchanged. Combined verification:130 study tests,8 actual GPU cases, both prototype builds and pnpm check:all passed, including15 access tests. Native day/night draw-three/reveal/original meaning/orbit/overhead/zoom/home/reset and1024px desktop checks completed; exact1792×1388 before/after evidence saved. No final browser warnings/errors;65 inherited dirty files unchanged. Evidence and limits: docs/design/stage2.4.14/README.md. User visual acceptance is pending.
+
 ##### stage2.4.14.2 — focus and glass refinement
 
 Select and test a stronger room-only blur method, retain clean foreground color, strengthen glass thickness/edge/local reflection contrast and inspect day/night/overhead/low-angle states. Final acceptance remains with the user after a local preview.
 
-Optical batch implemented locally: 12 CSS pixel room-only Gaussian with dense normalized taps and reduced blur targets, plus clearer glass bevel/lower edge and a broad window-shaped reflection. Eight focused blur checks and eight actual GPU cases passed, preserving source-art color and screen-control boundaries. Both prototype entries and pnpm check:all passed. Initial day/night and low-angle browser views checked. This independent optical batch is recorded before the scene-repair batch; combined interaction/occlusion verification continues in stage2.4.14.1. Evidence: docs/design/stage2.4.14/optical-research.md and room-gpu.json. No user acceptance or performance qualification is claimed.
+Optical batch implemented locally: 12 CSS pixel room-only Gaussian with dense normalized taps and reduced blur targets, plus clearer glass bevel/lower edge and a broad window-shaped reflection. Eight focused blur checks and eight actual GPU cases passed, preserving source-art color and screen-control boundaries. Both prototype entries and pnpm check:all passed. Initial day/night and low-angle browser views checked. This independent optical batch was committed as6649fce9 before the scene-repair batch; combined interaction/occlusion verification is complete in stage2.4.14.1. Evidence: docs/design/stage2.4.14/optical-research.md and room-gpu.json. No user acceptance or performance qualification is claimed.
 
 ### stage2.5 — full flow and local continuity
 

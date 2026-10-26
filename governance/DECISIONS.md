@@ -132,3 +132,8 @@ Save existingeadc2961 before the bounded local correction. The latest request ex
 ## 2026-10-26 — focused room optics
 
 Use uniform room-only defocus to retain every interactive card sharply at freely selected viewing angles. Do not apply a physical camera depth-of-field pass to the entire card scene. A dense Gaussian at reduced resolution avoids spaced copies of sharp room edges; retain linear color and cached room rendering. Original-room reflection capture would add twelve scene captures for two themes and still lack correct near-object parallax; use a bounded existing window-shaped reflection field for the glass instead. See stage2.4.14 optical research for primary references and limits.
+
+
+## 2026-10-26 — table-focused source-room cutaway
+
+The original bathroom showerhead can lie only.358m from the freely orbiting camera and fill the viewport. The separate room background then falsely puts the table above it. Retain camera freedom and hide coherent foreground furniture groups only while they obstruct the table corridor or approach the camera. Do not merely increase blur, globally remove room furniture, or silently constrain elevation. Preserve floor/rugs/architecture and restore source visibility when clear. The four decorative floor cards are independently excluded under the user's explicit request. This is a bounded cutaway approximation, not a shared-depth renderer or all-sightline guarantee.

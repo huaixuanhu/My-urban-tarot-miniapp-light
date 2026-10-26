@@ -220,6 +220,7 @@ function frame(now) {
     outline.position.set(pose.x, pose.y + 0.024, pose.z);
   }
   if (roomPass) {
+    room.update(camera);
     roomPass.render(camera); scene.background = roomPass.texture;
     // Day retains the cottage's .95 exposure. Night lowers only the room's
     // exposure for quiet contrast behind the light controls and original art.
