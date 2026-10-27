@@ -24,7 +24,7 @@ This does not qualify Electron packaging, physical-phone performance, future per
 
 Existing Vercel project:my-urban-tarot-miniapp-light, team anorias-projects; canonical URL:https://augurwell.anoriaquant.dev. vercel.json explicitly selects pnpm build and dist/public, keeps proxy.ts and redirects hosted /reading.html to /. Existing Cloudflare and server-side signature/hostname protections remain unchanged. File-based build/output configuration follows https://vercel.com/docs/project-configuration.
 
-At release preparation, local checks are complete; GitHub/Vercel and hosted outcomes are recorded separately after publication. The Vercel connector cannot currently read this team's project (403); GitHub deployment status and ordinary browser/HTTP observations are the available verification routes. No private credentials are copied or exposed.
+Local checks and production deployment are complete; see the publication receipt below. The Vercel connector cannot currently read this team's project (403); GitHub deployment status and ordinary browser/HTTP observations are the available verification routes. No private credentials are copied or exposed.
 
 ## Future work
 
@@ -33,3 +33,9 @@ Work directly in client/ using pnpm dev. Cottage integration should link the can
 ## Local cache preservation
 
 The first default dev-server startup regenerated inherited tracked Vite cache files. The server was stopped;48previously clean cache files were restored from HEAD and the dirty metadata index was recovered from Git blob8a396d92681f726af1552626677b7b63ed42f74d, with exact SHA-256 match against the preflight snapshot. All65 inherited dirty-file hashes match again. Root cacheDir now points to ignored .local/vite; a subsequent dev start uses that isolated cache and serves the new UI at port3000. These cache files are excluded from the application commit.
+
+## Publication receipt
+
+Publication result (2026-10-27): replacement commit117f967b7951f48827e18e3bd5b52ac1a1ed1efd was pushed to origin/main and remote/local heads matched. GitHub reported Vercel success; deployment7348950557 is explicitly Production, with state success and description “Deployment has completed”. Its environment URL is https://my-urban-tarot-miniapp-light-p9164076v-anorias-projects.vercel.app. Anonymous canonical page and GLB requests redirect302 to the existing Cloudflare Access login; direct Vercel page and GLB requests reject403. The native browser reached the existing login page. A fresh authenticated hosted reading is not observed because the browser has no valid session. No credentials/access policies were changed. This closes source replacement and production deployment, with that hosted-login verification limit explicit.
+
+Sanitized anonymous observations are in access-observations.json; no cookies or login parameters are retained.

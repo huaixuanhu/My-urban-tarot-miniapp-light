@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-27",
+  "sourceCommit": "117f967b7951f48827e18e3bd5b52ac1a1ed1efd",
+  "anonymous": [
+    {
+      "url": "https://augurwell.anoriaquant.dev/",
+      "status": 302,
+      "redirect_host": "polished-scene-f439.cloudflareaccess.com"
+    },
+    {
+      "url": "https://augurwell.anoriaquant.dev/assets/cottage-day-DA6Sk8N7.glb",
+      "status": 302,
+      "redirect_host": "polished-scene-f439.cloudflareaccess.com"
+    },
+    {
+      "url": "https://my-urban-tarot-miniapp-light.vercel.app/",
+      "status": 403,
+      "redirect_host": null
+    },
+    {
+      "url": "https://my-urban-tarot-miniapp-light.vercel.app/assets/cottage-day-DA6Sk8N7.glb",
+      "status": 403,
+      "redirect_host": null
+    }
+  ],
+  "authenticatedHostedGameplay": "not observed; existing login required"
+}

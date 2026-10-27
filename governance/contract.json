@@ -7,7 +7,7 @@
   ],
   "design": {
     "applicable": true,
-    "reason": "Continuing user-facing tarot app, with an observed legacy design awaiting reconstruction."
+    "reason": "Continuing user-facing Urban Tarot reading app with an accepted versioned glass-table design."
   },
   "roles": {
     "entrypoint": "AGENTS.md",
