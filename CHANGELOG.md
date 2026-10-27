@@ -142,3 +142,12 @@ The user accepted revision20 and authorized committing/pushing the accumulated l
 - Root-pin Three.js; retain original78-card assets/data and all accepted interactions/visuals.
 - Keep choreography/GPU tools separate, importing the same runtime. Preserve the Vercel access proxy and canonical hostname.
 - Current authority and verification: governance/STATE.md stage2.4.18.
+
+
+## 2026-10-28 — shared-record candidate and dedicated database
+
+- Unify More, drawn cards and reading records as day/night glass sheets with pull-out motion, close/Escape/focus recovery and reduced motion.
+- Add explicit shared-record form, historical list/detail and JSON export; preserve original meanings, placement and orientation separately from personal interpretation/reflection.
+- Add private records API, strict validation, immutable retry-safe storage, Neon adapter, explicit schema and 40 contract/client tests.
+- Create and validate the separately authorized Augurwell Neon resource; connect server secrets to Production only without deploying candidate code. Existing word-learning database and local generated changes remain untouched.
+- Record official Terra/Sol evaluation without making paid AI calls. Current evidence and release boundary remain in governance/STATE.md.

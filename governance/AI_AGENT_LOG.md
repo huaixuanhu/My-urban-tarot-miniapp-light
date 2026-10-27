@@ -242,3 +242,15 @@ Validation: pnpm check:all passed, including129 retained application/motion test
 A default dev startup rewrote the inherited Vite cache. Stopped it, recovered the exact original metadata from a matching Git blob and restored only the48previously clean files that startup deleted. All65 original dirty hashes match again. Root Vite now uses ignored .local/vite, avoiding future writes to that inherited cache. The new isolated dev start succeeds.
 
 Publication result (2026-10-27): replacement commit117f967b7951f48827e18e3bd5b52ac1a1ed1efd was pushed to origin/main and remote/local heads matched. GitHub reported Vercel success; deployment7348950557 is explicitly Production, with state success and description “Deployment has completed”. Its environment URL is https://my-urban-tarot-miniapp-light-p9164076v-anorias-projects.vercel.app. Anonymous canonical page and GLB requests redirect302 to the existing Cloudflare Access login; direct Vercel page and GLB requests reject403. The native browser reached the existing login page. A fresh authenticated hosted reading is not observed because the browser has no valid session. No credentials/access policies were changed. This closes source replacement and production deployment, with that hosted-login verification limit explicit.
+
+
+## 2026-10-28 — stage2.5 local records and authorized cloud setup
+
+Executor: Codex (GPT-6), with bounded implementation/review subagents. Read installed human-ai-governance and design-authorship plus relevant OpenAI/Vercel guidance. Implemented shared glass sheets, completed-reading records, immutable/idempotent API, Neon adapter, explicit migration and tests. Independently reviewed auth and storage readiness. Observed and repaired stale card-input rows after reset. Preserved all 65 inherited generated changes; accepted gameplay, artwork and access sources remain unchanged.
+
+Live account research identified words-learning-app-for-mimi-neon under existing Launch; $0.31 period spend, 6.21GB transfer and $5 notification were observed, not extrapolated into a hard cap. After explicit user authority, created dedicated augurwell-records in Sydney, applied the schema, verified local signed service requests against real Neon with synthetic data and exact cleanup, then configured 0.25 CU/five-minute sleep. After separate browser access-grant approval, connected the resource only to Augurwell Production and verified the named secret variable without revealing it. No other database was modified, no commit/push/deployment or AI request occurred. Runtime boundary and remaining hosted qualification are in STATE.md.
+
+
+## 2026-10-28 — stage2.5.3 release preparation
+
+Executor: Codex (GPT-6). The latest user request authorizes local commit, database-engineering review and conditional cloud publication of the records slice. Recheck the existing resource/handler/guard, preserve inherited generated files, then verify the hosted browser-to-database story. AI remains discussion only. Release receipts will be recorded after observation; no previous deployment evidence is reused as proof of the new API.

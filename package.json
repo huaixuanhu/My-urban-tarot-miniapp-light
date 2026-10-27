@@ -16,14 +16,16 @@
     "check:governance": ".venv/bin/python governance/governance_package_check.py --project-root . --target . --project-lifecycle durable",
     "check:access-runtime": "node scripts/check-access-runtime.mjs",
     "test:access": "tsx --test tests/access.test.ts",
-    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm build",
+    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm test:records && pnpm check:records-runtime && pnpm build",
     "format": "prettier --write .",
     "electron:dev": "electron .",
     "electron:build": "pnpm build:client && electron-builder --mac",
     "electron:build:win": "pnpm build:client && electron-builder --win",
     "electron:build:linux": "pnpm build:client && electron-builder --linux",
     "test:reading": "node --test prototypes/shuffle-study/*.test.mjs",
-    "dev:motion": "vite --config prototypes/shuffle-study/vite.config.mjs"
+    "dev:motion": "vite --config prototypes/shuffle-study/vite.config.mjs",
+    "test:records": "tsx --test tests/records*.test.mjs",
+    "check:records-runtime": "node scripts/check-records-runtime.mjs"
   },
   "build": {
     "appId": "com.urbantatot.app",
@@ -135,7 +137,8 @@
     "vaul": "^1.1.2",
     "wouter": "^3.3.5",
     "zod": "^4.1.12",
-    "three": "0.186.1"
+    "three": "0.186.1",
+    "@neondatabase/serverless": "1.1.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",

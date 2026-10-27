@@ -11,7 +11,7 @@ The accepted glass-table reading experience is the sole application. Its current
 - `pnpm build`: application output in `dist/public`, plus the existing Express fallback in `dist/index.js`.
 - `pnpm preview`: preview that built application locally. `pnpm start` runs the Express fallback.
 - For previous local bookmarks, `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs` serves the same client at port5174. Hosted `/reading.html` redirects to `/`.
-- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, access runtime,15 authorization tests,129 application/motion tests and the production build. Tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
+- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records runtimes,15 authorization tests,129 application/motion tests,40 record tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
 
 Local Vite/Express/Electron execution does not run the Vercel-specific identity gate. Do not use these local servers as a protected public host. Electron still points to `dist/public/index.html`; packaged desktop execution has not been qualified by this web replacement.
 
@@ -23,7 +23,17 @@ Local Vite/Express/Electron execution does not run the Vercel-specific identity 
 
 `reading-glass.mjs`, `reading-screen-glass.mjs`, `reading-back.mjs` and `reading-scene-style.mjs` own glass, controls, backs and lighting. `reading-room.mjs` loads static day/night cottage assets from `client/src/assets/`; room-only blur and furniture cutaway remain separate from sharp cards. Model provenance and reproduction are retained under docs/design/stage2.4.12. The original cottage is a separate, unchanged application.
 
-`reading-appearance.mjs` remembers only light/dark/system preference. Readings, questions and reflections are not persisted; refresh starts a new reading. Full-flow/record work remains deferred in STATE.md stage2.5. AI and cross-device sync remain deferred.
+`reading-appearance.mjs` remembers light/dark/system preference. Stage2.5.1 adds candidate glass sheets and explicit shared-record saving: question, original card facts/meanings, placement, personal interpretation and reflection. The active table and unsaved writing remain in memory; opening a historical record does not replace them. Refresh starts a new table. AI remains a separately evaluated future feature.
+
+## Shared records (local candidate)
+
+`reading-disclosures.mjs` owns More/list/records sheet motion and focus. `reading-records.mjs` renders the form and history; `reading-record-data.mjs` freezes save attempts so retries keep the same identifier and content. Save requires at least one card and every drawn card revealed. Existing records are immutable snapshots; no edit/delete or cloud draft autosave is implemented.
+
+`api/records.ts` serves private GET/POST requests on Vercel. Every request verifies the existing signed Cloudflare identity before storage, and writes require the same origin. Both authorized users read the same collection; the author identifier is attribution only. The server reads `AUGURWELL_RECORDS_DATABASE_URL`; it is never bundled into client code. Apply `server/records/001-create-records.sql` explicitly only to the dedicated Augurwell database. Startup never runs schema changes.
+
+Vite development/preview intentionally returns a clear unconfigured response at `/api/records`; it does not bypass hosted identity or pretend browser storage is cloud storage. The current production deployment has not received this candidate code. Live database setup and binding status are owned solely by STATE.md stage2.5.1.
+
+`pnpm test:records` runs the synthetic contract/client checks. The optional real-database harness is `pnpm exec tsx scripts/check-records-neon.mjs --confirm-dedicated-validation-database`, with server-only `AUGURWELL_RECORDS_TEST_DATABASE_URL` and exact `AUGURWELL_RECORDS_TEST_EXPECTED_HOST`. It requires an existing empty dedicated table, uses synthetic identities/data, cleans only its exact fixtures and verifies the empty baseline. It is deliberately excluded from `check:all`.
 
 ## Development tools
 

@@ -141,3 +141,12 @@ The original bathroom showerhead can lie only.358m from the freely orbiting came
 ## 2026-10-27 — stage2.4.18 sole primary application
 
 Source: explicit user request to replace the old version completely and continue on the accepted new version. Promote accepted revision20 from prototypes/shuffle-study into client/ and remove the retired React UI; keep original card art/data unchanged. The root build, hosted `/` and future development share one runtime. Keep the motion/GPU tools as development consumers, not a second product. Root-pinned Three.js makes the release independent of the old isolated install. Existing Vercel project/domain and application access guard remain. This supersedes stage2.4.17's source-publication-only boundary;4af6f9bb is the recovery point. Full-flow/persistence features remain deferred.
+
+
+## 2026-10-28 — stage2.5 shared records and dedicated Neon resource
+
+The user explicitly replaces the earlier browser-only/deferred-saving proposal with cloud records shared by the two existing users. Keep the author identifier as attribution, without per-user filtering. Preserve card identity, orientation, layout and original meanings as immutable server-enriched snapshots; keep human writing separate. More, drawn-card list and records use one candidate glass-sheet language with keyboard and reduced-motion recovery. Do not extend this into a new table/scene design.
+
+After a live quota/pricing audit of the existing Vercel-managed Neon Launch installation, the user explicitly chose a separate Augurwell project. Create augurwell-records in Sydney, apply the dedicated schema, retain optional Auth/Realtime off and use 0.25 CU with five-minute scale-to-zero. A later explicit confirmation authorizes connection only to the Augurwell Vercel Production server without deployment. This gives a new empty database, not access to the word-learning tables. Live synthetic database verification is distinct from hosted user acceptance. STATE.md stage2.5.1 owns current status.
+
+For stage2.5.2, prefer gpt-6.1-terra as the initial evaluation candidate based on official model scope and half the standard input/output rates of gpt-6-sol. This is not a measured quality result. No model invocation, secret setup or paid AI test is authorized by the research request; the bounded evaluation proposal is in docs/ai/stage2.5.2-model-evaluation.md.

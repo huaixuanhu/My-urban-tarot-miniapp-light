@@ -9,6 +9,8 @@ import { createReading, reduceReading, canUndo } from './reading-state.mjs';
 import { createReadingCardFace } from './reading-art.mjs';
 import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
 import { createReadingReader } from './reading-reader.mjs';
+import { createReadingDisclosures } from './reading-disclosures.mjs';
+import { createReadingRecords } from './reading-records.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
 import { createReadingProjection } from './reading-projection.mjs';
 import { createScreenGlass } from './reading-screen-glass.mjs';
@@ -35,7 +37,7 @@ function freshReading(order = shuffleDeck(ids)) {
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
 let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass;
-let appearanceController;
+let appearanceController, disclosures, recordsController;
 let scheduled = 0, failed = false, disposed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
 const flips = new Map(), currentPoses = new Map(), pendingReveals = new Map();
@@ -84,6 +86,7 @@ function announce(text) {
   noticeTimer = setTimeout(() => { noticeText = ''; updateUI(); }, 2500);
 }
 function updateUI() {
+  recordsController?.update();
   const placed = placedInOrder(), opened = placed.filter(isOpened).length;
   const selected = reading.placed[reading.selectedId];
   const busy = !!reset || failed;
@@ -250,7 +253,9 @@ async function reveal(id) {
 }
 function beginReset() {
   if (reset || failed) return;
-  for (const id of ['reader-details', 'table-tools', 'drawn-cards']) $(id).open = false;
+  if (!recordsController?.mayReset()) return;
+  disclosures.closeAll({ motion: false });
+  $('reader-details').open = false;
   round += 1; pendingReveals.clear();
   cancelDrag(); lastTap = null; hoverId = null;
   noticeText = '';
@@ -270,6 +275,7 @@ function finishReset() {
   if (!reset) return;
   viewTransition = null; zoomTarget = 1; applyView({ ...view, zoom: 1 });
   reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
+  recordsController?.reset();
   updateControlBounds();
   hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
   deckFocusId = reading.order[0]; flips.clear(); updateUI(); invalidate();
@@ -519,14 +525,8 @@ $('reveal').addEventListener('click', event => {
   reveal(reading.selectedId);
 });
 $('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
-for (const [buttonId, detailsId] of [['tools-toggle', 'table-tools'], ['drawn-toggle', 'drawn-cards']]) {
-  $(buttonId).addEventListener('click', () => {
-    $(detailsId).open = !$(detailsId).open;
-    if (detailsId === 'drawn-cards' && $(detailsId).open) {
-      ($('placed-list').querySelector('button') || $('placed-list')).focus({ preventScroll: true });
-    }
-  });
-}
+disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches });
+recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => !!reset || failed || flips.size > 0 || pendingReveals.size > 0, disclosures });
 $('return').addEventListener('click', () => { if (!reset) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
 $('undo').addEventListener('click', () => { if (!reset) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });
 $('arrange').addEventListener('click', () => { if (!reset) { cancelDrag(); dispatch({ type: 'arrange3', positions: [{ x: -2, z: -0.7 }, { x: 0, z: -0.7 }, { x: 2, z: -0.7 }] }); } });
@@ -540,19 +540,10 @@ $('next').addEventListener('click', () => stepDeck(1));
 $('place').addEventListener('click', placeFocused);
 $('reduce').addEventListener('change', () => { if ($('reduce').checked) { if (viewTransition) { const target = viewTransition.to; viewTransition = null; zoomTarget = target.zoom; applyView(target); } else applyView({ ...view, zoom: zoomTarget }); flips.clear(); if (reset) finishReset(); updateUI(); invalidate(); } });
 $('retry').addEventListener('click', () => location.reload());
-const floatingDisclosures = ['reader-details', 'table-tools', 'drawn-cards'].map($);
-for (const disclosure of floatingDisclosures) disclosure.addEventListener('toggle', () => {
-  if (disclosure.open) for (const other of floatingDisclosures) if (other !== disclosure) other.open = false;
-  const trigger = disclosure.id === 'reader-details' ? 'meaning' : disclosure.id === 'table-tools' ? 'tools-toggle' : 'drawn-toggle';
-  $(trigger).setAttribute('aria-expanded', String(disclosure.open));
-});
 document.addEventListener('keydown', event => {
-  if (event.key !== 'Escape') return;
-  const expanded = floatingDisclosures.find(disclosure => disclosure.open);
-  if (expanded) {
-    expanded.open = false;
-    const trigger = expanded.id === 'reader-details' ? 'meaning' : 'tools-toggle';
-    $(trigger).focus({ preventScroll: true });
+  if (event.key !== 'Escape' || event.defaultPrevented) return;
+  if ($('reader-details').open) {
+    $('reader-details').open = false; $('meaning').focus({ preventScroll: true });
   } else { cancelDrag(); dispatch({ type: 'select', id: null }); }
 });
 document.addEventListener('visibilitychange', () => {
@@ -561,6 +552,6 @@ document.addEventListener('visibilitychange', () => {
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
 }
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disclosures?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 startReading().catch(fail);
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });
