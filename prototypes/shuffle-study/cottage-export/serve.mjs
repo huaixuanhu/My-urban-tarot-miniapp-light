@@ -11,7 +11,7 @@ const cottage = resolve(process.env.COTTAGE_WEB_ROOT || join(root, '../../../../
 const require = createRequire(join(cottage, 'package.json'));
 const { createServer } = await import(pathToFileURL(require.resolve('vite')));
 const { default: react } = await import(pathToFileURL(require.resolve('@vitejs/plugin-react')));
-const output = resolve(root, '../assets');
+const output = resolve(root, '../../../client/src/assets');
 const evidence = resolve(root, '../../../docs/design/stage2.4.12');
 const manifest = JSON.parse(await readFile(join(root, 'source-manifest.json'), 'utf8'));
 for (const file of manifest.files) {

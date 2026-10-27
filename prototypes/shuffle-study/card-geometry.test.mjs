@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createCardGeometry, applyCardFlex } from './card-geometry.mjs';
-import { sampleFlex } from './flex.mjs';
-import { CARD_THICKNESS } from './motion.mjs';
+import { createCardGeometry, applyCardFlex } from '../../client/src/card-geometry.mjs';
+import { sampleFlex } from '../../client/src/flex.mjs';
+import { CARD_THICKNESS } from '../../client/src/motion.mjs';
 
 test('printed faces and paper edge form one indexed solid with outward normals', () => {
   const geometry = createCardGeometry();

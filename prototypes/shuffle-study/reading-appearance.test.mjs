@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { APPEARANCE_STORAGE_KEY, resolveAppearance, readAppearancePreference, createAppearancePreference } from './reading-appearance.mjs';
+import { APPEARANCE_STORAGE_KEY, resolveAppearance, readAppearancePreference, createAppearancePreference } from '../../client/src/reading-appearance.mjs';
 
 function storage(initial) {
   const values = new Map(initial ? [[APPEARANCE_STORAGE_KEY, initial]] : []);

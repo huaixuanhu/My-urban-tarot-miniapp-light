@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as THREE from 'three';
-import { excludeCottageFloorCards } from './reading-room-content.mjs';
+import { excludeCottageFloorCards } from '../../client/src/reading-room-content.mjs';
 
 // Decode the actual exported node hierarchy and mesh metadata without browser
 // image decoding. These tests establish selection/ownership integrity, not GPU
 // appearance; the parent trial's browser verification covers the latter.
 async function importedHierarchy(theme) {
-  const bytes = await readFile(new URL(`./assets/cottage-${theme}.glb`, import.meta.url));
+  const bytes = await readFile(new URL(`../../client/src/assets/cottage-${theme}.glb`, import.meta.url));
   const json = JSON.parse(bytes.subarray(20, 20 + bytes.readUInt32LE(12)).toString('utf8'));
   const nodes = json.nodes.map((source, index) => {
     const node = source.mesh === undefined ? new THREE.Group() : new THREE.Mesh(new THREE.BufferGeometry(), null);

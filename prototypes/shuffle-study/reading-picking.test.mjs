@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Euler, OrthographicCamera, Plane, Quaternion, Raycaster, Vector2, Vector3 } from 'three';
-import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from './motion.mjs';
-import { createReadingFan } from './reading-fan.mjs';
-import { PLACEMENT_BOUNDS } from './reading-layout.mjs';
-import { pickFan } from './reading-picking.mjs';
-import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, ZOOM_LIMITS, getViewPosition, getViewSize } from './reading-view.mjs';
+import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from '../../client/src/motion.mjs';
+import { createReadingFan } from '../../client/src/reading-fan.mjs';
+import { PLACEMENT_BOUNDS } from '../../client/src/reading-layout.mjs';
+import { pickFan } from '../../client/src/reading-picking.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, ZOOM_LIMITS, getViewPosition, getViewSize } from '../../client/src/reading-view.mjs';
 
 const views = [
   DEFAULT_VIEW,

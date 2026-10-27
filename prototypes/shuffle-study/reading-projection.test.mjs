@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { DEFAULT_VIEW, VIEW_LIMITS, ZOOM_LIMITS } from './reading-view.mjs';
-import { createReadingProjection, getReadingPerspectiveFrame, projectReadingPlane, READING_PROJECTION_VOLUMES, DEFAULT_READING_PADDING } from './reading-projection.mjs';
-import { createReadingFan } from './reading-fan.mjs';
-import { pickFan } from './reading-picking.mjs';
-import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
-import { createReadingGlassGeometry } from './reading-glass.mjs';
-import { createReadingDockGeometry, READING_DOCK, READING_DOCK_LABEL_PLANE } from './reading-dock.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, ZOOM_LIMITS } from '../../client/src/reading-view.mjs';
+import { createReadingProjection, getReadingPerspectiveFrame, projectReadingPlane, READING_PROJECTION_VOLUMES, DEFAULT_READING_PADDING } from '../../client/src/reading-projection.mjs';
+import { createReadingFan } from '../../client/src/reading-fan.mjs';
+import { pickFan } from '../../client/src/reading-picking.mjs';
+import { CARD_WIDTH, CARD_LENGTH } from '../../client/src/motion.mjs';
+import { createReadingGlassGeometry } from '../../client/src/reading-glass.mjs';
+import { createReadingDockGeometry, READING_DOCK, READING_DOCK_LABEL_PLANE } from '../../client/src/reading-dock.mjs';
 
 const near = (a, b, epsilon = 1e-9) => assert.ok(Math.abs(a - b) < epsilon, `${a} differs from ${b}`);
 const project = (camera, x, y, z) => new THREE.Vector3(x, y, z).project(camera);

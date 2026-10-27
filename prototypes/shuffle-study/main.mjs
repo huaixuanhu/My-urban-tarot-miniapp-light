@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { CARD_COUNT, DURATION_MS as SHUFFLE_DURATION_MS, shuffleDeck } from './motion.mjs';
-import { RESET_DURATION_MS as DURATION_MS, RESET_PREFIX_MS, RESET_SHUFFLE_START_MS, createResetRun, sampleResetPose, resetPhaseAt, shuffleProgressAt } from './reset-motion.mjs';
+import { CARD_COUNT, DURATION_MS as SHUFFLE_DURATION_MS, shuffleDeck } from '../../client/src/motion.mjs';
+import { RESET_DURATION_MS as DURATION_MS, RESET_PREFIX_MS, RESET_SHUFFLE_START_MS, createResetRun, sampleResetPose, resetPhaseAt, shuffleProgressAt } from '../../client/src/reset-motion.mjs';
 import { createCardBack, createCardFace, createTableTexture } from './textures.mjs';
-import { sampleFlex } from './flex.mjs';
-import { createCardGeometry, applyCardFlex } from './card-geometry.mjs';
+import { sampleFlex } from '../../client/src/flex.mjs';
+import { createCardGeometry, applyCardFlex } from '../../client/src/card-geometry.mjs';
 
 const $ = id => document.getElementById(id);
 const controls = { play: $('play'), pause: $('pause'), finish: $('finish'), timeline: $('timeline'), slow: $('slow'), reduce: $('reduce'), sound: $('sound') };

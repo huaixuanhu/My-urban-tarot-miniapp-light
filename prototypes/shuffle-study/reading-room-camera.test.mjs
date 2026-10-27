@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getReadingPerspectiveFrame } from './reading-projection.mjs';
-import { COTTAGE_ANCHOR, COTTAGE_METRES_PER_UNIT, READING_TABLE_CENTER_Z } from './reading-room.mjs';
+import { getReadingPerspectiveFrame } from '../../client/src/reading-projection.mjs';
+import { COTTAGE_ANCHOR, COTTAGE_METRES_PER_UNIT, READING_TABLE_CENTER_Z } from '../../client/src/reading-room.mjs';
 
 // These are the actual source floor/window boundaries, not the larger model
 // bounding box (which includes the exterior skyline). The desktop check starts

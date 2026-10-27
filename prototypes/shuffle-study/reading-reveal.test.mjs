@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CanvasTexture, Euler, Matrix4, Vector3 } from 'three';
-import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from './motion.mjs';
-import { createCardGeometry } from './card-geometry.mjs';
-import { createReading, reduceReading } from './reading-state.mjs';
-import { readingTablePose, sampleSideRevealPose, REVEAL_DURATION_MS } from './reading-reveal.mjs';
+import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from '../../client/src/motion.mjs';
+import { createCardGeometry } from '../../client/src/card-geometry.mjs';
+import { createReading, reduceReading } from '../../client/src/reading-state.mjs';
+import { readingTablePose, sampleSideRevealPose, REVEAL_DURATION_MS } from '../../client/src/reading-reveal.mjs';
 
 const card = { id: 12, x: -1.7, z: -2.1, faceUp: true };
 const near = (actual, expected, tolerance = 1e-8) => assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} differs from ${expected}`);

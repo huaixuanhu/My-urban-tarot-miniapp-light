@@ -2,6 +2,8 @@
 
 Derived from governance/STATE.md stage2.4.17. Scope: the user-authorized GitHub publication of accepted revision20 and pointers for a later user-led infra/cottage integration. This is supporting handoff evidence, not another current-state owner or authorization to modify the sibling project.
 
+> Superseded for integration by STATE.md stage2.4.18: the accepted UI is now promoted to client/ and the root build. See ../stage2.4.18/README.md. The remainder records the historical source-only publication.
+
 ## Source and accepted baseline
 
 Repository: https://github.com/huaixuanhu/My-urban-tarot-miniapp-light, branch main. The publication commit is the commit introducing this handoff; verify remote main before integration. Governance entry: AGENTS.md -> governance/README.md + contract.json + STATE.md; design owner: DESIGN.md revision20. The latest user authorizes this push even though earlier entry/history paragraphs record the previous no-push boundary.

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { READING_CARD_COUNT, createReading, reduceReading, canUndo } from './reading-state.mjs';
+import { READING_CARD_COUNT, createReading, reduceReading, canUndo } from '../../client/src/reading-state.mjs';
 
 const order = Array.from({ length: READING_CARD_COUNT }, (_, i) => (i * 17 + 23) % READING_CARD_COUNT);
 const reversed = Array.from({ length: READING_CARD_COUNT }, (_, id) => id % 3 === 0);

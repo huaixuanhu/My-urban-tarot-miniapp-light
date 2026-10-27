@@ -5,7 +5,7 @@ import { OBB } from 'three/examples/jsm/math/OBB.js';
 import {
   CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS, DURATION_MS,
   samplePose, phaseAt, shuffleDeck, flexLayerGapAt,
-} from './motion.mjs';
+} from '../../client/src/motion.mjs';
 
 const keys = ['x', 'y', 'z', 'rx', 'ry', 'rz'];
 const near = (actual, expected, tolerance = 1e-10) => {

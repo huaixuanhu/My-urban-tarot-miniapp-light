@@ -1,10 +1,10 @@
 import { readingCard, fittedArtwork } from './reading-content.mjs';
 
-// Vite packages the existing files; the prototype keeps no second source deck.
-const images = import.meta.glob('../../client/public/images/cards/*.webp', { eager: true, query: '?url', import: 'default' });
+// Vite packages the original files; the application keeps no second source deck.
+const images = import.meta.glob('../public/images/cards/*.webp', { eager: true, query: '?url', import: 'default' });
 
 export function readingCardImage(id) {
-  const path = `../../client/public${readingCard(id).image}`;
+  const path = `../public${readingCard(id).image}`;
   const url = images[path];
   if (!url) throw new Error(`Missing original artwork: ${path}`);
   return url;

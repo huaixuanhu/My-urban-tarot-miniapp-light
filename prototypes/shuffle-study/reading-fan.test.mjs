@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Euler, Matrix4, OrthographicCamera, Vector3 } from 'three';
-import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from './motion.mjs';
-import { createReadingFan } from './reading-fan.mjs';
-import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, getViewPosition, getViewSize } from './reading-view.mjs';
+import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from '../../client/src/motion.mjs';
+import { createReadingFan } from '../../client/src/reading-fan.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, getViewPosition, getViewSize } from '../../client/src/reading-view.mjs';
 
 function preparedOrders(count) {
   let seed = 0x1a2b3c4d;

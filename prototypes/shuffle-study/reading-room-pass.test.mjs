@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { createReadingRoomPass, roomTargetSize, roomBlurTargetSize, roomBlurWeights, ROOM_BLUR_SIGMA_CSS } from './reading-room-pass.mjs';
+import { createReadingRoomPass, roomTargetSize, roomBlurTargetSize, roomBlurWeights, ROOM_BLUR_SIGMA_CSS } from '../../client/src/reading-room-pass.mjs';
 
 function fakeRenderer() {
   const calls = [];

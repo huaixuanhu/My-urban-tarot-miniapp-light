@@ -137,3 +137,7 @@ Use uniform room-only defocus to retain every interactive card sharply at freely
 ## 2026-10-26 — table-focused source-room cutaway
 
 The original bathroom showerhead can lie only.358m from the freely orbiting camera and fill the viewport. The separate room background then falsely puts the table above it. Retain camera freedom and hide coherent foreground furniture groups only while they obstruct the table corridor or approach the camera. Do not merely increase blur, globally remove room furniture, or silently constrain elevation. Preserve floor/rugs/architecture and restore source visibility when clear. The four decorative floor cards are independently excluded under the user's explicit request. This is a bounded cutaway approximation, not a shared-depth renderer or all-sightline guarantee.
+
+## 2026-10-27 — stage2.4.18 sole primary application
+
+Source: explicit user request to replace the old version completely and continue on the accepted new version. Promote accepted revision20 from prototypes/shuffle-study into client/ and remove the retired React UI; keep original card art/data unchanged. The root build, hosted `/` and future development share one runtime. Keep the motion/GPU tools as development consumers, not a second product. Root-pinned Three.js makes the release independent of the old isolated install. Existing Vercel project/domain and application access guard remain. This supersedes stage2.4.17's source-publication-only boundary;4af6f9bb is the recovery point. Full-flow/persistence features remain deferred.

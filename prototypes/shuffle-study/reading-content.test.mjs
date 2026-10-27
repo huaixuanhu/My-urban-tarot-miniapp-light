@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, statSync } from 'node:fs';
-import { readingCards, readingCard, selectedCardContent, createCardLoader, mayFinishReveal, fittedArtwork } from './reading-content.mjs';
-import { createReading, reduceReading } from './reading-state.mjs';
+import { readingCards, readingCard, selectedCardContent, createCardLoader, mayFinishReveal, fittedArtwork } from '../../client/src/reading-content.mjs';
+import { createReading, reduceReading } from '../../client/src/reading-state.mjs';
 
 const source = JSON.parse(readFileSync(new URL('../../client/src/data/tarotData.json', import.meta.url)));
 const original = [...source.majorArcana, ...['wands', 'cups', 'swords', 'disks'].flatMap(suit => source.minorArcana[suit].cards)];

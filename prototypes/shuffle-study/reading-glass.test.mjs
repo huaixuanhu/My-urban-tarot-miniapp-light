@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createReadingGlassGeometry } from './reading-glass.mjs';
-import { GLASS_WIDTH, GLASS_LENGTH, CLOTH_CENTER_Z, PLACEMENT_BOUNDS } from './reading-layout.mjs';
-import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
+import { createReadingGlassGeometry } from '../../client/src/reading-glass.mjs';
+import { GLASS_WIDTH, GLASS_LENGTH, CLOTH_CENTER_Z, PLACEMENT_BOUNDS } from '../../client/src/reading-layout.mjs';
+import { CARD_WIDTH, CARD_LENGTH } from '../../client/src/motion.mjs';
 
 test('glass retains accepted playing area and stays below cards and above its support', () => {
   const geometry = createReadingGlassGeometry();

@@ -2,7 +2,7 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: the user accepted the enlarged glass/revision20 and explicitly authorized GitHub publication to origin/main. stage2.4.17 owns this bounded commit/push and the handoff for user-led cottage integration. The new reading UI is still an independent prototype build; this push does not rewire the production entry. Stage2.5 remains deferred.
+Current continuation: stage2.4.18 promotes accepted revision20 into the sole primary application, replacing the retired React UI and the production entry at augurwell.anoriaquant.dev. The user explicitly requested full replacement after the stage2.4.17 push. Continue all future UI work in client/. Preserve original art, accepted gameplay, access guards and inherited local changes. Stage2.5 remains deferred.
 
 ## stage1.1 — directory migration
 
@@ -269,6 +269,14 @@ Source: the user's “非常好可以进行一次推送了，然后我去隔壁�
 The publication commit carries the remaining glass source, its already-verified evidence and this handoff. Prior130 study tests, both prototype builds and day/night/drag/reveal review remain applicable to unchanged source. Run the aggregate gate before pushing; verify remote main equals the local publication commit afterward. The prior remote main was verified as012522b4 before publication, with21 local commits already ahead before this final commit. Remote outcome is reported separately from local commit preparation.
 
 Production boundary: the default root build still produces the legacy client in dist/public. The accepted reading UI uses prototypes/shuffle-study/reading.vite.config.mjs and produces prototypes/shuffle-study/dist/reading.html. Existing Git automation may build the root application after a main push; this task does not change its build command, routes, hostnames or access policy, nor does it manually deploy/promote the new UI. The source/build handoff is docs/design/stage2.4.17/HANDOFF.md. Do not interpret repository publication as new-UI activation at augurwell.anoriaquant.dev.
+
+#### stage2.4.18 — primary application replacement
+
+Source: the user's 2026-10-27 request “那就用这个代次版本的新版完全替换掉旧版，旧版完全不用了。之后我们继续在这个版本上改”. This explicitly supersedes stage2.4.17's separate-prototype/unchanged-production boundary: promote accepted revision20 to the sole main application, verify it, commit/push the bounded replacement and let the existing Vercel main deployment replace the old hosted UI. Keep the current project/domain/audience; no sibling-project write or access-policy change. The previous successful publication was 4af6f9bb, with matching local/remote main and a successful GitHub Vercel status.
+
+Capacity: dense_but_coherent. One replacement/rollback boundary: source ownership, root build and hosted entry must agree. Move the accepted runtime/assets into client/, remove the retired React UI from active source, retain the original78-card JSON/images, and keep the shuffle/GPU tools as development-only consumers of the same runtime. Root dependencies must install the pinned Three.js version on a fresh checkout. Remove trial-only navigation/copy from the user entry. Keep all accepted visual/gameplay behavior and original access enforcement. Git4af6f9bb is the recovery point; no parallel legacy user interface is retained.
+
+Verification: package install from the committed dependency graph;129 retained gameplay/optics/source tests (the obsolete cloth-only test is retired with that unused renderer); aggregate governance/TypeScript/access/build checks; inspect the built root page, all referenced assets and day/night draw/reveal/meaning/reset/camera behavior; verify remote commit, automatic Vercel result and canonical/anonymous/direct-origin outcomes to the extent existing authentication permits. Preserve the65 inherited generated-file changes by hash. Record deployment/readiness evidence separately; no production login result may be inferred from a build alone. Local replacement verified:129 reading/motion tests and15 access tests pass in pnpm check:all; a fresh frozen-lockfile install/build succeeds and its index.html matches. Production output includes78 hashed original images and both cottage GLBs. Native built-page day/night, drag-three, side reveal, meaning, orbit/home and reset complete with no browser warning/error logs.79 source art/data files and65 inherited generated-file hashes remain unchanged. Release preparation complete; remote activation is not yet claimed. Evidence: docs/design/stage2.4.18/README.md.
 
 ### stage2.5 — full flow and local continuity
 

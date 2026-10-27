@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CARD_COUNT, CARD_WIDTH, CARD_THICKNESS, RIFFLE_TIMING, samplePose } from './motion.mjs';
-import { FLEX_SEGMENTS, sampleFlex, deformCardPoint } from './flex.mjs';
+import { CARD_COUNT, CARD_WIDTH, CARD_THICKNESS, RIFFLE_TIMING, samplePose } from '../../client/src/motion.mjs';
+import { FLEX_SEGMENTS, sampleFlex, deformCardPoint } from '../../client/src/flex.mjs';
 
 const xs = Array.from({ length: FLEX_SEGMENTS + 1 }, (_, i) => Math.fround(-CARD_WIDTH / 2 + i * CARD_WIDTH / FLEX_SEGMENTS));
 const close = (a, b, tolerance = 1e-9) => assert.ok(Math.abs(a - b) <= tolerance, `${a} differs from ${b}`);

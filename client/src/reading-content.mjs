@@ -1,6 +1,6 @@
-import source from '../../client/src/data/tarotData.json' with { type: 'json' };
+import source from './data/tarotData.json' with { type: 'json' };
 
-// Match the legacy deck's order once. A physical ID never depends on a fan slot.
+// Match the original deck's order once. A physical ID never depends on a fan slot.
 export const readingDeck = Object.freeze({ ...source.deck });
 export const readingCards = Object.freeze([
   ...source.majorArcana.map(card => ({ ...card, family: '大阿尔卡那' })),

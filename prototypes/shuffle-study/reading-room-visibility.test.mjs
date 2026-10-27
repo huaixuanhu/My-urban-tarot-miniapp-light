@@ -2,17 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as THREE from 'three';
-import { createReadingRoomVisibility } from './reading-room-visibility.mjs';
-import { excludeCottageFloorCards } from './reading-room-content.mjs';
-import { createReadingProjection } from './reading-projection.mjs';
-import { DEFAULT_VIEW } from './reading-view.mjs';
-import { COTTAGE_METRES_PER_UNIT, cottageToReadingPosition } from './reading-room.mjs';
+import { createReadingRoomVisibility } from '../../client/src/reading-room-visibility.mjs';
+import { excludeCottageFloorCards } from '../../client/src/reading-room-content.mjs';
+import { createReadingProjection } from '../../client/src/reading-projection.mjs';
+import { DEFAULT_VIEW } from '../../client/src/reading-view.mjs';
+import { COTTAGE_METRES_PER_UNIT, cottageToReadingPosition } from '../../client/src/reading-room.mjs';
 
 // Read real POSITION/index buffers and node transforms from the pinned GLBs.
 // Texture decoding/GPU appearance stays in the browser review. Unlike a bounds
 // fixture these tests exercise the exported shower/sofa/board triangles.
 async function originalGeometry(theme = 'day') {
-  const bytes = await readFile(new URL(`./assets/cottage-${theme}.glb`, import.meta.url));
+  const bytes = await readFile(new URL(`../../client/src/assets/cottage-${theme}.glb`, import.meta.url));
   const length = bytes.readUInt32LE(12), json = JSON.parse(bytes.subarray(20, 20 + length).toString('utf8'));
   const body = bytes.subarray(28 + length);
   function attribute(index) {

@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Euler, Matrix3, Matrix4, Vector3 } from 'three';
 import { OBB } from 'three/examples/jsm/math/OBB.js';
-import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS, samplePose } from './motion.mjs';
-import { RESET_PREFIX_MS, RESET_SHUFFLE_START_MS, RESET_DURATION_MS, COLLECT_START_MS, RESET_PATH_TIME_MS, createResetRun, sampleResetPose, resetPhaseAt, shuffleProgressAt, resetPathProgressAt, resetPathRateAt } from './reset-motion.mjs';
+import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS, samplePose } from '../../client/src/motion.mjs';
+import { RESET_PREFIX_MS, RESET_SHUFFLE_START_MS, RESET_DURATION_MS, COLLECT_START_MS, RESET_PATH_TIME_MS, createResetRun, sampleResetPose, resetPhaseAt, shuffleProgressAt, resetPathProgressAt, resetPathRateAt } from '../../client/src/reset-motion.mjs';
 
 const order = Array.from({ length: CARD_COUNT }, (_, i) => (i * 17 + 23) % CARD_COUNT);
 const placed = [-1.9, 0, 1.9].map((x, id) => ({ id, x, y: 0.045, z: [0.10, -0.12, 0.10][id], rx: Math.PI, ry: [-0.10, 0.02, 0.12][id], rz: 0 }));

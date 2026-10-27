@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { createScreenGlass, screenGlassCapture } from './reading-screen-glass.mjs';
+import { createScreenGlass, screenGlassCapture } from '../../client/src/reading-screen-glass.mjs';
 
 const bounds = Object.freeze({ left: 400, top: 720, width: 520, height: 80, viewportWidth: 1440, viewportHeight: 900 });
 

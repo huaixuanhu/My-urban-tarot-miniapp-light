@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { COTTAGE_SOURCE_REVISION, cottageToReadingPosition, COTTAGE_ANCHOR, ROOM_FLOOR_Y } from './reading-room.mjs';
+import { COTTAGE_SOURCE_REVISION, cottageToReadingPosition, COTTAGE_ANCHOR, ROOM_FLOOR_Y } from '../../client/src/reading-room.mjs';
 
 async function loadAsset(theme) {
-  const binary=await readFile(new URL(`./assets/cottage-${theme}.glb`,import.meta.url));
+  const binary=await readFile(new URL(`../../client/src/assets/cottage-${theme}.glb`,import.meta.url));
   assert.equal(binary.toString('ascii',0,4),'glTF');
   assert.equal(binary.readUInt32LE(4),2);
   assert.equal(binary.readUInt32LE(8),binary.length);

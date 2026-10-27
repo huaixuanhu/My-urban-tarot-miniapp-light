@@ -1,54 +1,38 @@
-# Urban Tarot
+# Augurwell · Urban Tarot
 
-An existing React/Vite tarot-board demo with an isolated local reconstruction study. The current scope and next entry are in [governance/STATE.md](governance/STATE.md).
+The accepted glass-table reading experience is the sole application. Its current scope and continuation are owned by [governance/STATE.md](governance/STATE.md); [DESIGN.md](DESIGN.md) owns the accepted visual/interaction baseline. The retired React demo is recoverable from Git history and is no longer an active source or user entry.
 
-## Location and source
+## Application and local work
 
-The working directory is /Users/anoria/Documents/python_coding/small_project/urban-tarot-light. It was moved from /Users/anoria/Downloads/urban-tarot-light on 2026-10-22 without a second checkout or retained source directory. The repository is https://github.com/huaixuanhu/My-urban-tarot-miniapp-light. The imported source identity is a190b14359172a0209feb17a7df26f117cb78ccd.
+- Primary source: `client/index.html`, `client/src/reading.mjs`, and `client/src/reading.css`.
+- Formal entry: https://augurwell.anoriaquant.dev. Repository: https://github.com/huaixuanhu/My-urban-tarot-miniapp-light.
+- Install root dependencies with `pnpm install --frozen-lockfile`. Three.js is pinned to0.186.1 in the root manifest/lockfile; no separate study install is required.
+- `pnpm dev`: the application at http://127.0.0.1:3000/.
+- `pnpm build`: application output in `dist/public`, plus the existing Express fallback in `dist/index.js`.
+- `pnpm preview`: preview that built application locally. `pnpm start` runs the Express fallback.
+- For previous local bookmarks, `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs` serves the same client at port5174. Hosted `/reading.html` redirects to `/`.
+- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, access runtime,15 authorization tests,129 application/motion tests and the production build. Tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
 
-## Architecture
+Local Vite/Express/Electron execution does not run the Vercel-specific identity gate. Do not use these local servers as a protected public host. Electron still points to `dist/public/index.html`; packaged desktop execution has not been qualified by this web replacement.
 
-- client/src/App.tsx establishes React, theme, notifications, and hash-based routing.
-- client/src/pages/Home.tsx composes the reading board, spread deck, help, shuffle, and clear controls. components/ supplies cards, the detail modal, and reusable UI.
-- client/src/contexts/TarotContext.tsx owns in-memory deck and placed-card state. Tarot data comes from client/src/data/tarotData.json. Refresh persistence of readings is not implemented in this inspected context; ThemeContext uses localStorage for the theme.
-- client/public/ contains card illustrations and sounds. client/src/index.css owns the existing visual tokens. DESIGN.md records their observed status.
-- vite.config.ts builds client/ to dist/public using relative output asset paths. server/index.ts is an Express static-file fallback server; electron/main.cjs loads the bundled files for the desktop wrapper.
-- The current web host is Vercel project my-urban-tarot-miniapp-light. Access/DNS configuration is external to Git. Current verification and limitations belong to governance/STATE.md. The imported source had no identity validation; the access-only patch now uses proxy.ts and access/guard.ts to verify Cloudflare-signed application tokens before pages and assets. access/config.ts contains public application identifiers, not secrets. The formal entry is https://augurwell.anoriaquant.dev. Local Vite/Express/Electron execution does not run this Vercel-specific gate and must not be presented as a protected public host.
+## Source ownership
 
-## Local work
+`reading-state.mjs` owns stable card identities, order, placement and reveal state. `reading-content.mjs` uses `client/src/data/tarotData.json`; `reading-art.mjs` bundles the unchanged78 images in `client/public/images/cards/`. Images and text remain original Urban Tarot content. Meanings appear on demand; source data has no separate reversed interpretations.
 
-Use the package manager recorded in package.json. Existing dependencies moved with the directory. Commands: pnpm dev, pnpm check, pnpm build, pnpm preview. pnpm test:access tests signed-token authorization, and pnpm check:access-runtime compiles and loads the production entrypoint using Node ESM rules. For a full local gate: python3 -m venv .venv once, then pnpm check:all. Electron packaging is a separate surface and has not been revalidated by the move.
+`reading-reset.mjs`, `reset-motion.mjs`, `motion.mjs`, `flex.mjs` and `card-geometry.mjs` preserve the accepted airborne gather and bent interleaving. `reading-reveal.mjs` owns left/right turns without changing orientation. `reading-fan.mjs`, `reading-picking.mjs`, `reading-view.mjs` and `reading-projection.mjs` own choosing, dragging and camera behavior.
 
-Do not assume a successful local build is a deployment or product acceptance. Avoid putting personal addresses, tokens, or private account exports into this repository. Local private service evidence belongs under ignored .local/ if needed.
+`reading-glass.mjs`, `reading-screen-glass.mjs`, `reading-back.mjs` and `reading-scene-style.mjs` own glass, controls, backs and lighting. `reading-room.mjs` loads static day/night cottage assets from `client/src/assets/`; room-only blur and furniture cutaway remain separate from sharp cards. Model provenance and reproduction are retained under docs/design/stage2.4.12. The original cottage is a separate, unchanged application.
 
-## Local motion study
+`reading-appearance.mjs` remembers only light/dark/system preference. Readings, questions and reflections are not persisted; refresh starts a new reading. Full-flow/record work remains deferred in STATE.md stage2.5. AI and cross-device sync remain deferred.
 
-The locally reviewed stage2.1 study lives in [prototypes/shuffle-study/](prototypes/shuffle-study/README.md). It has its own Three.js manifest/lockfile; it is outside the production client build. From the repository root, install its pinned dependency with `npm ci --prefix prototypes/shuffle-study --ignore-scripts`, then run `pnpm exec vite --config prototypes/shuffle-study/vite.config.mjs`. Open http://127.0.0.1:5174/ on this computer. This loopback-only motion review does not draw cards, collect questions, save readings, or replace the protected hosted app.
+## Development tools
 
-Study checks are separate from the existing aggregate: `node --test prototypes/shuffle-study/*.test.mjs` and `pnpm exec vite build --config prototypes/shuffle-study/vite.config.mjs`. The study reuses the repository's Vite toolchain; its build output stays inside `prototypes/shuffle-study/dist/`. Trial 03's `reset-motion.mjs` supplies a 2.6-second seeded airborne return/convergence with a slow-to-fast pace, then joins the preserved motion/flex modules at their already-lifted stack. Its shared shuffle-time helper keeps poses, bending and audio aligned while the remaining 2.46 seconds run at normal speed. A three-card illustrative spread demonstrates returning from existing positions; physical IDs remain fixed while a run maps them to shuffled slots. Face, edge and shadow deformation stays in `flex.mjs` and `card-geometry.mjs`; the full scene remains pausable and scrub-able.
+`pnpm dev:motion` opens the isolated choreography tool at port5174 using the same client motion modules. It is not built or linked into the production app. GPU verification fixtures and the bounded cottage exporter remain under `prototypes/shuffle-study/`; they do not create another product implementation. See that directory's README for their scope.
 
-The current local interaction trial is [reading.html](prototypes/shuffle-study/reading.html), served at http://127.0.0.1:5174/reading.html. It adds the agreed drag/free-placement/double-click-reveal/reset loop and bounded blank-table view dragging and 65–220% wheel zoom without editing the accepted shuffle page. `reading-state.mjs` owns identity-preserving transitions, `reading-content.mjs` maps stable IDs to the original 78-card JSON, `reading-art.mjs` packages and decodes the existing WebP images, `reading-reader.mjs` presents selected content on demand, `reading-reveal.mjs` supplies the sideways reveal with fixed orientation, and `reading-reset.mjs` adapts current poses before delegating to the accepted choreography. `reading-fan.mjs` prepares a stable loose arc per order, `reading-glass.mjs` supplies the finite physical glass surface, `reading-scene-style.mjs` owns lights/back materials and `reading-appearance.mjs` remembers only light/dark/system preference, and `reading-view.mjs` owns bounded camera movement/framing and `reading-picking.mjs` selects stable card planes from the current angle. Trial 06 restyles trial 05 as one day/night glass table: original artwork, an unboxed selected name/theme, optional details and compact native utility disclosures. Source face textures are unlit so appearance changes do not recolor the illustration. Only appearance is remembered; there is no question entry, notes or saved reading. The accepted placement bounds and motion modules remain unchanged. Trial 08 keeps one perspective and chosen camera angles through reset; overview fitting includes the glass, cards and physical controls. The source has no authored reversed meanings, and the panel explicitly records that gap. The reading dev configuration uses polling for file changes after stale transformed modules were observed on this host. Build both local entries with `pnpm exec vite build --config prototypes/shuffle-study/reading.vite.config.mjs`; test the study with `node --test prototypes/shuffle-study/*.test.mjs`.
+## Hosting and protection
 
-## Hosted access maintenance
+`vite.config.ts` builds client/ to dist/public with relative asset paths. `vercel.json` explicitly selects `pnpm build` and `dist/public`, retaining the existing `proxy.ts` entry. The project remains my-urban-tarot-miniapp-light in anorias-projects. The latest primary-entry replacement is owned by STATE.md stage2.4.18; source publication, Vercel status and observed hosted runtime are recorded separately.
 
-The email allowlist is owned by Cloudflare. The app audience and issuer must match access/config.ts when replacing the Access application. Keep the project firewall's canonical-host restriction so historical deployments cannot become a second public entry. Certificate validation bypass is confined to the reserved ACME path; unknown challenges never serve the application.
+Cloudflare owns the existing allowlist. The application also validates signed Cloudflare credentials through access/guard.ts and confines access to the canonical hostname. Preserve those checks for pages, images and GLBs. A link from the cottage collection does not replace the destination application's gate. Never put personal addresses, credentials or private configuration exports into tracked files; local evidence belongs under ignored .local/.
 
-The supported Vercel configuration uses proxy.entrypoint in vercel.json. See [Vercel routing middleware](https://vercel.com/docs/routing-middleware) and [Cloudflare token validation](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/). After future changes, validate both a real allowed login and anonymous/direct-origin rejection. Avoid downloading production environment variables merely to run a local build; source-only tests and remote builds were used here.
-
-Local trial 07 refines trial 06 into a full-viewport scene: the glass action dock, selected-card annotation, appearance chooser and optional disclosures float over the table. Opening an overlay does not resize the canvas. reading-projection.mjs now supplies genuine perspective, padded framing and a continuous transition to the retained shuffle camera. The action dock follows the projected table edge without resizing the canvas. Local commit/verification authority remains in governance/STATE.md.
-
-Local trial 08 implements design revision 15 under stage2.4.6. `reading-back.mjs` supplies paired crisp reference-led backs; `reading-dock.mjs` owns the physical glass capsule and the native-control projection mapping. Elevation reaches exactly 90 degrees with stable axes; reset retains that viewing direction. Optional popovers remain screen-aligned. Trial 07 is recoverable as checkpoint 4 (`0bdb04f7`, product `55fbfc91`); the following visual trial is not yet accepted. See [bounded trial 08 evidence](docs/design/stage2.4.6/README.md).
-
-Historical local trial 09 replaces only trial 08’s button treatment. `reading-screen-glass.mjs` draws a fixed lower-center clear-glass lens over a cropped copy of the already-rendered scene; native controls remain upright and stable during camera movement. Original face color handling, table appearance and camera framing stay unchanged. The historical `reading-dock.mjs` still supplies a retained framing extent/tests but its world mesh is not instantiated. See [bounded trial 09 evidence](docs/design/stage2.4.8/README.md).
-
-## 2026-10-26 — cottage environment local batch
-
-Local trial11 directly reuses the original static 萱敏小屋 architecture, furniture and textures. reading-room.mjs loads verified day/night GLB assets (34.31MiB combined) independently of the cottage application; reading-room-pass.mjs lightly blurs and caches only that environment. Original card art stays sharp and unchanged. Day glass edges and thickness are more visible. Source/export instructions, camera containment checks and browser evidence: docs/design/stage2.4.12/. The prototype remains local-only.
-
-The current stage2.4.12 camera supports a full horizontal orbit, elevation12–90 degrees and a visible 回正 button beside appearance. Recovery changes only view and zoom. The original gameplay and access boundaries remain.
-
-
-Current local trial12 (STATE.md stage2.4.14) retains the original cottage assets and adds two bounded adapters: `reading-room-content.mjs` excludes its four duplicate floor cards; `reading-room-visibility.mjs` temporarily hides coherent furniture components that obstruct the camera-to-table corridor. `reading.mjs` updates this mask before the cached room render. The camera bounds and home behavior remain unchanged. The room pass uses12CSSpx uniform defocus, and glass edge/reflection contrast is stronger. Full evidence and approximation limits: [trial12 repair evidence](docs/design/stage2.4.14/README.md). This is local-only and awaiting visual review.
-
-
-Accepted revision20 and the user-authorized repository push are covered by STATE.md stage2.4.17. For integration in the cottage collection, start with [the source/build handoff](docs/design/stage2.4.17/HANDOFF.md): the reading prototype has a separate build and is not activated by the legacy root build.
+For future integration, use the canonical HTTPS URL. The previous stage2.4.17 independent-build handoff is superseded by [stage2.4.18](docs/design/stage2.4.18/README.md). No change to the sibling cottage is made here.

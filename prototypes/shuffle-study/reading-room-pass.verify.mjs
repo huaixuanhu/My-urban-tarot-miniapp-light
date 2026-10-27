@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { createReadingRoomPass } from './reading-room-pass.mjs';
-import { createScreenGlass, screenGlassCapture } from './reading-screen-glass.mjs';
+import { createReadingRoomPass } from '../../client/src/reading-room-pass.mjs';
+import { createScreenGlass, screenGlassCapture } from '../../client/src/reading-screen-glass.mjs';
 
 const button = document.getElementById('run'), status = document.getElementById('status');
 const output = document.getElementById('results'), stage = document.getElementById('stage');

@@ -7,21 +7,23 @@
   "author": "Robin Scott",
   "description": "Urban Tarot - Interactive Tarot Reading Board",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "build:client": "vite build",
     "start": "NODE_ENV=production node dist/index.js",
-    "preview": "vite preview --host",
+    "preview": "vite preview --host 127.0.0.1",
     "check": "tsc --noEmit",
     "check:governance": ".venv/bin/python governance/governance_package_check.py --project-root . --target . --project-lifecycle durable",
     "check:access-runtime": "node scripts/check-access-runtime.mjs",
     "test:access": "tsx --test tests/access.test.ts",
-    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm build",
+    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm build",
     "format": "prettier --write .",
     "electron:dev": "electron .",
     "electron:build": "pnpm build:client && electron-builder --mac",
     "electron:build:win": "pnpm build:client && electron-builder --win",
-    "electron:build:linux": "pnpm build:client && electron-builder --linux"
+    "electron:build:linux": "pnpm build:client && electron-builder --linux",
+    "test:reading": "node --test prototypes/shuffle-study/*.test.mjs",
+    "dev:motion": "vite --config prototypes/shuffle-study/vite.config.mjs"
   },
   "build": {
     "appId": "com.urbantatot.app",
@@ -39,7 +41,9 @@
       "target": [
         {
           "target": "dir",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -48,13 +52,18 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
     "linux": {
       "icon": "build/icon.png",
-      "target": ["AppImage", "deb"]
+      "target": [
+        "AppImage",
+        "deb"
+      ]
     },
     "dmg": {
       "title": "Urban Tarot",
@@ -125,10 +134,10 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
     "wouter": "^3.3.5",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "three": "0.186.1"
   },
   "devDependencies": {
-
     "@tailwindcss/typography": "^0.5.15",
     "@tailwindcss/vite": "^4.1.3",
     "@types/express": "4.17.21",
@@ -150,7 +159,6 @@
     "tw-animate-css": "^1.4.0",
     "typescript": "5.6.3",
     "vite": "^7.1.7",
-
     "vitest": "^2.1.4"
   },
   "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af",

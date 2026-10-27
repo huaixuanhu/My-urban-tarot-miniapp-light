@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createScreenGlass, screenGlassCapture } from './reading-screen-glass.mjs';
+import { createScreenGlass, screenGlassCapture } from '../../client/src/reading-screen-glass.mjs';
 
 // An isolated browser fixture. No application scene, card state or storage imports.
 const runButton = document.getElementById('run');

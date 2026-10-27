@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, clampView, dragView, getViewPosition, getViewBasis, isDefaultView, fitViewSize, getViewSize, getFramedViewSize, ZOOM_LIMITS, wheelZoom } from './reading-view.mjs';
-import { READING_ENVELOPE } from './reading-layout.mjs';
+import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, clampView, dragView, getViewPosition, getViewBasis, isDefaultView, fitViewSize, getViewSize, getFramedViewSize, ZOOM_LIMITS, wheelZoom } from '../../client/src/reading-view.mjs';
+import { READING_ENVELOPE } from '../../client/src/reading-layout.mjs';
 
 const near = (a, b, tolerance = 1e-12) => assert.ok(Math.abs(a - b) <= tolerance, `${a} differs from ${b}`);
 

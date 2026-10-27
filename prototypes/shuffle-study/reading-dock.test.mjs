@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { createReadingDock, createReadingDockGeometry, READING_DOCK, READING_DOCK_LABEL_PLANE, planarCssTransform } from './reading-dock.mjs';
-import { createReadingFan } from './reading-fan.mjs';
-import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from './motion.mjs';
-import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
+import { createReadingDock, createReadingDockGeometry, READING_DOCK, READING_DOCK_LABEL_PLANE, planarCssTransform } from '../../client/src/reading-dock.mjs';
+import { createReadingFan } from '../../client/src/reading-fan.mjs';
+import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from '../../client/src/motion.mjs';
+import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z } from '../../client/src/reading-layout.mjs';
 
 test('control glass stays on the table with its labels on its flat upper face', () => {
   const geometry = createReadingDockGeometry();

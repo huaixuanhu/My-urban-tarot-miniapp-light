@@ -1,4 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "proxy": { "entrypoint": "proxy.ts" }
+  "proxy": {
+    "entrypoint": "proxy.ts"
+  },
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist/public",
+  "redirects": [
+    {
+      "source": "/reading.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
 }

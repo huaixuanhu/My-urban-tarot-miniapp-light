@@ -1,10 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CARD_WIDTH, CARD_LENGTH } from './motion.mjs';
-import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z, PLACEMENT_BOUNDS, DROP_MARGIN, READING_ENVELOPE, canPlaceAt, clampPlacement } from './reading-layout.mjs';
-import { CLOTH_MAX_HEIGHT, createReadingClothGeometry } from './reading-cloth.mjs';
+import { CARD_WIDTH, CARD_LENGTH } from '../../client/src/motion.mjs';
+import { CLOTH_WIDTH, CLOTH_LENGTH, CLOTH_CENTER_Z, PLACEMENT_BOUNDS, DROP_MARGIN, READING_ENVELOPE, canPlaceAt, clampPlacement } from '../../client/src/reading-layout.mjs';
 
-test('larger cloth retains its front edge and contains full cards at all placement limits', () => {
+test('accepted playing bounds retain their front edge and contain full cards at all placement limits', () => {
   assert.equal(CLOTH_WIDTH, 14.8); assert.equal(CLOTH_LENGTH, 11.2); assert.equal(CLOTH_CENTER_Z, -0.6);
   assert.equal(CLOTH_CENTER_Z + CLOTH_LENGTH / 2, 5);
   assert.deepEqual(PLACEMENT_BOUNDS, { minX: -6.6, maxX: 6.6, minZ: -4.6, maxZ: 0.75 });
@@ -12,7 +11,7 @@ test('larger cloth retains its front edge and contains full cards at all placeme
     for (const z of [PLACEMENT_BOUNDS.minZ, PLACEMENT_BOUNDS.maxZ]) {
       for (const dx of [-CARD_WIDTH / 2, CARD_WIDTH / 2]) for (const dz of [-CARD_LENGTH / 2, CARD_LENGTH / 2]) {
         const edgeX = x + dx, edgeZ = z + dz;
-        // Conservative inward margins include the cloth's bounded edge waviness.
+        // Preserve the accepted inward margins of the original playing bounds.
         assert.ok(Math.abs(edgeX) < CLOTH_WIDTH / 2 - 0.03);
         assert.ok(edgeZ > CLOTH_CENTER_Z - CLOTH_LENGTH / 2 + 0.037);
         assert.ok(edgeZ < CLOTH_CENTER_Z + CLOTH_LENGTH / 2 - 0.037);
@@ -43,17 +42,4 @@ test('invalid drop coordinates cannot enter the reading state', () => {
     assert.equal(canPlaceAt(point), false);
     assert.equal(clampPlacement(point), null);
   }
-});
-
-test('enlarged cloth mesh retains finite extents and clears the underlying floor', () => {
-  const geometry = createReadingClothGeometry();
-  try {
-    const positions = geometry.attributes.position, bounds = geometry.boundingBox;
-    assert.ok(positions.array.every(Number.isFinite));
-    assert.ok(bounds.min.x >= -CLOTH_WIDTH / 2 - 0.03 && bounds.max.x <= CLOTH_WIDTH / 2 + 0.03);
-    assert.ok(bounds.min.z >= CLOTH_CENTER_Z - CLOTH_LENGTH / 2 - 0.038 && bounds.max.z <= CLOTH_CENTER_Z + CLOTH_LENGTH / 2 + 0.038);
-    assert.ok(bounds.max.x - bounds.min.x > 14.7 && bounds.max.z - bounds.min.z > 11.1);
-    assert.ok(bounds.max.y <= CLOTH_MAX_HEIGHT);
-    assert.ok(bounds.min.y - 0.008 > -0.08, 'The cloth sidewall must clear the underlying floor.');
-  } finally { geometry.dispose(); }
 });

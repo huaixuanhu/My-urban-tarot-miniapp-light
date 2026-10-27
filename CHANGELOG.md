@@ -135,3 +135,10 @@ After checkpoint9 (73b2fa4d), enlarged the physical glass and its floor-shadow f
 ## 2026-10-26 — accepted glass size and repository publication
 
 The user accepted revision20 and authorized committing/pushing the accumulated local work to main. Added source/build/access handoff for user-led cottage integration. The new reading UI remains separate from the legacy root production build.
+
+## 2026-10-27 — accepted UI becomes the sole application
+
+- Promote revision20 into client/ and the root build; retire legacy React UI source and prototype navigation.
+- Root-pin Three.js; retain original78-card assets/data and all accepted interactions/visuals.
+- Keep choreography/GPU tools separate, importing the same runtime. Preserve the Vercel access proxy and canonical hostname.
+- Current authority and verification: governance/STATE.md stage2.4.18.
