@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-28 — shared records published
+
+Product06a47e88 passed connection review,184 automated tests and seven real-Neon cases, then was pushed and deployed through the existing Vercel integration. Formal-page save and page-refresh history readback passed with synthetic data, followed by exact cleanup. Existing access protection remained effective. Mimi's own login and broader visual acceptance remain pending; AI is still a separate evaluation. Release owner: STATE.md stage2.5.3.
+
 ## 2026-10-26 — local trial 09 fixed glass controls
 
 Replaces the unaccepted moving button block with a stable lower-center glass strip. Clear local refraction samples the actual scene, with a restrained optical edge and warm/cool highlights; labels and utility popovers remain upright. The accepted table/camera/card treatment is unchanged.
