@@ -1,6 +1,8 @@
 import { readingCard } from './reading-content.mjs';
 import { readingCardImage } from './reading-art.mjs';
 import { captureRecord, createSaveAttempt, createRecordsClient } from './reading-record-data.mjs';
+import { aiReadingSignature, AI_MODELS } from '../../shared/ai-options.mjs';
+import { renderAIInterpretation } from './reading-ai-render.mjs';
 
 export function createReadingRecords({ root, getReading, getBusy, disclosures, client = createRecordsClient() }) {
   const doc = root.ownerDocument;
@@ -23,7 +25,9 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   let mode = 'current', saving = false, disposed = false, listRequest = 0, detailRequest = 0;
   let roundStartedAt = new Date().toISOString(), attempt = createSaveAttempt(), savedSignature = '';
   let lastCardsKey = null, currentSavedId = null, noteChanged = false;
-  const intro = el('p', '保存牌阵与此刻的想法，与你的伙伴一起回看。', 'record-intro');
+  const draftListeners = new Set();
+  let aiResults = [], aiChoiceKey = '';
+  const includedAI = new Set();
   const form = el('form');
   const field = (label, id, max, rows, placeholder) => {
     const wrap = el('label', label, 'record-field'), input = el('textarea');
@@ -38,13 +42,21 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   form.append(cardSummary, cardRows);
   const interpretation = field('我的解读 · 选填', 'record-interpretation', 8000, 3, '这几张牌，让你联想到了什么？');
   const reflection = field('留给之后的自己 · 选填', 'record-reflection', 8000, 2, '想记住的感受、行动或疑问');
+  const aiChoices = el('fieldset', '', 'record-ai-choices'); aiChoices.hidden = true;
   const save = el('button', '保存到共享记录', 'record-primary'); save.type = 'submit';
   const saveHint = el('p', '', 'record-save-hint');
-  form.append(save, saveHint); current.append(intro, form);
+  form.append(aiChoices, save, saveHint); current.append(form);
   const labels = {};
   const signature = snapshot => JSON.stringify({ ...snapshot, id: '', startedAt: '' });
   function draft(id = crypto.randomUUID()) {
-    return captureRecord(getReading(), { id, startedAt: roundStartedAt, question: question.value, interpretation: interpretation.value, reflection: reflection.value, labels });
+    const snapshot = captureRecord(getReading(), { id, startedAt: roundStartedAt, question: question.value, interpretation: interpretation.value, reflection: reflection.value, labels });
+    const ids = matchingAI(snapshot).filter(result => includedAI.has(result.id)).map(result => result.id);
+    if (ids.length) snapshot.aiInterpretationIds = ids;
+    return snapshot;
+  }
+  function matchingAI(snapshot) {
+    const expected = aiReadingSignature(snapshot);
+    return aiResults.filter(result => result.status === 'completed' && aiReadingSignature(result.reading) === expected);
   }
   function message(text, error = false) { status.textContent = text; status.classList.toggle('is-error', error); }
   function show(next) {
@@ -68,13 +80,28 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
         row.append(name, input); cardRows.append(row);
       });
     }
-    cardSummary.textContent = cards.length ? `自由摆牌 · ${cards.length} 张 · 保存抽取顺序、位置与正逆位` : '先从牌带抽出属于这次占卜的牌。';
+    cardSummary.textContent = cards.length ? `自由摆牌 · ${cards.length} 张` : '先抽牌并翻开。';
     let unchanged = false;
     if (ready && savedSignature) unchanged = signature(draft()) === savedSignature;
     save.disabled = saving || (!attempt.pending && (!ready || unchanged));
     save.textContent = saving ? '正在保存…' : attempt.pending ? '确认并重试保存' : unchanged ? '已保存到共享记录' : currentSavedId ? '保存为新记录' : '保存到共享记录';
-    saveHint.textContent = attempt.pending ? '上次保存结果尚未确认。重试会核对同一份内容，避免重复记录。' : !ready && cards.length ? '翻开所有桌上的牌后即可保存。' : '双方都能回看。保存后，这次牌阵和文字会作为一个独立记录保留。';
+    saveHint.textContent = attempt.pending ? '上次保存结果尚未确认。重试会核对同一份内容，避免重复记录。' : !ready && cards.length ? '翻开所有桌上的牌后即可保存。' : '';
+    saveHint.hidden = !saveHint.textContent;
     for (const input of form.querySelectorAll('textarea,input')) input.disabled = saving || attempt.pending;
+    const available = ready ? matchingAI(draft()) : [];
+    const choiceKey = available.map(result => result.id).join('|');
+    if (choiceKey !== aiChoiceKey) {
+      aiChoiceKey = choiceKey; aiChoices.replaceChildren();
+      aiChoices.hidden = !available.length;
+      if (available.length) aiChoices.append(el('legend', '同时保存AI解读'));
+      for (const result of available) {
+        const label = el('label'), input = el('input'); input.type = 'checkbox'; input.checked = includedAI.has(result.id);
+        input.addEventListener('change', () => { input.checked ? includedAI.add(result.id) : includedAI.delete(result.id); noteChanged = true; update(); });
+        label.append(input, el('span', `${AI_MODELS.find(item => item.id === result.model)?.label || result.model} · ${date(result.completedAt || result.createdAt)}`)); aiChoices.append(label);
+      }
+    }
+    for (const input of aiChoices.querySelectorAll('input')) input.disabled = saving || attempt.pending;
+    for (const listener of draftListeners) listener();
   }
   form.addEventListener('submit', async event => {
     event.preventDefault(); if (save.disabled) return;
@@ -85,7 +112,10 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     try {
       const { record } = await client.save(snapshot);
       if (disposed) return;
-      currentSavedId = record.id; savedSignature = signature(snapshot); noteChanged = false; attempt.complete();
+      currentSavedId = record.id; savedSignature = signature(snapshot); attempt.complete();
+      // A concurrently completed AI request can add a result after this save
+      // snapshot was frozen. Keep that unsaved addition visible to reset/unload.
+      try { noteChanged = signature(draft()) !== savedSignature; } catch { noteChanged = true; }
       message('已保存到共享记录。你和伙伴都可以回看。');
     } catch (error) { if (error.definite) attempt.complete(); if (!disposed) message(error.message, true); }
     finally { saving = false; if (!disposed) { update(); if (mode === 'current') status.scrollIntoView({ block: 'nearest' }); } }
@@ -142,6 +172,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
       for (const [label, text] of [['我的解读', record.interpretation], ['留给之后的自己', record.reflection]]) {
         if (text) detail.append(el('h4', label), el('p', text, 'record-prose'));
       }
+      for (const result of record.aiInterpretations || []) detail.append(renderAIInterpretation(doc, result));
       detail.append(button('导出这条记录', () => {
         const blob = new Blob([JSON.stringify(record, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob), link = el('a'); link.href = url; link.download = `augurwell-${record.id}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -156,15 +187,39 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   show('current');
   return {
     update,
+    getQuestion: () => question.value,
+    setQuestion(value) {
+      if (saving || attempt.pending) return;
+      if (question.value !== value) { question.value = value; noteChanged = true; update(); }
+    },
+    setLabel(id, value) {
+      if (saving || attempt.pending) return;
+      if (labels[id] !== value) { labels[id] = value; lastCardsKey = null; noteChanged = true; update(); }
+    },
+    getLabels: () => ({ ...labels }),
+    getAIReading(id = crypto.randomUUID()) {
+      const result = draft(id); result.interpretation = ''; result.reflection = ''; delete result.aiInterpretationIds; return result;
+    },
+    get locked() { return saving || attempt.pending; },
+    subscribe(listener) { draftListeners.add(listener); return () => draftListeners.delete(listener); },
+    setAIResults(results) {
+      const previousIds = new Set(aiResults.map(result => result.id));
+      aiResults = structuredClone(results).slice(-10);
+      for (const result of aiResults) if (!previousIds.has(result.id)) includedAI.add(result.id);
+      aiChoiceKey = ''; noteChanged = true; update();
+    },
+    openCurrent() { show('current'); disclosures.open('reading-records'); },
     mayReset() {
       if (saving || attempt.pending) { disclosures.open('reading-records'); show('current'); message('请先确认这条记录的保存结果，再重洗。', true); return false; }
       return !unsaved() || window.confirm('这次的文字还没有保存。仍要重洗并清空这些文字吗？');
     },
     reset() {
       question.value = interpretation.value = reflection.value = ''; Object.keys(labels).forEach(key => delete labels[key]);
-      roundStartedAt = new Date().toISOString(); savedSignature = ''; currentSavedId = null; noteChanged = false; attempt = createSaveAttempt(); lastCardsKey = null; message(''); update();
+      roundStartedAt = new Date().toISOString(); savedSignature = ''; currentSavedId = null; noteChanged = false; attempt = createSaveAttempt(); lastCardsKey = null; message('');
+      aiResults = []; includedAI.clear(); aiChoiceKey = ''; aiChoices.replaceChildren(); aiChoices.hidden = true;
+      update();
       root.scrollTop = 0;
     },
-    dispose() { disposed = true; listRequest++; detailRequest++; doc.removeEventListener('reading:disclosurechange', onOpen); window.removeEventListener('beforeunload', beforeUnload); },
+    dispose() { disposed = true; listRequest++; detailRequest++; draftListeners.clear(); doc.removeEventListener('reading:disclosurechange', onOpen); window.removeEventListener('beforeunload', beforeUnload); },
   };
 }

@@ -42,7 +42,7 @@ function dateTime(value, name) {
 
 /** Strict client input; canonical source content and authorship are server-owned. */
 export function normalizeRecordInput(value) {
-  object(value, ['schemaVersion', 'id', 'startedAt', 'question', 'interpretation', 'reflection', 'spread', 'cards'], '记录');
+  object(value, ['schemaVersion', 'id', 'startedAt', 'question', 'interpretation', 'reflection', 'spread', 'cards', 'aiInterpretationIds'], '记录');
   if (value.schemaVersion !== RECORD_SCHEMA_VERSION) invalid('暂不支持这个记录版本。');
   object(value.spread, ['type', 'name'], '牌阵');
   if (value.spread.type !== 'free') invalid('当前只支持自由摆牌记录。');
@@ -64,6 +64,12 @@ export function normalizeRecordInput(value) {
   for (const key of ['physicalId', 'sourceCardId', 'drawOrder', 'zIndex']) {
     if (new Set(cards.map(card => card[key])).size !== cards.length) invalid('记录中有重复的牌或顺序。');
   }
+  let aiInterpretationIds;
+  if (value.aiInterpretationIds !== undefined) {
+    if (!Array.isArray(value.aiInterpretationIds) || value.aiInterpretationIds.length > 10) invalid('每条记录最多保存十份 AI 解读。');
+    aiInterpretationIds = value.aiInterpretationIds.map(normalizeRecordId);
+    if (new Set(aiInterpretationIds).size !== aiInterpretationIds.length) invalid('AI 解读编号不能重复。');
+  }
   return {
     schemaVersion: RECORD_SCHEMA_VERSION,
     id: normalizeRecordId(value.id), startedAt: dateTime(value.startedAt, '开始时间'),
@@ -72,6 +78,7 @@ export function normalizeRecordInput(value) {
     reflection: text(value.reflection, RECORD_LIMITS.reflection, '补充想法'),
     spread: { type: 'free', name: text(value.spread.name, RECORD_LIMITS.spreadName, '牌阵名称', '自由摆牌') || '自由摆牌' },
     cards,
+    ...(aiInterpretationIds?.length ? { aiInterpretationIds } : {}),
   };
 }
 

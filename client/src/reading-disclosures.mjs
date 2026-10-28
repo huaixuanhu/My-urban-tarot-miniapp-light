@@ -5,6 +5,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     ['table-tools', 'tools-toggle'],
     ['drawn-cards', 'drawn-toggle'],
     ['reading-records', 'records-toggle'],
+    ['reading-ai', 'ai-toggle'],
   ];
   const sheets = new Map(definitions.map(([id, triggerId]) => [id, {
     element: $(id), panel: $(id)?.querySelector('.glass-sheet'), trigger: $(triggerId),
@@ -108,6 +109,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     if (expanded) closeAll();
   });
   listen(document, 'pointerdown', event => {
+    if (event.target.closest?.('.help-tooltip')) return;
     if ([...sheets.values()].some(entry => entry.panel.contains(event.target) || entry.trigger?.contains(event.target))) return;
     closeAll();
   }, true);

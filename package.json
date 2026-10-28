@@ -16,7 +16,7 @@
     "check:governance": ".venv/bin/python governance/governance_package_check.py --project-root . --target . --project-lifecycle durable",
     "check:access-runtime": "node scripts/check-access-runtime.mjs",
     "test:access": "tsx --test tests/access.test.ts",
-    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm test:records && pnpm check:records-runtime && pnpm build",
+    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm test:records && pnpm check:records-runtime && pnpm test:ai && pnpm check:ai-runtime && pnpm build",
     "format": "prettier --write .",
     "electron:dev": "electron .",
     "electron:build": "pnpm build:client && electron-builder --mac",
@@ -25,7 +25,10 @@
     "test:reading": "node --test prototypes/shuffle-study/*.test.mjs",
     "dev:motion": "vite --config prototypes/shuffle-study/vite.config.mjs",
     "test:records": "tsx --test tests/records*.test.mjs",
-    "check:records-runtime": "node scripts/check-records-runtime.mjs"
+    "check:records-runtime": "node scripts/check-records-runtime.mjs",
+    "test:ai": "tsx --test tests/ai-*.test.mjs",
+    "check:ai-runtime": "node scripts/check-ai-runtime.mjs",
+    "dev:ai-preview": "tsx scripts/preview-ai.mjs"
   },
   "build": {
     "appId": "com.urbantatot.app",

@@ -1,0 +1,115 @@
+{
+  "parent": "governance/STATE.md stage2.5.4.3",
+  "scope": "Six synthetic live API generations through the actual handler with local signing keys and memory storage; no Neon/cloud writes.",
+  "date": "2026-10-29",
+  "generationCount": 6,
+  "budgetUSD": 1,
+  "reservedUSD": 0.63,
+  "estimatedTotalUSD": 0.050209,
+  "billingLimit": "Estimate from returned tokens and published standard rates, not a reconciled account charge.",
+  "replayCheck": "Each original request was queried and submitted again; generation count stayed unchanged.",
+  "results": [
+    {
+      "model": "gpt-6.1-terra",
+      "effort": "low",
+      "maxOutputTokens": 3000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 12.1,
+      "usage": {
+        "inputTokens": 1026,
+        "outputTokens": 705,
+        "totalTokens": 1731,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "standardRateEstimateUSD": 0.004551
+    },
+    {
+      "model": "gpt-6.1-terra",
+      "effort": "medium",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 8.8,
+      "usage": {
+        "inputTokens": 1026,
+        "outputTokens": 616,
+        "totalTokens": 1642,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "standardRateEstimateUSD": 0.004106
+    },
+    {
+      "model": "gpt-6.1-terra",
+      "effort": "high",
+      "maxOutputTokens": 12000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 10.5,
+      "usage": {
+        "inputTokens": 1026,
+        "outputTokens": 762,
+        "totalTokens": 1788,
+        "reasoningTokens": 90,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "standardRateEstimateUSD": 0.004836
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "effort": "low",
+      "maxOutputTokens": 3000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 21.8,
+      "usage": {
+        "inputTokens": 1026,
+        "outputTokens": 929,
+        "totalTokens": 1955,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "standardRateEstimateUSD": 0.011342
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 17.8,
+      "usage": {
+        "inputTokens": 1026,
+        "outputTokens": 970,
+        "totalTokens": 1996,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "standardRateEstimateUSD": 0.011752
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "maxOutputTokens": 12000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 29,
+      "usage": {
+        "inputTokens": 1026,
+        "outputTokens": 1157,
+        "totalTokens": 2183,
+        "reasoningTokens": 218,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "standardRateEstimateUSD": 0.013622
+    }
+  ]
+}

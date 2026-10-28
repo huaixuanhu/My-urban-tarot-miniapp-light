@@ -1,5 +1,17 @@
 # Change history
 
+## 2026-10-29 — local optional AI interpretation
+
+Add user-invoked Terra/Sol interpretation with a user-written question, framework-only system instructions, strength/token choices and broad cost hints. Preserve a fixed submitted snapshot, distinguish incomplete/unknown outcomes, and prevent duplicate generation through UI locking, durable same-ID claiming and explicit paid-repeat confirmation. Shared records can separately attach matching server-owned AI results.233 tests and aggregate checks pass; six synthetic live API calls complete (token-rate estimateUSD0.050209). Browser mock save/readback/export and isolated local SQL probes pass. Production schema/key activation, user visual acceptance, commit/push/deployment remain pending; see STATE.md stage2.5.4.
+
+## 2026-10-28 — matched three-model reading comparison
+
+Add an isolated, offline-by-default Sol comparison runner. Reuse the six frozen Terra cases/results, changing only model for12new generations across GPT-6 Sol and GPT-6.1 Sol. All18 answers pass supplied fact/structure checks; two independent anonymous content reviews preserve their disagreements. New estimated token costUSD0.09315, all18USD0.11331. Results, original answers and quality/cost/latency limits live under docs/ai/stage2.5.2.2. No product AI integration, database change, commit, push or deployment is included.
+
+## 2026-10-28 — local Terra reading pilot
+
+Add an isolated six-case API evaluation with original Urban Tarot facts, offline input/output checks and a bounded run budget. All six completed, with estimated token costUSD0.02016. Full outputs and source/style limitations are recorded under docs/ai/stage2.5.2.1. No production AI feature, cloud-record change or deployment is included.
+
 ## 2026-10-28 — shared records published
 
 Product06a47e88 passed connection review,184 automated tests and seven real-Neon cases, then was pushed and deployed through the existing Vercel integration. Formal-page save and page-refresh history readback passed with synthetic data, followed by exact cleanup. Existing access protection remained effective. Mimi's own login and broader visual acceptance remain pending; AI is still a separate evaluation. Release owner: STATE.md stage2.5.3.
@@ -155,3 +167,15 @@ The user accepted revision20 and authorized committing/pushing the accumulated l
 - Add private records API, strict validation, immutable retry-safe storage, Neon adapter, explicit schema and 40 contract/client tests.
 - Create and validate the separately authorized Augurwell Neon resource; connect server secrets to Production only without deploying candidate code. Existing word-learning database and local generated changes remain untouched.
 - Record official Terra/Sol evaluation without making paid AI calls. Current evidence and release boundary remain in governance/STATE.md.
+
+
+## 2026-10-29 — contextual help and quieter sheets
+
+- Remove More subtitles and repeated AI/record explanations; retain concise cost ranges and actionable request states.
+- Add500ms question-mark help with keyboard/click access, viewport clamping and Escape priority in both appearances.
+- Preserve existing AI duplicate-charge protections. Local evidence and release boundary remain in STATE.md stage2.5.4.4.
+
+
+## 2026-10-29 — accepted optional-AI local checkpoint
+
+The user accepts the current AI framework and contextual-help UI for a local checkpoint. Commit the evaluated models, protected optional interpretation flow and UI evidence together; production AI activation remains pending. Continuation: STATE.md stage2.5.4.5.

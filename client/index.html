@@ -50,16 +50,16 @@
       <details class="table-tools" id="table-tools">
         <summary class="sr-only" tabindex="-1">更多</summary>
         <section class="glass-sheet" aria-labelledby="tools-title">
-          <header class="sheet-heading"><h2 id="tools-title" tabindex="-1">更多</h2><button class="sheet-close" data-sheet-close aria-label="收起更多">×</button></header>
+          <header class="sheet-heading"><div class="sheet-title-line"><h2 id="tools-title" tabindex="-1">更多</h2><button type="button" data-help-label="牌桌操作" data-help="拖动空白处调整视角，滚轮缩放；可逐张挑牌，也可直接从牌带拖出。Esc 收起面板。">?</button></div><button class="sheet-close" data-sheet-close aria-label="收起更多">×</button></header>
           <div class="tool-body sheet-content">
             <nav class="sheet-links" aria-label="牌桌内容">
-              <button id="records-toggle" class="sheet-link" aria-expanded="false" aria-controls="reading-records"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3v12H7a3 3 0 0 1-3-3v-11a1 1 0 0 1 1-1Z"/><path d="M8 4.5v15M11 9h5M11 13h4"/></svg></span><span><strong>占卜记录</strong><small>留存牌阵与解读，慢慢回看</small></span><span aria-hidden="true">↗</span></button>
-              <button id="drawn-toggle" class="sheet-link" aria-expanded="false" aria-controls="drawn-cards"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="11" height="17" rx="2"/><path d="m5 6-2 13a2 2 0 0 0 1.7 2.3l7.3 1"/></svg></span><span><strong>桌上的牌</strong><small>查看与选中已抽出的牌</small></span><span aria-hidden="true">↗</span></button>
+              <button id="ai-toggle" class="sheet-link" aria-expanded="false" aria-controls="reading-ai"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg></span><span><strong>AI解读</strong></span><span aria-hidden="true">↗</span></button>
+              <button id="records-toggle" class="sheet-link" aria-expanded="false" aria-controls="reading-records"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3v12H7a3 3 0 0 1-3-3v-11a1 1 0 0 1 1-1Z"/><path d="M8 4.5v15M11 9h5M11 13h4"/></svg></span><span><strong>占卜记录</strong></span><span aria-hidden="true">↗</span></button>
+              <button id="drawn-toggle" class="sheet-link" aria-expanded="false" aria-controls="drawn-cards"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="11" height="17" rx="2"/><path d="m5 6-2 13a2 2 0 0 0 1.7 2.3l7.3 1"/></svg></span><span><strong>桌上的牌</strong></span><span aria-hidden="true">↗</span></button>
             </nav>
             <div class="tool-group"><span class="tool-heading">挑牌</span><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">抽出这张</button></div></div>
             <div class="tool-group"><span class="tool-heading">摆放</span><div class="table-actions"><button id="return" disabled>放回牌带</button><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button></div></div>
             <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
-            <p class="tool-help">拖动空白处转动视角 · 滚轮缩放 · Esc 收起</p>
           </div>
         </section>
       </details>
@@ -73,8 +73,15 @@
       <details class="reading-records" id="reading-records">
         <summary class="sr-only" tabindex="-1">占卜记录</summary>
         <section class="glass-sheet glass-sheet-records" aria-labelledby="records-title">
-          <header class="sheet-heading"><div><button class="sheet-back" data-sheet-back>‹ 更多</button><h2 id="records-title" tabindex="-1">占卜记录</h2></div><button class="sheet-close" data-sheet-close aria-label="收起占卜记录">×</button></header>
+          <header class="sheet-heading"><div><button class="sheet-back" data-sheet-back>‹ 更多</button><div class="sheet-title-line"><h2 id="records-title" tabindex="-1">占卜记录</h2><button type="button" data-help-label="占卜记录" data-help="保存牌阵、正逆位和你的文字，与你的伙伴共享。每次保存保留独立记录；未保存的草稿会在刷新后消失。">?</button></div></div><button class="sheet-close" data-sheet-close aria-label="收起占卜记录">×</button></header>
           <div id="records-body" class="sheet-content"></div>
+        </section>
+      </details>
+      <details class="reading-ai" id="reading-ai">
+        <summary class="sr-only" tabindex="-1">AI解读</summary>
+        <section class="glass-sheet glass-sheet-ai" aria-labelledby="ai-title">
+          <header class="sheet-heading"><div><button class="sheet-back" data-sheet-back>‹ 更多</button><div class="sheet-title-line"><h2 id="ai-title" tabindex="-1">AI解读</h2><button type="button" data-help-label="AI解读" data-help="只有点击开始解读，才会把你填写的问题与已翻开的牌发送给 OpenAI。牌位可选填；结果可另存到共享记录。">?</button></div></div><button class="sheet-close" data-sheet-close aria-label="收起AI解读">×</button></header>
+          <div id="ai-body" class="sheet-content"></div>
         </section>
       </details>
       <p id="progress" class="progress" role="status">先抽三张，再按自己的顺序揭晓。</p>

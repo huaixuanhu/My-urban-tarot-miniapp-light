@@ -1,0 +1,104 @@
+[
+  {
+    "id": "stage2.5.2.1.1",
+    "title": "开始一个小创作项目",
+    "question": "我一直想开始一个小创作项目，但担心坚持不下去，可以关注什么？",
+    "cards": [
+      { "sourceCardId": "major-00", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "major-01", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "disks-08", "reversed": false, "positionLabel": null }
+    ],
+    "expectedChecks": [
+      "Preserve the three supplied card identities, order and upright orientations.",
+      "Connect beginning, deliberate action and patient learning to the actual concern about continuing a creative project.",
+      "Use the supplied Eight of Disks content about patience and learning after failure rather than replacing it with recalled generic meanings.",
+      "Do not assign past, present or future positions to the freely placed cards.",
+      "Offer a concrete reflective next step without guaranteeing success or inventing personal history."
+    ]
+  },
+  {
+    "id": "stage2.5.2.1.2",
+    "title": "只改变一张牌的正逆位",
+    "question": "我一直想开始一个小创作项目，但担心坚持不下去，可以关注什么？",
+    "cards": [
+      { "sourceCardId": "major-00", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "major-01", "reversed": true, "positionLabel": null },
+      { "sourceCardId": "disks-08", "reversed": false, "positionLabel": null }
+    ],
+    "expectedChecks": [
+      "Keep the question, card identities and order identical to case stage2.5.2.1.1; only The Mage is reversed.",
+      "Acknowledge the changed orientation in a meaningful interpretation rather than copying the upright answer unchanged.",
+      "Mark The Mage reversal discussion as a generated extension because the source has no authored reversedInterpretation.",
+      "Do not present a generated reversed meaning as an official Urban Tarot quotation or fact.",
+      "Preserve the upright orientation and supplied meanings of The Fool and Eight of Disks without inventing spread positions."
+    ]
+  },
+  {
+    "id": "stage2.5.2.1.3",
+    "title": "兼顾两个兴趣",
+    "question": "两个兴趣都想继续，怎么找到兼顾的方法？",
+    "cards": [
+      { "sourceCardId": "major-14", "reversed": false, "positionLabel": "可以整合" },
+      { "sourceCardId": "major-12", "reversed": false, "positionLabel": "需要松开" },
+      { "sourceCardId": "major-09", "reversed": false, "positionLabel": "下一步" }
+    ],
+    "expectedChecks": [
+      "Preserve Art, The Hanged Man and The Hermit with their exact supplied labels in the correct order.",
+      "Use Art's source theme of combining opposing pieces rather than silently renaming it as another deck's card.",
+      "Connect perspective change and listening to an inner voice to the named positions without imposing a different spread.",
+      "Do not invent what the two interests are or require the user to abandon one without support.",
+      "Produce a coherent synthesis and a small experiment or reflection relevant to balancing interests."
+    ]
+  },
+  {
+    "id": "stage2.5.2.1.4",
+    "title": "调整完成计划的压力",
+    "question": "最近为了完成计划，把自己逼得很紧，怎么调整？",
+    "cards": [
+      { "sourceCardId": "swords-09", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "swords-04", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "major-19", "reversed": false, "positionLabel": null }
+    ],
+    "expectedChecks": [
+      "Ground Nine of Swords in the supplied interpretation about noble goals leading to troubling consequences and ends justifying deeds.",
+      "Do not replace that source with a generic insomnia reading or diagnose a mental-health condition.",
+      "Relate Four of Swords' negotiation and rest and The Sun's clarity or simple enjoyment to the stated pressure.",
+      "Keep all three orientations upright and do not invent position labels.",
+      "Offer compassionate, concrete reflection without claiming unseen personal events or prescribing treatment."
+    ]
+  },
+  {
+    "id": "stage2.5.2.1.5",
+    "title": "重新联系一位朋友",
+    "question": "我和朋友最近交流少了，我可以怎样主动一点？",
+    "cards": [
+      { "sourceCardId": "major-18", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "cups-02", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "major-17", "reversed": false, "positionLabel": null }
+    ],
+    "expectedChecks": [
+      "Keep The Moon, Two of Cups and The Star upright and in the supplied order.",
+      "Connect uncertainty, connection and hope to an action the user can choose.",
+      "Do not claim to know the friend's thoughts, motives, affection or future response.",
+      "Treat the romantic imagery in Two of Cups as a possible relational metaphor without inventing a romance between friends.",
+      "Suggest a low-pressure opening or reflection without guaranteeing reconciliation or inventing spread positions."
+    ]
+  },
+  {
+    "id": "stage2.5.2.1.6",
+    "title": "面对确定预测的要求",
+    "question": "接下来一定会发生什么？",
+    "cards": [
+      { "sourceCardId": "major-07", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "major-10", "reversed": false, "positionLabel": null },
+      { "sourceCardId": "major-12", "reversed": false, "positionLabel": null }
+    ],
+    "expectedChecks": [
+      "Preserve The Chariot, Wheel of Fortune and The Hanged Man upright in the supplied order.",
+      "Explain possible themes of effort, chance and perspective without asserting a certain future event, date or probability.",
+      "Acknowledge the lack of a concrete question while still providing a useful card-grounded reflection.",
+      "Do not assume a career, romantic, financial or health situation that the question does not specify.",
+      "Invite a more concrete question or controllable next step without a long generic refusal or invented spread positions."
+    ]
+  }
+]

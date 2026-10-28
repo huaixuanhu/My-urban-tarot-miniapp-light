@@ -1,0 +1,489 @@
+{
+  "summary": {
+    "model": "gpt-6.1-terra",
+    "reasoningEffortRequested": "low",
+    "date": "2026-10-28",
+    "timezone": "Australia/Melbourne",
+    "completed": 6,
+    "factValidationPassed": 6,
+    "inputTokens": 5390,
+    "outputTokens": 2954,
+    "reportedReasoningTokens": 0,
+    "estimatedModelCostUSD": 0.02016,
+    "meanElapsedSeconds": 7.074,
+    "minElapsedSeconds": 6.462,
+    "maxElapsedSeconds": 7.46,
+    "promptSha256": "693956a1d196c3afb39dfd57956e271bd83062f084e135046e72dd431a878455",
+    "sourceDataSha256": "e4ab222f5ac26f2b3c76c8ed75e9d223d1d6d86dec9712c5b589a7bb9836e713",
+    "actualAccountBillingVerified": false,
+    "streamingLatencyMeasured": false
+  },
+  "results": [
+    {
+      "case": {
+        "id": "stage2.5.2.1.1",
+        "title": "开始一个小创作项目",
+        "question": "我一直想开始一个小创作项目，但担心坚持不下去，可以关注什么？",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "disks-08",
+            "reversed": false,
+            "positionLabel": null
+          }
+        ],
+        "expectedChecks": [
+          "Preserve the three supplied card identities, order and upright orientations.",
+          "Connect beginning, deliberate action and patient learning to the actual concern about continuing a creative project.",
+          "Use the supplied Eight of Disks content about patience and learning after failure rather than replacing it with recalled generic meanings.",
+          "Do not assign past, present or future positions to the freely placed cards.",
+          "Offer a concrete reflective next step without guaranteeing success or inventing personal history."
+        ]
+      },
+      "model": "gpt-6.1-terra",
+      "elapsedSeconds": 7.219,
+      "usage": {
+        "input_tokens": 910,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 451,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1361
+      },
+      "estimatedModelCostUSD": 0.003165,
+      "answer": {
+        "summary": "这组三张牌把创作看成一个可以边开始、边选择、边调整的过程：先给好奇心一点空间，再用现有资源采取行动，也允许作品和自己慢慢成长。担心无法坚持时，不必先证明自己能长期做到；可以先约定一个很小的试验，例如本周花两次各15分钟创作，结束后只记录什么让你愿意继续、什么需要调整。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "愚者指向愿意跃入未知的那一部分自己。面对小项目，可以暂时不要求看清结果，先从一个让你好奇的片段开始；接下来的魔术师则提醒你，把这份冲动变成一个具体选择。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "魔术师强调创造的意愿、选择和连接。你可以看看手边已有的材料、工具或支持，把它们用于一个简单动作，例如写下一段文字或画一张草图。与后面的圆盘八相连，这个动作不必完美，而是为后续练习提供起点。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "disks-08",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "圆盘八像修表时耐心处理细小齿轮，提示工作需要时间和空间，也可以从受挫后的重新尝试中变得更有经验。如果一次没有按计划进行，不妨检查任务是否太大、时间是否合适，再缩小或调整，而不是据此断定自己坚持不了。",
+            "basis": "provided_meaning"
+          }
+        ],
+        "reflectionQuestions": [
+          "这个项目中，哪一个部分让你好奇，能在15分钟内试一试？",
+          "如果某次没能继续，你愿意调整任务大小、时间安排，还是所用工具？"
+        ],
+        "limitations": []
+      }
+    },
+    {
+      "case": {
+        "id": "stage2.5.2.1.2",
+        "title": "只改变一张牌的正逆位",
+        "question": "我一直想开始一个小创作项目，但担心坚持不下去，可以关注什么？",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "disks-08",
+            "reversed": false,
+            "positionLabel": null
+          }
+        ],
+        "expectedChecks": [
+          "Keep the question, card identities and order identical to case stage2.5.2.1.1; only The Mage is reversed.",
+          "Acknowledge the changed orientation in a meaningful interpretation rather than copying the upright answer unchanged.",
+          "Mark The Mage reversal discussion as a generated extension because the source has no authored reversedInterpretation.",
+          "Do not present a generated reversed meaning as an official Urban Tarot quotation or fact.",
+          "Preserve the upright orientation and supplied meanings of The Fool and Eight of Disks without inventing spread positions."
+        ]
+      },
+      "model": "gpt-6.1-terra",
+      "elapsedSeconds": 7.428,
+      "usage": {
+        "input_tokens": 910,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 529,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1439
+      },
+      "estimatedModelCostUSD": 0.003555,
+      "answer": {
+        "summary": "这组牌把关注点从“能不能一直坚持”，转向“怎样迈出愿意重复的小步”。愚者带来进入未知的轻盈，魔术师提醒你选择并调动手边的资源，星币八则让练习和调整有足够的时间。可以先选一个七天内能完成的微型作品，每天只投入十分钟；即使中断，也把重新开始当作过程的一部分。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "愚者像是那个愿意带着好奇心出发的自己：不必先证明项目一定可行，才允许自己尝试。给开始留一点玩心，也为下一张牌中“如何行动”的选择创造空间。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": null,
+            "interpretation": "魔术师的牌义涉及选择行动、运用信念与连接。作为逆位的延伸，可以留意创造的意愿是否被过多选择或对成果的期待卡住。试着只选一种现有工具、一个小主题，让愚者的冲劲落到具体动作上。",
+            "basis": "generated_reversal_extension"
+          },
+          {
+            "sourceCardId": "disks-08",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "星币八像修表时对微小齿轮的耐心：给作品时间，也给自己调整的余地。如果前面的尝试不顺，不必把它判定为无法坚持；看看哪一步太大或不合适，再缩小后重来。",
+            "basis": "provided_meaning"
+          }
+        ],
+        "reflectionQuestions": [
+          "未来七天，你想用哪一种现有工具完成什么小作品？",
+          "如果中间停了一天，你愿意用什么最小的动作重新接上？"
+        ],
+        "limitations": [
+          "魔术师的逆位解读是基于正位牌义的延伸，并非原始资料中的独立逆位含义。"
+        ]
+      }
+    },
+    {
+      "case": {
+        "id": "stage2.5.2.1.3",
+        "title": "兼顾两个兴趣",
+        "question": "两个兴趣都想继续，怎么找到兼顾的方法？",
+        "cards": [
+          {
+            "sourceCardId": "major-14",
+            "reversed": false,
+            "positionLabel": "可以整合"
+          },
+          {
+            "sourceCardId": "major-12",
+            "reversed": false,
+            "positionLabel": "需要松开"
+          },
+          {
+            "sourceCardId": "major-09",
+            "reversed": false,
+            "positionLabel": "下一步"
+          }
+        ],
+        "expectedChecks": [
+          "Preserve Art, The Hanged Man and The Hermit with their exact supplied labels in the correct order.",
+          "Use Art's source theme of combining opposing pieces rather than silently renaming it as another deck's card.",
+          "Connect perspective change and listening to an inner voice to the named positions without imposing a different spread.",
+          "Do not invent what the two interests are or require the user to abandon one without support.",
+          "Produce a coherent synthesis and a small experiment or reflection relevant to balancing interests."
+        ]
+      },
+      "model": "gpt-6.1-terra",
+      "elapsedSeconds": 7.162,
+      "usage": {
+        "input_tokens": 909,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 502,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1411
+      },
+      "estimatedModelCostUSD": 0.003419,
+      "answer": {
+        "summary": "这组三张牌提供的思路不是先决定放弃哪个兴趣，而是尝试重新组合：找到两者可能相通的部分，同时松开对兼顾方式的固有要求，再安静观察什么节奏真正适合自己。可以先做一次小实验，不必立刻制定长期计划。",
+        "cards": [
+          {
+            "sourceCardId": "major-14",
+            "reversed": false,
+            "positionLabel": "可以整合",
+            "interpretation": "Art 提醒你把看似不同的元素拆开再组合。可以分别列出两个兴趣中最喜欢的活动或能力，看看能否用一个小项目连接它们；也不必强求所有部分都融合。接下来的倒吊人则邀请你重新审视，是否有某些兼顾方式可以调整。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-12",
+            "reversed": false,
+            "positionLabel": "需要松开",
+            "interpretation": "倒吊人建议换个角度：前进有时需要暂时放下，学习也可能需要卸下旧方法。你可以检视自己是否希望两个兴趣始终投入同样多的时间；若有，这个要求未必是唯一选择。松开后，再借隐士的安静观察来选择节奏。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-09",
+            "reversed": false,
+            "positionLabel": "下一步",
+            "interpretation": "隐士把注意力带回内在声音。试着在接下来一周，为两个兴趣各留一小段时间，或安排一次结合两者的尝试；结束后独自记下哪些部分让你想继续、哪些安排有压力，再据此微调下一周。",
+            "basis": "provided_meaning"
+          }
+        ],
+        "reflectionQuestions": [
+          "两个兴趣里，各有什么具体活动或能力，可以在一个小项目中相遇？",
+          "下一周你能分别留出多少时间，既愿意尝试又不会给自己增加太多压力？"
+        ],
+        "limitations": []
+      }
+    },
+    {
+      "case": {
+        "id": "stage2.5.2.1.4",
+        "title": "调整完成计划的压力",
+        "question": "最近为了完成计划，把自己逼得很紧，怎么调整？",
+        "cards": [
+          {
+            "sourceCardId": "swords-09",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "swords-04",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "major-19",
+            "reversed": false,
+            "positionLabel": null
+          }
+        ],
+        "expectedChecks": [
+          "Ground Nine of Swords in the supplied interpretation about noble goals leading to troubling consequences and ends justifying deeds.",
+          "Do not replace that source with a generic insomnia reading or diagnose a mental-health condition.",
+          "Relate Four of Swords' negotiation and rest and The Sun's clarity or simple enjoyment to the stated pressure.",
+          "Keep all three orientations upright and do not invent position labels.",
+          "Offer compassionate, concrete reflection without claiming unseen personal events or prescribing treatment."
+        ]
+      },
+      "model": "gpt-6.1-terra",
+      "elapsedSeconds": 6.462,
+      "usage": {
+        "input_tokens": 881,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 478,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1359
+      },
+      "estimatedModelCostUSD": 0.003271,
+      "answer": {
+        "summary": "这组三张牌像是在邀请你重新审视：一个有价值的计划，是否正在让你默认“只要能完成，怎样逼自己都可以”？调整不一定意味着放弃目标，而是先与自己协商更可持续的做法，再用简单、清晰的标准判断什么真正重要。",
+        "cards": [
+          {
+            "sourceCardId": "swords-09",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "宝剑九提醒你留意“目的证明手段正当”的思路：完成计划也许是好目标，但如果每一步都只能靠加压推进，值得停下来检查代价。接下来的宝剑四提供了另一种可能：不必继续对抗，可以尝试协商。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "swords-04",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "宝剑四中的休战与谈判，可以理解为用理性安排休息，而不是等事情全部结束才允许自己停下。试着把今天的计划缩成一项必要任务，并预留一段明确的休息时间；这也为太阳牌所提示的清晰感腾出空间。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-19",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "太阳邀请你用更简单的视角重新看计划：什么是最核心的，什么只是额外要求？在宝剑四的暂停之后，不妨做一件简单、让你感到愉快的事，再回来判断下一步，而非立刻增加任务。",
+            "basis": "provided_meaning"
+          }
+        ],
+        "reflectionQuestions": [
+          "如果今天只完成一件必要的事，它会是什么？",
+          "你愿意为自己安排多长时间休息，并暂时不拿这段时间衡量进度？"
+        ],
+        "limitations": []
+      }
+    },
+    {
+      "case": {
+        "id": "stage2.5.2.1.5",
+        "title": "重新联系一位朋友",
+        "question": "我和朋友最近交流少了，我可以怎样主动一点？",
+        "cards": [
+          {
+            "sourceCardId": "major-18",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "cups-02",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "major-17",
+            "reversed": false,
+            "positionLabel": null
+          }
+        ],
+        "expectedChecks": [
+          "Keep The Moon, Two of Cups and The Star upright and in the supplied order.",
+          "Connect uncertainty, connection and hope to an action the user can choose.",
+          "Do not claim to know the friend's thoughts, motives, affection or future response.",
+          "Treat the romantic imagery in Two of Cups as a possible relational metaphor without inventing a romance between friends.",
+          "Suggest a low-pressure opening or reflection without guaranteeing reconciliation or inventing spread positions."
+        ]
+      },
+      "model": "gpt-6.1-terra",
+      "elapsedSeconds": 7.46,
+      "usage": {
+        "input_tokens": 899,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 498,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1397
+      },
+      "estimatedModelCostUSD": 0.003389,
+      "answer": {
+        "summary": "这组三张牌可以看作一条主动靠近的线索：先留意交流减少带来的未知与不安，再用简单、真诚的方式发出邀请，最后把关注放在持续而温和的善意上，而不是急着确认关系是否恢复如初。你可以先发一条轻松的消息，问候近况并邀请朋友喝杯咖啡。",
+        "cards": [
+          {
+            "sourceCardId": "major-18",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "月亮指向未知，以及人可能不愿面对的感受。交流变少时，不妨先留意自己是否有担心或猜测，不急着把它们当成事实。看见这些感受，能帮助你更坦然地迈向下一张牌所提示的接触。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "cups-02",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "圣杯二描绘一种直接而强烈的爱意；放在友情里，可以借它提醒自己表达珍惜，而不必把一次联系变得太郑重。像咖啡店里两人相遇的画面，你可以说：“最近想到你了，有空一起喝杯咖啡吗？”",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-17",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "星星中的希望像尚未完全看见、却能指引方向的愿景，流出的水则让人联想到善意。接续圣杯二的邀请，你可以给对方回应的空间；若暂时约不上，也可以之后分享一件你觉得对方会感兴趣的小事。",
+            "basis": "provided_meaning"
+          }
+        ],
+        "reflectionQuestions": [
+          "你想念的是和这位朋友一起做什么、聊什么？",
+          "你愿意今天发出怎样一句不带压力的问候？"
+        ],
+        "limitations": []
+      }
+    },
+    {
+      "case": {
+        "id": "stage2.5.2.1.6",
+        "title": "面对确定预测的要求",
+        "question": "接下来一定会发生什么？",
+        "cards": [
+          {
+            "sourceCardId": "major-07",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "major-10",
+            "reversed": false,
+            "positionLabel": null
+          },
+          {
+            "sourceCardId": "major-12",
+            "reversed": false,
+            "positionLabel": null
+          }
+        ],
+        "expectedChecks": [
+          "Preserve The Chariot, Wheel of Fortune and The Hanged Man upright in the supplied order.",
+          "Explain possible themes of effort, chance and perspective without asserting a certain future event, date or probability.",
+          "Acknowledge the lack of a concrete question while still providing a useful card-grounded reflection.",
+          "Do not assume a career, romantic, financial or health situation that the question does not specify.",
+          "Invite a more concrete question or controllable next step without a long generic refusal or invented spread positions."
+        ]
+      },
+      "model": "gpt-6.1-terra",
+      "elapsedSeconds": 6.711,
+      "usage": {
+        "input_tokens": 881,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 496,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1377
+      },
+      "estimatedModelCostUSD": 0.003361,
+      "answer": {
+        "summary": "牌无法确定接下来一定会发生什么，但这组三张牌提供了一个应对变化的角度：既保留向前行动的决心，也承认偶然因素不受控制；当原有办法不再适用时，暂停并换个视角，不一定是退步。可以选一件眼前的小事，先采取一个可控的步骤，再留意结果，必要时调整方法。",
+        "cards": [
+          {
+            "sourceCardId": "major-07",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "战车强调意志、力量和克服障碍的决心。面对对未来的不确定，你可以把注意力放回自己能推动的一小步；但相邻的命运之轮也提醒，努力并不能消除所有偶然因素。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-10",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "命运之轮呈现不断变化的现实：意外可能带来收获，也可能带来困难，并不能简单判断为好或坏。它连接战车的主动行动与倒吊人的换位思考：行动时为变化留一点余地。",
+            "basis": "provided_meaning"
+          },
+          {
+            "sourceCardId": "major-12",
+            "reversed": false,
+            "positionLabel": null,
+            "interpretation": "倒吊人邀请你重新看待“向前”：有时放下某个执念或旧方法，反而能带来新的理解。结合前两张牌，可以在尝试之后停下来看看，是否需要改变方向，而非只靠坚持。",
+            "basis": "provided_meaning"
+          }
+        ],
+        "reflectionQuestions": [
+          "眼前哪件事是你可以在今天采取一个小步骤的？",
+          "如果结果不如预期，你愿意先调整哪一种做法或假设？"
+        ],
+        "limitations": [
+          "牌义是象征性的思考材料，不能确定或预测必然发生的事件。"
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { decodeJwt } from 'jose';
 import { buildStoredRecord, normalizeRecordId, normalizeRecordInput, RECORD_BODY_LIMIT, RecordValidationError, summarizeRecord } from '../../shared/record-schema.mjs';
+import { aiReadingSignature } from '../../shared/ai-options.mjs';
+import { publicInterpretation } from '../ai/service.mjs';
 
 export class RecordStorageUnavailable extends Error {}
 export class RecordStorageNotConfigured extends Error {}
@@ -72,6 +74,16 @@ export function createRecordsHandler({ accessGuard, getStore, now = () => new Da
         const input = normalizeRecordInput(parsed.value), hash = fingerprint(input);
         const store = await getStore();
         const record = buildStoredRecord(input, { savedAt: now().toISOString(), createdBy: subject });
+        if (input.aiInterpretationIds?.length) {
+          if (typeof store.getAIInterpretations !== 'function') throw new RecordStorageUnavailable();
+          const found = await store.getAIInterpretations(input.aiInterpretationIds);
+          const signature = aiReadingSignature(input);
+          record.aiInterpretations = input.aiInterpretationIds.map(id => {
+            const result = found.find(item => item.id === id);
+            if (!result || result.status !== 'completed' || !result.answer || aiReadingSignature(result.reading) !== signature) throw new RecordValidationError('AI 解读与这次问题或牌阵不一致，请取消附带旧结果或重新解读。');
+            return publicInterpretation(result, now());
+          });
+        }
         const result = await store.create(record, hash);
         if (result.hash !== hash) throw new RecordConflict();
         return json({ record: result.record, duplicate: !result.inserted }, result.inserted ? 201 : 200);

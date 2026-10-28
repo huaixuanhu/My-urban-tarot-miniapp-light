@@ -11,6 +11,8 @@ import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-c
 import { createReadingReader } from './reading-reader.mjs';
 import { createReadingDisclosures } from './reading-disclosures.mjs';
 import { createReadingRecords } from './reading-records.mjs';
+import { createReadingAI } from './reading-ai.mjs';
+import { initializeInlineHelp, disposeHelpTips } from './reading-help.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
 import { createReadingProjection } from './reading-projection.mjs';
 import { createScreenGlass } from './reading-screen-glass.mjs';
@@ -37,7 +39,7 @@ function freshReading(order = shuffleDeck(ids)) {
 let reading = freshReading();
 let readingFan = createReadingFan(reading.order);
 let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass;
-let appearanceController, disclosures, recordsController;
+let appearanceController, disclosures, recordsController, aiController;
 let scheduled = 0, failed = false, disposed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
 const flips = new Map(), currentPoses = new Map(), pendingReveals = new Map();
@@ -253,7 +255,7 @@ async function reveal(id) {
 }
 function beginReset() {
   if (reset || failed) return;
-  if (!recordsController?.mayReset()) return;
+  if (!aiController?.mayReset() || !recordsController?.mayReset()) return;
   disclosures.closeAll({ motion: false });
   $('reader-details').open = false;
   round += 1; pendingReveals.clear();
@@ -275,6 +277,7 @@ function finishReset() {
   if (!reset) return;
   viewTransition = null; zoomTarget = 1; applyView({ ...view, zoom: 1 });
   reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
+  aiController?.reset();
   recordsController?.reset();
   updateControlBounds();
   hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
@@ -525,8 +528,10 @@ $('reveal').addEventListener('click', event => {
   reveal(reading.selectedId);
 });
 $('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
+initializeInlineHelp(document);
 disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches });
 recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => !!reset || failed || flips.size > 0 || pendingReveals.size > 0, disclosures });
+aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => !!reset || failed || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });
 $('return').addEventListener('click', () => { if (!reset) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
 $('undo').addEventListener('click', () => { if (!reset) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });
 $('arrange').addEventListener('click', () => { if (!reset) { cancelDrag(); dispatch({ type: 'arrange3', positions: [{ x: -2, z: -0.7 }, { x: 0, z: -0.7 }, { x: 2, z: -0.7 }] }); } });
@@ -552,6 +557,6 @@ document.addEventListener('visibilitychange', () => {
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
 }
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disclosures?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disposeHelpTips(document); disclosures?.dispose(); aiController?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 startReading().catch(fail);
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

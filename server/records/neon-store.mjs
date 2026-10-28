@@ -6,6 +6,10 @@ export async function createNeonRecordStore(connectionString) {
   const { neon } = await import('@neondatabase/serverless');
   const sql = neon(connectionString);
   return {
+    async getAIInterpretations(ids) {
+      const rows = await sql`SELECT document FROM augurwell_ai_interpretations WHERE id = ANY(${ids}::uuid[])`;
+      return rows.map(row => row.document);
+    },
     async create(record, hash) {
       const rows = await sql`
         INSERT INTO augurwell_records (id, saved_at, created_by, request_hash, document)

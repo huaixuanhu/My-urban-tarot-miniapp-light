@@ -8,6 +8,10 @@ function localRecordsUnavailable(server: ViteDevServer | PreviewServer) {
     res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
     res.end(JSON.stringify({ error: { code: 'RECORDS_NOT_CONFIGURED', message: '本地预览尚未连接云端记录，内容没有提交。可以先体验填写与面板交互。' } }));
   });
+  server.middlewares.use('/api/interpretations', (_req, res) => {
+    res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+    res.end(JSON.stringify({ error: { code: 'AI_NOT_CONFIGURED', message: '本地预览尚未接通 AI 服务。问题和设置已保留，这次没有发起解读。' } }));
+  });
 }
 
 export default defineConfig({

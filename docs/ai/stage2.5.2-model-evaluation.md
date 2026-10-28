@@ -1,32 +1,31 @@
 # stage2.5.2 — official model evaluation
 
-Parent and authority: [governance/STATE.md](../../governance/STATE.md), stage2.5.2. This derived memo covers the two requested official OpenAI API models and a proposed evaluation for Augurwell. It does not authorize credentials, paid requests, submission of private questions, deployment or model activation.
+Parent and authority: [governance/STATE.md](../../governance/STATE.md), stage2.5.2 and its bounded evaluations stage2.5.2.1/stage2.5.2.2. This derived memo covers the three requested official OpenAI API models and their matched six-case local evaluation for Augurwell. Execution authority comes from STATE.md, not this memo. Private questions, deployment and production model activation remain outside scope.
 
-Reviewed: 2026-10-28, Australia/Melbourne. Status: documentation-based recommendation; no API requests or matched-case evaluation performed. Account access, actual latency and tarot interpretation quality remain unverified. Existing shared-record infrastructure work is separate from this model evaluation.
+Reviewed: 2026-10-28, Australia/Melbourne. Status: the authorized six-case Terra pilot and subsequent twelve-generation Sol comparison are complete. All18 answers passed structure and supplied card-field validation. Additional Sol generations cost an estimated USD0.09315; all18 cost USD0.11331, calculated from returned usage and Standard rates, not reconciled account billing. See the [three-model report](stage2.5.2.2/README.md), [all answers](stage2.5.2.2/ANSWERS.md), and unchanged [Terra baseline](stage2.5.2.1/README.md). No repeat-sampling reliability study or production AI integration has been performed.
 
 ## Verified model facts
 
-| | GPT-6.1 Terra | GPT-6 Sol |
-| --- | --- | --- |
-| Exact API ID | `gpt-6.1-terra` | `gpt-6-sol` |
-| Standard input, USD / 1 million tokens | $1.00 | $2.00 |
-| Standard output, USD / 1 million tokens | $5.00 | $10.00 |
-| Cached input, USD / 1 million tokens | $0.05 | $0.20 |
-| Official positioning relevant here | Efficient natural writing and visual reasoning | Complex coding and agent workflows |
-| Structured outputs and streaming | Supported | Supported |
-| Reasoning effort | `none`, `low`, `medium`, `high`, `xhigh`, `max` | Same |
+| | GPT-6.1 Terra | GPT-6 Sol | GPT-6.1 Sol |
+| --- | --- | --- | --- |
+| Exact API ID | `gpt-6.1-terra` | `gpt-6-sol` | `gpt-6.1-sol` |
+| Standard input, USD / 1 million tokens | $1.00 | $2.00 | $2.00 |
+| Standard output, USD / 1 million tokens | $5.00 | $10.00 | $10.00 |
+| Cached input, USD / 1 million tokens | $0.05 | $0.20 | $0.10 |
+| Structured outputs and streaming | Supported | Supported | Supported |
+| Reasoning effort | `none`, `low`, `medium`, `high`, `xhigh`, `max` | Same | `low`, `medium`, `high`, `xhigh`, `max` |
 
-Sources opened and checked: [Terra model](https://developers.openai.com/api/docs/models/gpt-6.1-terra), [Sol model](https://developers.openai.com/api/docs/models/gpt-6-sol), [pricing](https://developers.openai.com/api/docs/pricing). These are Standard short-context rates; cache-write, Fast, regional-processing and tool charges are separate. This comparison preserves the requested GPT-6 Sol rather than substituting GPT-6.1 Sol.
+Sources opened and checked: [Terra model](https://developers.openai.com/api/docs/models/gpt-6.1-terra), [6 Sol model](https://developers.openai.com/api/docs/models/gpt-6-sol), [6.1 Sol model](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [pricing](https://developers.openai.com/api/docs/pricing). These are Standard short-context rates; cache-write, Fast, regional-processing and tool charges are separate. Both exact Sol variants were separately requested and returned by the API.
 
 ## Recommendation and its limit
 
-Start with Terra as the candidate default. The intended task is to connect a user's question with supplied card facts and existing Urban Tarot content, then write a concise Chinese interpretation. Its documented writing focus and lower uncached rates fit that workload. This is an inference from the task and documentation, not evidence that Terra has better tarot knowledge or faster responses in this application.
+The matched comparison slightly favors GPT-6 Sol as the balanced default candidate: fuller useful distinctions than Terra in some examples, with less verbosity and a shorter observed wait than GPT-6.1 Sol. Terra remains an adequate economical/concise candidate; GPT-6.1 Sol gave the clearest summary-level reversal sensitivity. The independent content reviewer found several substantive ties and no decisive overall winner; the independent reading reviewer narrowly preferred Sol6. Model/style selection remains with the user after reading the comparative examples. No model is activated, and this does not establish a general tarot-knowledge ranking or production reliability.
 
 The more important product controls are accurate input, distinct facts and interpretations, a useful writing style, and reliable saved results. Neither model should infer hidden cards, invent a spread's meaning, treat free placement as a predefined layout, or claim certain knowledge of future events. Existing card content should be supplied explicitly instead of relying on recalled generic tarot meanings. Inspection of [the project deck data](../../client/src/data/tarotData.json) confirms that none of its 78 cards has an authored `reversedInterpretation`; record that absence and identify any model-derived reversed interpretation as generated.
 
-Use the same Responses API input contract for both candidates. Begin comparison at `low` reasoning, then consider `none` only if it maintains the agreed quality. Do not use external tools or card images for the initial text-grounded comparison. Image-based interpretation would be a separate experiment.
+All three candidates received the same Responses API input contract at `low` reasoning. Only the requested model field changed. No external tools or images were sent. Alternative reasoning settings or image-based interpretation would be separate experiments; `none` is not listed for GPT-6.1 Sol.
 
-## Cost illustration and proposed test ceiling
+## Historical pilot cost proposal and limits
 
 For a hypothetical request with 3,000 input tokens and 1,500 total billed output tokens:
 
@@ -39,7 +38,7 @@ Calculation: `(input tokens × input rate + total output tokens × output rate) 
 
 The proposed first pilot is six Terra requests only: approximately USD $0.063 at the example sizes. Cap each request at 4,000 input tokens and 3,000 total output tokens, including reasoning. At Standard uncached rates, the six-request maximum is USD $0.114. Even if all input is billed as 30-minute cache writes, the corresponding amount is USD $0.120; at 12-hour write rates it is USD $0.150. These figures exclude tools, premium processing, regional premiums, tax and unrelated hosting/storage charges.
 
-A **USD $0.20 model-token budget** is proposed for this pilot, not authorized or incurred. Before an approved run, verify account access and rates, count input tokens, enforce the output cap, reserve the maximum per attempt and stop rather than automatically retry a failed, incomplete or uncertain request. An incomplete answer is a test outcome, not permission for another call. No private records are submitted. Model selection, credential access and these paid requests remain pending.
+A **USD $0.20 model-token budget** now applies under STATE.md stage2.5.2.1. Verify account access and rates, count input tokens, enforce the output cap, reserve the maximum per attempt and stop rather than automatically retry a failed, incomplete or uncertain request. An incomplete answer is a test outcome, not permission for another call. No private records are submitted. The local runner reserves USD0.03 per attempt, including headroom above the stated maximums. User-reported monthly USD11 cap remains separate from this run's budget.
 
 ## Proposed six-case Terra-first pilot
 
@@ -60,9 +59,17 @@ Before any model request, local preflight must reject an incomplete spread or in
 
 Review criteria: card/order/orientation accuracy; fidelity to supplied content; relevance to the question; coherent relationships between cards; clear Chinese without repetitive stock prose; appropriate uncertainty; complete structured response. Record schema failures, refusals, truncation, time to first useful output, total elapsed time, input/output/reasoning usage and estimated charge. A fabricated card or changed orientation is a critical failure, irrespective of attractive prose. No numeric quality threshold or user preference is established until the comparison is reviewed.
 
-### Optional later Sol comparison
+### stage2.5.2.2 — completed matched Sol comparison
 
-If Terra's style or coherence is unsatisfactory, compare the same synthetic cases with `gpt-6-sol`, keeping prompt, facts, reasoning setting and requested length identical and hiding model labels during review. A broader twelve-case matched comparison can add ambiguous context, conflicting themes, instructions to change the drawn facts and later reflections. At the earlier illustrative token sizes, twelve calls to each model would cost USD $0.378. This is a separate optional proposal, outside the six-call pilot and its USD $0.20 budget; it is neither scheduled nor authorized.
+The subsequent user request authorized both exact Sol variants against the six existing Terra answers. The two Sol models were called once per case, alternating their order, under a disclosed USD0.80 ceiling. Twelve USD0.06 reservations totaled USD0.72; these reservations are not charges. All12 returned completed, valid answers without retry. Neither the prompt nor Terra's original results were rewritten.
+
+| Model | Six-answer estimated cost | Mean full-response seconds | Input / output tokens |
+| --- | ---: | ---: | ---: |
+| GPT-6.1 Terra | USD0.02016 | 7.074 | 5390 / 2954 |
+| GPT-6 Sol | USD0.04447 | 8.062 | 5390 / 3369 |
+| GPT-6.1 Sol | USD0.04868 | 14.989 | 5390 / 3790 |
+
+All reported cache/read-write counts were zero. Sol6 reported110 reasoning tokens already included in its output total; the others reported0. Full-response latency includes network/service effects; Terra was measured earlier, and no first-token measurement or repeated controlled timing benchmark was performed. Two independent agents reviewed anonymous candidate answers before the model mapping was disclosed. Their disagreements, concrete examples and recommended next step are preserved in the [comparison report](stage2.5.2.2/README.md). Further generations, prompt revisions and live activation remain separate future scope.
 
 ## Record structure and provenance
 
