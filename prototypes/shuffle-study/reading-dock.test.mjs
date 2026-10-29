@@ -61,6 +61,7 @@ test('capsule footprint clears complete randomized fans with a 0.03 scene-unit m
     return { x: d.x + Math.sign(c) * (d.width / 2 - d.radius) + c * (d.radius + margin),
       z: d.z + Math.sin(angle) * (d.radius + margin) };
   });
+  const layouts = new Set();
   let seed = 101;
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
   for (let run = 0; run < 128; run++) {
@@ -68,13 +69,16 @@ test('capsule footprint clears complete randomized fans with a 0.03 scene-unit m
     for (let i = order.length - 1; i; i--) {
       const j = Math.floor(random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]];
     }
-    for (const p of createReadingFan(order)) {
+    const fan = createReadingFan(order, Math.floor(random() * 4294967296));
+    layouts.add(JSON.stringify(fan));
+    for (const p of fan) {
       const euler = new THREE.Euler(p.rx, p.ry, p.rz);
       const corners = [-CARD_WIDTH / 2, CARD_WIDTH / 2].flatMap(x => [0, CARD_THICKNESS].flatMap(y =>
         [-CARD_LENGTH / 2, CARD_LENGTH / 2].map(z => new THREE.Vector3(x, y, z).applyEuler(euler).add(new THREE.Vector3(p.x, p.y, p.z)))));
       assert.equal(intersects(convexHull(corners), dock), false, `Fan ${run} at x=${p.x} intersects dock.`);
     }
   }
+  assert.equal(layouts.size, 128, 'Clearance must cover distinct layouts, not just relabeled cards.');
 });
 
 function applyCss(transform, x, y) {

@@ -40,4 +40,10 @@ ANU's JavaScript-rendered current documentation was re-read through the browser:
 
 ## Follow-up review status
 
-The commit carrying these corrections will be sent to the same Claude chat for a bounded delta review. No second-review acceptance is claimed until its receipt is observed. Push, deployment, production migration/key activation remain unauthorised by this work.
+Claude completed the bounded delta review of `af7cf339d76c7f64afd066fa217117aeabba999a` against `79bcff65`, independently passing all308 aggregate tests, five focused fault/identity probes and2048 sampled fan-layout clearance checks. The verdict was sufficient corrections, no new blocking finding and no observed behavioral regression. Receipt: ignored `.local/quantum-claude-review-followup.md`, SHA256 `08b19b44b4e01b2c0705b715f2aa21a8718a6a88791480af1b9d4db1bfb378c0`.
+
+One low-priority test-only finding remained: the existing dock clearance test varied card identities but omitted the new independent layout seed. Codex restored128 distinct seeded layouts and added an assertion that all128 geometries differ; the five focused dock tests passed in both Codex and Claude's read-only rerun of the working patch. This final closeout changes only that test and evidence documents; product source remains exactly the independently reviewed `af7cf339`. A final aggregate rerun also passes308 tests and build.
+
+The schema probe detects absent tables and missing columns explicitly referenced by its reads (`id`, `document`, `singleton`); it is not a full schema-version validator. Other partial-schema failures remain conservative/uncertain. The003 migration is transactional; future migrations must extend this qualification. Saved local test records from the first candidate may still contain their old nested AI snapshot; no such candidate was published.
+
+Local implementation, tests, commits and the requested cross-host review are complete. User visual acceptance and future release work remain separate. Push, deployment, production migration/key activation remain unauthorised by this work.
