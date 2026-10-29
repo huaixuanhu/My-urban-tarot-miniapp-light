@@ -1,5 +1,10 @@
 # Change history
 
+## 2026-10-30 — soft night reflections and richer engraving
+
+Broaden night reflections into warmer soft light and extend the accepted faint glass etching with crescents, orbits and sparse stars. Keep original day lighting, card area and gameplay. Local batch under STATE.md stage2.5.9.1.
+
+
 ## 2026-10-29 — ritual engraving and quantum identity
 
 Save preceding continuous-glass/prompt-design work as checkpoint34972294. Add restrained static glass engraving and an original observation mark, plus a reusable wave/orbit quantum icon. Applied quantum/local round badges remain independent of next-round preference and pool metadata.315 aggregate tests/build and synthetic day/night/three-card/narrow checks pass. New visuals remain local/uncommitted, with no real provider calls or publication. The user has accepted the AI detail/direction proposal; its implementation remains next work.

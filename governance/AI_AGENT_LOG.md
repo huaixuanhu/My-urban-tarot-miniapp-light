@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-30 — stage2.5.9.1 lighting and engraving
+
+Executor: Codex (GPT-6), with bounded scene implementation agent. Saved the user-accepted revision28 checkpoint9dae1d1f, then softened night glass response/existing light falloff and enriched a single procedural engraving. Integrated319-test aggregate, syntax, finite canvas operations and repeat-safe disposal checks pass. Actual Chromium default/high-angle views show broad warm halos with quiet peripheral motifs. No real provider/cloud/access change; local split commits authorized. Stage2.5.9.2 interaction changes remain a separate following slice.
+
+
 ## 2026-10-29 — stage2.5.8 ritual and quantum visuals
 
 Executor: Codex (GPT-6), with a bounded engraving implementation agent and a read-only provenance/design reviewer. Reuse current installed governance/design skills and project owners. Commit preceding verified UI and accepted prompt proposal as34972294, then add the delegated visual refinement. Engraving owns one static texture/material/geometry and no input or randomness. Original shared SVG symbols supply observation identity and truthful quantum/local provenance. Independent diff review finds no blocker. Aggregate315 tests/runtime/build checks pass; the new regression guards applied source against next-mode/pool confusion. Actual Chromium exercises empty/pending/collected-but-unapplied states, one synthetic quantum shuffle, three drag/reveals, next-mode change with preserved provenance, day/night, low-angle/restore and390px layout. Fixture: randomCalls1,AI calls0,attempts0,records0. No realANU/OpenAI/Neon access;65 inherited hashes unchanged. New visuals are uncommitted. Evidence: docs/design/stage2.5.8/README.md. AI design accepted, implementation pending; no push/deployment.

@@ -8,7 +8,7 @@ export { createReadingBack } from './reading-back.mjs';
 // Only materials and lights vary. No card, camera or reading-state references.
 const PALETTES = {
   light: { background: 0xeeedf0, sky: 0xf0eff7, bounce: 0x827c8a, ambient: 0.9, key: 2.65, rim: 1.15, pool: 52, coolPool: 20, shadow: 0.66, selection: 0x786745, paperEdge: 0xd1c7b5, backGlow: 0.08 },
-  dark: { background: 0x181a22, sky: 0xd3dce4, bounce: 0x1f252d, ambient: 0.64, key: 2.25, rim: 1.25, pool: 48, coolPool: 25, shadow: 0.84, selection: 0xd0b98d, paperEdge: 0xb8aa90, backGlow: 0.16 },
+  dark: { background: 0x181a22, sky: 0xd3dce4, bounce: 0x1f252d, ambient: 0.64, key: 2.25, rim: 1.10, pool: 34, coolPool: 17, shadow: 0.84, selection: 0xd0b98d, paperEdge: 0xb8aa90, backGlow: 0.16 },
 };
 
 export function createReadingSceneStyle(scene, renderer, texture) {
@@ -60,6 +60,15 @@ export function createReadingSceneStyle(scene, renderer, texture) {
       glass.userData.applyAppearance(resolved);
       hemisphere.color.setHex(p.sky); hemisphere.groundColor.setHex(p.bounce); hemisphere.intensity = p.ambient;
       key.intensity = p.key; key.shadow.intensity = p.shadow; rim.intensity = p.rim; pool.intensity = p.pool; coolPool.intensity = p.coolPool;
+      const dark = resolved === 'dark';
+      // Broader warm falloff complements the softened glass response at night.
+      // Restore every daylight setting when switching themes.
+      pool.angle = dark ? .94 : .72;
+      pool.penumbra = dark ? 1 : .92;
+      coolPool.angle = dark ? .88 : .64;
+      pool.color.setHex(dark ? 0xffdfb4 : 0xffedda);
+      coolPool.color.setHex(dark ? 0xffe3c4 : 0xd0dcff);
+      rim.color.setHex(dark ? 0xe9d9c5 : 0xd1d9ef);
       back.map = backMaps[resolved]; back.emissiveMap = backMaps[resolved]; back.emissiveIntensity = p.backGlow;
       edge.color.setHex(p.paperEdge);
       if (outline) outline.material.color.setHex(p.selection);

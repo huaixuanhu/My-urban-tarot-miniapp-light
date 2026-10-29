@@ -136,10 +136,12 @@ export function createReadingGlass(renderer) {
     surface.color.setHex(dark ? 0xdce6f3 : 0xe2edf6);
     surface.attenuationColor.setHex(dark ? 0xc3d7ed : 0xd0e6f2);
     surface.transmission = dark ? .98 : .96;
-    surface.roughness = dark ? .065 : .06;
+    // The night table catches broad lamplight instead of pin-sharp bulb glints.
+    // The edge stays polished, so softening the face does not erase its volume.
+    surface.roughness = dark ? .20 : .06;
     surface.clearcoat = dark ? .35 : .65;
     surface.envMapIntensity = dark ? .14 : .48;
-    surface.clearcoatRoughness = .075;
+    surface.clearcoatRoughness = dark ? .25 : .075;
     edge.color.setHex(dark ? 0xc3d7ed : 0xa2bdcd);
     edge.attenuationColor.setHex(dark ? 0x8caacd : 0x7b9cba);
     edge.attenuationDistance = dark ? .8 : .38;

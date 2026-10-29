@@ -36,6 +36,19 @@ export function createReadingRitual(renderer) {
     }
     ctx.closePath(); ctx.fill();
   }
+  function crescent(x, z, radius, mirror = 1) {
+    ctx.save(); ctx.translate(x, z); ctx.scale(mirror, 1);
+    ctx.globalAlpha = .53; ctx.lineWidth = .013;
+    ctx.beginPath(); ctx.arc(0, 0, radius, rad(68), rad(292));
+    ctx.quadraticCurveTo(-radius * .28, 0, Math.cos(rad(68)) * radius, Math.sin(rad(68)) * radius);
+    ctx.closePath(); ctx.stroke(); ctx.restore();
+  }
+  function orbit(x, z, radius) {
+    ctx.globalAlpha = .35; ctx.lineWidth = .011;
+    ctx.beginPath(); ctx.ellipse(x, z, radius, radius * .40, -.46, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, z, radius * .62, rad(34), rad(307)); ctx.stroke();
+    dot(x, z, .022, .60);
+  }
 
   // The main arcs frame the far edge. Their center stays open for free placing.
   arc(6.72, 4.70, 198, 261, .80);
@@ -55,11 +68,34 @@ export function createReadingRitual(renderer) {
   star(-5.82, -2.12, .10, .68);
   dot(5.89, -1.92, .028, .70);
 
+  // Peripheral lunar/orbital marks enrich the instrument without implying
+  // card positions, a prescribed spread, or connections between drawn cards.
+  arc(7.00, 4.94, 190, 255, .30, .011);
+  arc(7.00, 4.94, 285, 350, .30, .011);
+  crescent(-1.02, -4.94, .14);
+  crescent(1.02, -4.94, .14, -1);
+  dot(-.54, -4.95, .018, .46); dot(.54, -4.95, .018, .46);
+  orbit(-6.63, -.12, .34); orbit(6.63, -.12, .34);
+  for (const side of [-1, 1]) {
+    line(side * 6.76, .56, side * 6.76, 1.28, .32, .011);
+    dot(side * 6.76, 1.44, .022, .48);
+    star(side * 6.76, 1.72, .10, .56);
+    const nodes = [[5.32, -4.72], [5.72, -4.43], [6.12, -4.64], [6.38, -4.23]];
+    for (let i = 0; i < nodes.length; i += 1) {
+      const [x, z] = nodes[i];
+      dot(side * x, z, i === 1 ? .031 : .019, .50);
+      if (i) line(side * nodes[i - 1][0], nodes[i - 1][1], side * x, z, .26, .011);
+    }
+  }
+
   // Two short, unconnected near-edge echoes keep the view balanced when orbited.
   arc(6.72, 4.70, 29, 47, .30, .011);
   arc(6.72, 4.70, 132, 151, .30, .011);
   dot(-4.65, 3.14, .018, .38);
   dot(4.65, 3.14, .018, .38);
+  arc(6.48, 4.46, 36, 57, .25, .011);
+  arc(6.48, 4.46, 122, 143, .25, .011);
+  crescent(-6.00, 2.46, .12, -1); crescent(6.00, 2.46, .12);
 
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;

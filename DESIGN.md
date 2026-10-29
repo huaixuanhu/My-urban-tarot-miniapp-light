@@ -2,6 +2,10 @@
 
 Accepted local baseline: revision28, stage2.5.8 restrained ritual language and quantum identity, explicitly accepted by the user before stage2.5.9. Revision27 is saved as requested checkpoint34972294. The user delegates a careful enhancement of the occult atmosphere and a distinctive quantum symbol within the established glass world. Prior gameplay, room, original artwork and request behavior remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
 
+## stage2.5.9.1 — candidate revision29: soft night light and lunar engraving
+
+Parent: STATE.md stage2.5.9, evolving accepted revision28 under explicit delegated local refinement. At night, existing reflections broaden into warm soft light; the glass edge retains its polished outline and day material/light settings restore unchanged. Delicate outer arcs, crescents, small orbital marks and sparse corner star strokes enrich the existing etched plane. Keep all marks peripheral, still and below physical cards; no prescribed positions or invented card relations. Owners remain reading-glass.mjs, reading-scene-style.mjs and reading-ritual.mjs. Verified default/high-angle browser views and aggregate checks; user review pending.
+
 ## stage2.5.8 — accepted revision28: observation and quantum identity
 
 Parent: governance/STATE.md stage2.5.8, derived from revision27 and the user's request. Reuse the established card-back stars/orbits and the accepted concept's quiet mathematical/celestial relations. This is an established-system extension, not a new layout, card deck or generated concept-image replacement.
