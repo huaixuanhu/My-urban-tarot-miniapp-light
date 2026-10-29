@@ -4,7 +4,11 @@ import { RecordStorageUnavailable, RecordStorageNotConfigured } from './service.
 export async function createNeonRecordStore(connectionString) {
   if (typeof connectionString !== 'string' || !connectionString.trim()) throw new RecordStorageNotConfigured();
   const { neon } = await import('@neondatabase/serverless');
-  const sql = neon(connectionString);
+  return createRecordStoreFromSql(neon(connectionString));
+}
+
+/** Injectable SQL surface for isolated local verification of the production queries. */
+export function createRecordStoreFromSql(sql) {
   return {
     async getRandomDraw(id) {
       const rows = await sql`SELECT document FROM augurwell_random_operations WHERE id = ${id}::uuid AND action = 'draw' AND status = 'completed'`;

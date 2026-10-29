@@ -196,3 +196,5 @@ Parent: governance/STATE.md stage2.5.5; user-approved direction, local day/night
 
 
 Revision24 review refinement (stage2.5.5.1): retain the accepted fan pose formulas and varied presentation, but obtain its shape from an independent motion seed; card relabeling cannot affect the visible picking geometry. Pool metadata refresh stops after a two-minute visible visit, resumes on reopen/visibility, and adds no extra controls. Final synthetic joint record flow and screenshot are in docs/random/stage2.5.5/REVIEW.md; user visual acceptance is still separate.
+
+Revision24 verification (stage2.5.5.3): existing gameplay and source panel also verified with one actual ANU response, normal animation, three-card dragging/reveals, local record history and unchanged current source while toggling next-round mode. No product layout or visual rule changed; the temporary live-harness banner explicitly distinguishes real ANU data from local identity/storage. Evidence: docs/random/stage2.5.5/LIVE.md.

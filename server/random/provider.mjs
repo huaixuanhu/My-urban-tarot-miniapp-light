@@ -30,7 +30,7 @@ export function createANUProvider(key, fetcher = fetch) {
       let result;
       try { result = JSON.parse(Buffer.concat(chunks).toString('utf8')); }
       catch { throw new RandomProviderError('invalid_response'); }
-      if (result?.success !== true || result.type !== 'uint16' || result.length !== 1024 || !validBatch(result.data)) throw new RandomProviderError('invalid_response');
+      if (result?.success !== true || result.type !== 'uint16' || ![1024, '1024'].includes(result.length) || !validBatch(result.data)) throw new RandomProviderError('invalid_response');
       return result.data;
     },
   };

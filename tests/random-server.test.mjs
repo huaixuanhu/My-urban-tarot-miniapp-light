@@ -204,7 +204,7 @@ test('ANU fixed URL/header, no redirect or retry, validated exact uint16 batch',
 });
 
 test('ANU rejects malformed, sparse, overflowing and unsuccessful data', async () => {
-  const invalid = [null, {}, { ...validResponse(), success: false }, { ...validResponse(), type: 'uint8' }, { ...validResponse(), length: 1023 }, { ...validResponse(), data: [] }, { ...validResponse(), data: Array(1024).fill(65536) }, { ...validResponse(), data: Array(1024).fill(null) }];
+  const invalid = [null, {}, ...['01024', '1024 ', '1e3', true, [1024]].map(length => ({ ...validResponse(), length })), { ...validResponse(), success: false }, { ...validResponse(), type: 'uint8' }, { ...validResponse(), length: 1023 }, { ...validResponse(), data: [] }, { ...validResponse(), data: Array(1024).fill(65536) }, { ...validResponse(), data: Array(1024).fill(null) }];
   for (const data of invalid) await assert.rejects(createANUProvider('example', async () => Response.json(data)).collect(), error => error.kind === 'invalid_response');
   await assert.rejects(createANUProvider('example', async () => new Response('x'.repeat(32769))).collect(), error => error.kind === 'invalid_response');
 });
@@ -329,4 +329,13 @@ test('pending display distinguishes collection from draw without claiming a draw
   assert.equal(draw.status, 'unknown'); assert.equal(draw.terminal, false);
   assert.match(draw.message, /洗牌/); assert.doesNotMatch(draw.message, /采集|额度/);
   assert.match(collect.message, /采集/); assert.equal(collect.terminal, false);
+});
+
+
+test('ANU live string length is accepted without weakening the exact 1024-word contract', async () => {
+  let calls = 0;
+  const provider = createANUProvider('offline-example', async () => { calls++; return Response.json({ ...validResponse(), length: '1024' }); });
+  assert.equal((await provider.collect()).length, 1024);
+  assert.equal(calls, 1);
+  await assert.rejects(createANUProvider('offline-example', async () => Response.json({ ...validResponse(), length: '1024', data: batch().slice(1) })).collect(), { kind: 'invalid_response' });
 });

@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-29 — one real ANU batch validated locally
+
+Add a private one-request local harness with retained PostgreSQL, safe restart ownership and offline response recovery. Accept ANU's observed string length metadata while retaining exact data checks. One real batch supports a verified three-card shuffle/reveal/local-save flow;869 values remain.314 aggregate tests and15 local PostgreSQL checks pass. No cloud activation, push or deployment. Evidence: docs/random/stage2.5.5/LIVE.md.
+
 ## 2026-10-29 — local shared quantum randomness
 
 Add a two-user shared1024-value pool, manual ANU acquisition, next-shuffle random mode switch, last-receipt/remaining display and saved source metadata. Preserve tables on shortage/failure/toggle/refresh. Unbiased source conversion, atomic consumption and stable operation recovery receive exhaustive math, local SQL and browser fixture checks. No cloud migration, key activation, live ANU call, push or deployment. Evidence: docs/random/stage2.5.5/README.md.

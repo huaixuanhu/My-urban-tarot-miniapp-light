@@ -1,89 +1,24 @@
 /**
  * Local PostgreSQL verification of the actual production pool adapter SQL.
- * Creates/removes one private temporary cluster; never reads app env files,
+ * Creates/removes private temporary SQL and lifecycle clusters; never reads app env files,
  * contacts Neon/ANU, or applies a migration to an existing database.
  * Requires initdb, pg_ctl and psql on PATH (or POSTGRES_BIN_DIR).
  */
 import assert from 'node:assert/strict';
+import { access, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { mkdtemp, mkdir, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID, createHash } from 'node:crypto';
 import { createRandomStoreFromSql } from '../server/random/neon-store.mjs';
 import { generateDeck } from '../shared/randomness.mjs';
+import { openLocalPostgres } from './lib/local-postgres.mjs';
 
-const execute = promisify(execFile);
-const root = await mkdtemp('/private/tmp/augurwell-pg-');
-const data = path.join(root, 'data'), socket = path.join(root, 'socket');
-const bin = name => process.env.POSTGRES_BIN_DIR ? path.join(process.env.POSTGRES_BIN_DIR, name) : name;
-const env = { PATH: process.env.PATH, LANG: 'C', LC_ALL: 'C' };
-const options = { env, maxBuffer: 4 * 1024 * 1024 };
-let started = false;
+const migrationPath = new URL('../server/random/003-create-random-pool.sql', import.meta.url);
+const migration = await readFile(migrationPath, 'utf8');
+const database = await openLocalPostgres({ migrations: [migrationPath] });
+const { sql, execute: psql } = database;
 const passed = [];
-
-// psql emits CSV without interpreting result projections. The adapter's SQL
-// strings and transaction statement boundaries are executed unchanged.
-function parseCSV(text) {
-  const rows = []; let row = [], value = '', quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (char === '"') {
-      if (quoted && text[i + 1] === '"') { value += '"'; i++; }
-      else quoted = !quoted;
-    } else if (!quoted && char === ',') { row.push(value); value = ''; }
-    else if (!quoted && char === '\n') { row.push(value); rows.push(row); row = []; value = ''; }
-    else if (char !== '\r' || quoted) value += char;
-  }
-  if (value || row.length) { row.push(value); rows.push(row); }
-  return rows;
-}
-function deserialize(name, value) {
-  if (value === '') return null;
-  if (['document', 'values_json'].includes(name)) return JSON.parse(value);
-  if (name === 'cursor') return Number(value);
-  if (name === 'singleton') return value === 't';
-  return value;
-}
-function literal(value) {
-  if (value === null || value === undefined) return 'NULL';
-  if (typeof value === 'number') { assert(Number.isFinite(value)); return String(value); }
-  if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
-  assert.equal(typeof value, 'string');
-  return `'${value.replaceAll("'", "''")}'`;
-}
-async function psql(input) {
-  const child = execFile(bin('psql'), ['-X', '-q', '--csv', '-P', 'footer=off', '-v', 'ON_ERROR_STOP=1',
-    '-h', socket, '-p', '55439', '-U', 'postgres', '-d', 'postgres'], options);
-  const result = new Promise((resolve, reject) => {
-    let stdout = '', stderr = '';
-    child.stdout.on('data', chunk => { stdout += chunk; });
-    child.stderr.on('data', chunk => { stderr += chunk; });
-    child.on('error', reject);
-    child.on('close', code => code === 0 ? resolve(stdout) : reject(new Error(`Local psql failed (${code}): ${stderr}`)));
-  });
-  child.stdin.end(input);
-  return result;
-}
-async function runQueries(queries, transaction) {
-  const marker = `result_${randomUUID()}`;
-  const input = `${transaction ? 'BEGIN;\n' : ''}${queries.map((query, i) => `\\echo ${marker}_${i}\n${query};`).join('\n')}\n${transaction ? 'COMMIT;\n' : ''}`;
-  const output = await psql(input);
-  return queries.map((_, i) => {
-    const start = output.indexOf(`${marker}_${i}\n`);
-    assert(start >= 0, 'missing result delimiter');
-    const next = output.indexOf(`${marker}_${i + 1}\n`, start + 1);
-    const segment = output.slice(start + marker.length + String(i).length + 2, next < 0 ? undefined : next);
-    const [columns = [], ...rows] = parseCSV(segment);
-    return rows.filter(row => row.length === columns.length).map(row => Object.fromEntries(columns.map((name, j) => [name, deserialize(name, row[j])])));
-  });
-}
-function sql(strings, ...values) {
-  const text = strings.reduce((result, part, i) => result + part + (i < values.length ? literal(values[i]) : ''), '');
-  return { text, then(resolve, reject) { return runQueries([text], false).then(rows => rows[0]).then(resolve, reject); } };
-}
-sql.transaction = queries => runQueries(queries.map(query => query.text), true);
-
 const store = createRandomStoreFromSql(sql);
 const at = () => new Date().toISOString();
 async function claim(action) {
@@ -107,13 +42,6 @@ function candidate(pool, requestId) {
 async function check(name, action) { await action(); passed.push(name); }
 
 try {
-  await mkdir(socket, { mode: 0o700 });
-  await execute(bin('initdb'), ['-D', data, '--auth=trust', '-U', 'postgres', '--locale=C', '-E', 'UTF8'], options);
-  await execute(bin('pg_ctl'), ['-D', data, '-l', path.join(root, 'server.log'), '-o', `-k ${socket} -p 55439 -c listen_addresses='' -c fsync=off`, '-w', 'start'], options);
-  started = true;
-  const migration = await readFile(new URL('../server/random/003-create-random-pool.sql', import.meta.url), 'utf8');
-  await psql(migration);
-
   await check('actual migration creates empty durable inventory', async () => {
     const pool = await store.getPool();
     assert.deepEqual(pool.values, []); assert.equal(pool.cursor, 0); assert.equal(pool.batchId, null);
@@ -233,9 +161,65 @@ try {
       }
     }
   });
+  // A dedicated disposable directory exercises the persistent preview lifecycle.
+  // It never touches the user's retained live-validation cluster or receipts.
+  const lifecycleDirectory = await mkdtemp('/private/tmp/augurwell-lifecycle-');
+  const lifecycleOptions = { directory: lifecycleDirectory, migrations: [migrationPath] };
+  const lifecycleHandles = [];
+  let live, savedPool, savedDraw, savedCollection;
+  try {
+    await check('simultaneous cluster startup has one owner and loser cannot stop winner', async () => {
+      const starts = await Promise.allSettled([openLocalPostgres(lifecycleOptions), openLocalPostgres(lifecycleOptions)]);
+      lifecycleHandles.push(...starts.filter(result => result.status === 'fulfilled').map(result => result.value));
+      assert.equal(lifecycleHandles.length, 1);
+      assert.match(starts.find(result => result.status === 'rejected').reason.message, /lifecycle lock/);
+      live = lifecycleHandles[0];
+      assert.equal(live.created, true);
+      assert.deepEqual(await live.sql`SELECT 1 AS alive`, [{ alive: '1' }]);
+      assert.deepEqual(await live.sql`SELECT current_setting('fsync') AS fsync, current_setting('synchronous_commit') AS sync, current_setting('listen_addresses') AS listen`,
+        [{ fsync: 'on', sync: 'on', listen: null }]);
+    });
+    await check('persistent close and reopen retain pool cursor and completed operation receipts', async () => {
+      const localStore = createRandomStoreFromSql(live.sql);
+      const collection = { id: randomUUID(), action: 'collect', status: 'pending', createdAt: at(), createdBy: 'local-lifecycle-check' };
+      await localStore.claim(collection);
+      assert.equal(await localStore.startCollection(collection.id, at()), true);
+      await localStore.completeCollection(collection.id, Array.from({ length: 1024 }, (_, i) => i), at());
+      const draw = { id: randomUUID(), action: 'draw', status: 'pending', createdAt: at(), createdBy: 'local-lifecycle-check' };
+      await localStore.claim(draw);
+      const pool = await localStore.getPool(), deck = candidate(pool, draw.id);
+      assert.equal((await localStore.commitDraw(draw.id, pool.version, deck.randomness.consumed, deck, at())).status, 'completed');
+      savedPool = await localStore.getPool();
+      savedDraw = await localStore.get(draw.id); savedCollection = await localStore.get(collection.id);
+      await live.close();
+      await access(path.join(lifecycleDirectory, 'data/PG_VERSION'));
+      live = await openLocalPostgres(lifecycleOptions); lifecycleHandles.push(live);
+      assert.equal(live.created, false);
+      const reopened = createRandomStoreFromSql(live.sql);
+      assert.deepEqual(await reopened.getPool(), savedPool);
+      assert.deepEqual(await reopened.get(draw.id), savedDraw);
+      assert.deepEqual(await reopened.get(collection.id), savedCollection);
+    });
+    await check('already-stopped owned server releases lifecycle lock and can reopen', async () => {
+      const pgCtl = process.env.POSTGRES_BIN_DIR ? path.join(process.env.POSTGRES_BIN_DIR, 'pg_ctl') : 'pg_ctl';
+      await promisify(execFile)(pgCtl, ['-D', path.join(lifecycleDirectory, 'data'), '-m', 'fast', '-w', 'stop'],
+        { env: { PATH: process.env.PATH, LANG: 'C', LC_ALL: 'C' } });
+      await assert.rejects(access(path.join(lifecycleDirectory, 'data/postmaster.pid')), { code: 'ENOENT' });
+      await live.close();
+      await assert.rejects(access(path.join(lifecycleDirectory, 'local-lifecycle.lock')), { code: 'ENOENT' });
+      live = await openLocalPostgres(lifecycleOptions); lifecycleHandles.push(live);
+      assert.equal(live.created, false);
+      const reopened = createRandomStoreFromSql(live.sql);
+      assert.deepEqual(await reopened.getPool(), savedPool);
+      assert.deepEqual(await reopened.get(savedDraw.id), savedDraw);
+    });
+  } finally {
+    for (const handle of lifecycleHandles) await handle.close();
+    await assert.rejects(access(path.join(lifecycleDirectory, 'data/postmaster.pid')), { code: 'ENOENT' });
+    await rm(lifecycleDirectory, { recursive: true, force: true });
+  }
   console.log(JSON.stringify({ localPostgres: true, migrationSha256: createHash('sha256').update(migration).digest('hex'),
     tests: passed.length, passed, externalRequests: 0, productionDatabaseTouched: false }, null, 2));
 } finally {
-  if (started) await execute(bin('pg_ctl'), ['-D', data, '-m', 'immediate', '-w', 'stop'], options);
-  await rm(root, { recursive: true, force: true });
+  await database.close();
 }

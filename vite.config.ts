@@ -30,9 +30,10 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    fs: { deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/.local/anu-live.env", "**/.local/anu-live/**", "**/.local/anu-live-pg/**"] },
     host: "127.0.0.1",
     port: 3000,
     strictPort: true,
-    watch: { usePolling: true, interval: 350 },
+    watch: { usePolling: true, interval: 350, ignored: ["**/.local/anu-live.env", "**/.local/anu-live/**", "**/.local/anu-live-pg/**"] },
   },
 });

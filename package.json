@@ -32,7 +32,8 @@
     "test:random": "tsx --test tests/random-*.test.mjs",
     "check:random-runtime": "node scripts/check-random-runtime.mjs",
     "check:random-postgres": "node scripts/check-random-postgres.mjs",
-    "dev:random-preview": "tsx scripts/preview-ai.mjs"
+    "dev:random-preview": "tsx scripts/preview-ai.mjs",
+    "dev:anu-live": "tsx scripts/preview-anu-live.mjs"
   },
   "build": {
     "appId": "com.urbantatot.app",
