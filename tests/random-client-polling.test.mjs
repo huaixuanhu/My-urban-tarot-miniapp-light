@@ -26,13 +26,16 @@ function setup() {
   const clock = fakeClock(), elements = new Map(), document = new EventTarget();
   document.hidden = false;
   document.getElementById = id => { if (!elements.has(id)) elements.set(id, new EventTarget()); return elements.get(id); };
-  let open = false, requests = 0;
+  let open = false, requests = 0, reading = {};
   const controller = createReadingRandom({
-    document, clock, getReading: () => ({}), disclosures: { isOpen: () => open },
+    document, clock, getReading: () => reading, disclosures: { isOpen: () => open },
     client: { metadata: async () => { requests += 1; return { pool: { batchId: null, fetchedAt: null, total: 0, remaining: 0, collecting: false } }; } },
   });
   return {
-    controller, clock, get requests() { return requests; },
+    controller, clock, elements,
+    reading(value) { reading = value; controller.update(); },
+    mode(value) { const toggle = document.getElementById('random-mode'); toggle.checked = value === 'quantum'; toggle.dispatchEvent(new Event('change')); },
+    get requests() { return requests; },
     panel(value) { open = value; const event = new Event('reading:disclosurechange'); event.detail = { id: 'reading-random', open }; document.dispatchEvent(event); },
     visible(value) { document.hidden = !value; document.dispatchEvent(new Event('visibilitychange')); },
   };
@@ -73,4 +76,32 @@ test('reopening never duplicates timers and disposal removes the polling lifecyc
   ui.controller.dispose(); assert.equal(ui.clock.active, 0);
   ui.panel(false); ui.panel(true); ui.visible(false); ui.visible(true);
   ui.clock.advance(300000); assert.equal(ui.requests, 3);
+});
+
+
+test('round source mark follows the applied reading, never next-round preference or empty pool', async () => {
+  const ui = setup(), get = id => ui.elements.get(id);
+  assert.equal(ui.controller.state.mode, 'quantum');
+  assert.equal(get('random-round-source').hidden, true);
+  assert.equal(get('random-quantum-icon').hidden, true);
+  ui.panel(true); await Promise.resolve(); await Promise.resolve();
+  assert.equal(get('random-round-source').hidden, true); // Empty/unprepared, even with pool metadata.
+  ui.reading({ randomness: { source: 'anu' } });
+  assert.equal(get('random-round-source').hidden, false);
+  assert.equal(get('random-round-label').textContent, 'ANU 量子随机');
+  assert.equal(get('random-quantum-icon').hidden, false);
+  assert.equal(get('random-local-icon').hidden, true);
+  ui.mode('local');
+  assert.equal(ui.controller.state.mode, 'local');
+  assert.equal(get('random-round-label').textContent, 'ANU 量子随机');
+  assert.equal(get('random-quantum-icon').hidden, false);
+  ui.reading({ randomness: { source: 'local' } });
+  ui.mode('quantum');
+  assert.equal(get('random-round-label').textContent, '普通随机');
+  assert.equal(get('random-quantum-icon').hidden, true);
+  assert.equal(get('random-local-icon').hidden, false);
+  ui.reading({});
+  assert.equal(get('random-round-source').hidden, true);
+  assert.equal(get('random-local-icon').hidden, true);
+  ui.controller.dispose();
 });

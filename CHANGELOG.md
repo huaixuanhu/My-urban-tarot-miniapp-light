@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-29 — ritual engraving and quantum identity
+
+Save preceding continuous-glass/prompt-design work as checkpoint34972294. Add restrained static glass engraving and an original observation mark, plus a reusable wave/orbit quantum icon. Applied quantum/local round badges remain independent of next-round preference and pool metadata.315 aggregate tests/build and synthetic day/night/three-card/narrow checks pass. New visuals remain local/uncommitted, with no real provider calls or publication. The user has accepted the AI detail/direction proposal; its implementation remains next work.
+
 ## 2026-10-29 — continuous glass and panel controls
 
 Save revision26 as local checkpoint a616d660. Subsequent revision27 removes inset white reading cards, centers panel SVG controls, replaces the appearance popup with a native-radio glass pill and repairs adjacent hover/help-target details.314 aggregate tests/build and day/night/390px browser checks pass. New fixes remain uncommitted; no push/deployment. A separate source-backed AI detail/direction proposal is documented under stage2.5.7; no AI behavior changes or real calls.

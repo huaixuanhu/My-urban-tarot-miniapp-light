@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLASS_WIDTH, GLASS_LENGTH, CLOTH_CENTER_Z } from './reading-layout.mjs';
+import { createReadingRitual } from './reading-ritual.mjs';
 
 const TOP = -0.008;
 const DEPTH = 0.08;
@@ -120,6 +121,7 @@ export function createReadingGlass(renderer) {
     color: 0x50767c, transparent: true, opacity: .3, toneMapped: false,
   }));
   lowerRim.name = 'glass-lower-boundary'; lowerRim.position.y = -(DEPTH + BEVEL * 2 - .03); group.add(lowerRim);
+  const ritual = createReadingRitual(renderer); group.add(ritual.mesh);
 
   // The room is visible through the actual volume. No opaque backing remains;
   // the bounded shadow receiver in the scene keeps cards grounded on this top.
@@ -128,6 +130,7 @@ export function createReadingGlass(renderer) {
   group.userData.environmentTexture = environment.texture;
   group.userData.applyAppearance = theme => {
     const dark = theme === 'dark';
+    ritual.applyAppearance(theme);
     // Cool transmitted light separates the slab from the warm cottage floor;
     // the clear center retains the room, while its bevel carries the contrast.
     surface.color.setHex(dark ? 0xdce6f3 : 0xe2edf6);
@@ -155,6 +158,7 @@ export function createReadingGlass(renderer) {
     disposed = true;
     body.geometry.dispose(); rimGeometry.dispose(); rimMaterial.dispose(); lowerRim.geometry.dispose(); lowerRim.material.dispose();
     surface.dispose(); edge.dispose();
+    ritual.dispose();
     environment.dispose();
   };
   return group;

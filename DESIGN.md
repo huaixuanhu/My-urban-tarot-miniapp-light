@@ -1,6 +1,16 @@
 # Urban Tarot design owner
 
-Current local candidate: revision27, stage2.5.6.2 continuous glass sheets and appearance controls. Revision26 was saved as the requested local checkpoint a616d660; the user explicitly identified visual problems to repair. The resulting revision27 appearance awaits user review. Revision24's quantum-source interface and earlier accepted gameplay remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
+Accepted local baseline: revision28, stage2.5.8 restrained ritual language and quantum identity, explicitly accepted by the user before stage2.5.9. Revision27 is saved as requested checkpoint34972294. The user delegates a careful enhancement of the occult atmosphere and a distinctive quantum symbol within the established glass world. Prior gameplay, room, original artwork and request behavior remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
+
+## stage2.5.8 — accepted revision28: observation and quantum identity
+
+Parent: governance/STATE.md stage2.5.8, derived from revision27 and the user's request. Reuse the established card-back stars/orbits and the accepted concept's quiet mathematical/celestial relations. This is an established-system extension, not a new layout, card deck or generated concept-image replacement.
+
+The glass carries a static, fine engraving: two broken far-edge arcs, sparse instrument ticks, a small eight-point star and a few near-edge echoes. The center stays open, without implied card slots, time axes or causal relationships. It is one transparent plane at y=-.006 above the glass's y=-.008 top, below cards, with depth testing and no depth writes; it cannot be picked. Day uses subdued warm gray, night pale champagne. The original observation wordmark echoes the card-back star without claiming a historical/religious symbol. No new particles, perpetual rotation or blinking are introduced.
+
+Quantum identity uses an original open orbit, crossing waves and one observation point. Reuse one SVG symbol in More, the random-source heading and the current-round badge. It is a product mark, not a scientific seal, probability measure or accuracy claim. Feature-entry marks are neutral. The current badge shows the quantum symbol only when applied reading provenance is anu; local rounds show a different shuffle icon and label, and empty rounds hide the badge. Next-round preference and stale/empty pool metadata never change that claim. Short source text remains alongside the unfamiliar symbol. Existing manual collection/recovery and explanatory help remain authoritative.
+
+Keep desktop primary and bounded narrow layouts; no new interactive target is added. Retain native switch semantics, card input precedence and existing focus/motion behavior. Source owners: reading-ritual.mjs, reading-glass.mjs, index.html symbols, reading-random.mjs and reading-sheets.css. The static texture/material/geometry are disposed by the glass owner. Evidence and limits: [stage2.5.8](docs/design/stage2.5.8/README.md). Local verification does not establish user visual acceptance, native-device performance or a public-release decision.
 
 ## stage2.5.6.2 — candidate revision27: continuous reading glass
 

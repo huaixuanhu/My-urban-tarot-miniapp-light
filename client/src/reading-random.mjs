@@ -15,7 +15,11 @@ export function createReadingRandom({ document, storage, operationStorage, getRe
     const sourceLabel = source === 'anu' ? 'ANU 量子随机' : source === 'local' ? '普通随机' : '尚未洗牌';
     $('random-mode').checked = state.mode === 'quantum';
     $('random-current').textContent = sourceLabel;
-    $('random-round-source').textContent = source ? sourceLabel : '';
+    // Provenance belongs to the applied reading, not the next-round switch or pool.
+    $('random-round-source').hidden = !['anu', 'local'].includes(source);
+    $('random-round-label').textContent = source ? sourceLabel : '';
+    $('random-quantum-icon').hidden = source !== 'anu';
+    $('random-local-icon').hidden = source !== 'local';
     $('random-remaining').textContent = state.pool ? `${state.pool.remaining} / ${state.pool.total || 1024}` : '尚未读取';
     $('random-fetched').textContent = state.pool?.fetchedAt ? new Date(state.pool.fetchedAt).toLocaleString(undefined, { timeZoneName: 'short' }) : '—';
     $('random-collect').disabled = state.busy || !!state.pending || !!state.pool?.collecting;
