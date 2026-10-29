@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-10-29 — stage2.5.5.4 release preparation
+
+Executor: Codex (GPT-6); independent reviewer: Claude Code (Opus5.5), same tarot conversation. Exact product67758561 cleared with314 aggregate tests,15 PostgreSQL checks and9 isolated recovery scenarios. The latest user authorizes push/deployment/closeout, superseding earlier local-only restrictions for this slice. Verified target, previous remote/deployment and read committed isolation; applied002/003 atomically without changing the0-record baseline; configured Production-only Secret ANU_API_KEY and verified OPENAI_API_KEY absent. No provider call, paid AI or access-policy change. The65 inherited fingerprints remain identical; the abandoned empty task socket directory was removed. This preparation changes only documentation relative to reviewed product. Publication receipts and retained non-blocking local-development observation are owned by docs/random/stage2.5.5/RELEASE.md.
+
 ## 2026-10-26 — local trial 09 screen-space glass
 
 Executor: Codex (GPT-6), with bounded CSS and glass-rendering agents plus actual GPU verification. Checkpoint 5 was committed as d496918b before product edits. Removed the world-space control instance, retained accepted camera/framing and introduced cropped framebuffer refraction with native fixed controls. STATE.md and the bounded evidence record own verification/limits. No new dependencies, Blender asset, push or deployment.

@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-29 — reviewed quantum release preparation
+
+Claude Code independently cleared the real-ANU product commit with314 tests,15 local PostgreSQL checks and9 offline recovery scenarios. Additive cloud002/003 setup is verified with an empty shared pool, and ANU is configured as a Production-only Secret. AI remains inactive. Existing access and reviewed product code are unchanged; actual publication receipts are owned by docs/random/stage2.5.5/RELEASE.md.
+
 ## 2026-10-29 — one real ANU batch validated locally
 
 Add a private one-request local harness with retained PostgreSQL, safe restart ownership and offline response recovery. Accept ANU's observed string length metadata while retaining exact data checks. One real batch supports a verified three-card shuffle/reveal/local-save flow;869 values remain.314 aggregate tests and15 local PostgreSQL checks pass. No cloud activation, push or deployment. Evidence: docs/random/stage2.5.5/LIVE.md.
