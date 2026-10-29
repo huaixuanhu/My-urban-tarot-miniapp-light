@@ -1,6 +1,16 @@
 # Urban Tarot design owner
 
-Current local candidate: revision26, stage2.5.6.1 adjustable sheet transparency, extending revision25's fluid-glass panels. The user explicitly selected the collection and then requested transparency adjustment; the resulting local appearance awaits user review. Revision24's quantum-source interface and earlier accepted gameplay remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
+Current local candidate: revision27, stage2.5.6.2 continuous glass sheets and appearance controls. Revision26 was saved as the requested local checkpoint a616d660; the user explicitly identified visual problems to repair. The resulting revision27 appearance awaits user review. Revision24's quantum-source interface and earlier accepted gameplay remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
+
+## stage2.5.6.2 — candidate revision27: continuous reading glass
+
+Parent: governance/STATE.md stage2.5.6.2, derived from revision26 and the user's screenshots. Supersedes the opaque inset reading-ground rule in revisions25/26: AI and records now use one continuous glass shell. Their body has no separate fill, margin, corner radius or shadow. Whole-shell haze remains bounded for reading (day minimum.40, night.52); transparency adjusts that material without fading text. Inputs use a subtle shared veil. This preserves readable content while removing the pasted-card boundary. The source adapter/optical engine is unchanged.
+
+Appearance is a compact glass radio group: system/day/night, with one pearl selection. It reuses the existing preference controller and system subscription. Native radios retain names, arrow-key operation and visible focus; narrow windows retain symbols and accessible names without crowding the wordmark. No native appearance popup is used. AI model/effort/budget still use their existing native select behavior.
+
+Close, card-navigation, zoom and transparency-reset symbols use a consistent18px SVG box, zero letter spacing and grid centering. Transparency help restores the standard28px target. More/history hover is a subtle ink wash rather than an opaque white tile; disabled primary actions use a quieter translucent fill. Shared navigation, explanatory help, focus recovery and request state are unchanged.
+
+Evidence: [stage2.5.6](docs/design/stage2.5.6/README.md). Day/night,0/100 transparency, radio keyboard selection, retained question draft and390px layout checked in the credential-free preview.314 automated tests/build pass. This is a local candidate; native-device/cross-browser qualification and user visual acceptance remain separate.
 
 ## stage2.5.6.1 — candidate revision26: adjustable transparency
 

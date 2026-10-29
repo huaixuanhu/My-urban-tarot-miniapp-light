@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-29 — continuous glass and panel controls
+
+Save revision26 as local checkpoint a616d660. Subsequent revision27 removes inset white reading cards, centers panel SVG controls, replaces the appearance popup with a native-radio glass pill and repairs adjacent hover/help-target details.314 aggregate tests/build and day/night/390px browser checks pass. New fixes remain uncommitted; no push/deployment. A separate source-backed AI detail/direction proposal is documented under stage2.5.7; no AI behavior changes or real calls.
+
 ## 2026-10-29 — adjustable local sheet transparency
 
 Add More's glass transparency slider, shared live response, current-browser preference and restore-default control. Preserve readable paper/pearl surfaces, the table and all provider/data behavior.314 aggregate tests/build and desktop/narrow browser checks pass; no commit or release.

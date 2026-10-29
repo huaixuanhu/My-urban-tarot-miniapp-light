@@ -19,7 +19,13 @@
   width: min(480px,calc(100vw - 40px));
 }
 .glass-sheet.fg-glass:hover { --fg-k-sh: 1; --fg-veil-boost: 0; }
-.glass-sheet-records.fg-glass, .glass-sheet-ai.fg-glass { width: min(660px,calc(100vw - 40px)); }
+.glass-sheet-records.fg-glass, .glass-sheet-ai.fg-glass {
+  width: min(660px,calc(100vw - 40px));
+  --fg-veil-min: .40; --fg-veil-0: .46; --fg-veil-1: .65; --fg-veil-2: .94;
+}
+[data-theme="dark"] .glass-sheet-records.fg-glass, [data-theme="dark"] .glass-sheet-ai.fg-glass {
+  --fg-veil-min: .52; --fg-veil-0: .58; --fg-veil-1: .72; --fg-veil-2: .96;
+}
 .glass-sheet > .sheet-heading, .glass-sheet > .sheet-content { position: relative; z-index: 1; }
 .glass-sheet > .sheet-heading { align-items: center; padding: 24px 28px 20px; border: 0; gap: 16px; }
 .sheet-heading h2 { margin: 0; font: 400 24px/1.4 var(--fgs-font-serif); letter-spacing: .08em; }
@@ -29,18 +35,18 @@
 .glass-sheet .sheet-close:hover { background: var(--fgs-pearl-hi); }
 .glass-sheet .sheet-content { padding: 4px 24px 24px; scrollbar-gutter: stable; scrollbar-color: rgb(from var(--fgs-ink) r g b / .22) transparent; }
 
-/* Reading/editing gets one quiet paper surface, not nested glass cards. */
+/* Reading/editing shares the shell's continuous haze, with no inset slab. */
 .glass-sheet #ai-body, .glass-sheet #records-body {
-  margin: 0 12px 12px;
-  padding: 24px;
-  border-radius: var(--fgs-radius-card);
-  background: var(--fgs-paper);
-  box-shadow: inset 0 1px 0 rgb(from var(--fgs-reflect-sky) r g b / .14), 0 1px 4px rgb(from var(--fgs-shade) r g b / .06);
+  margin: 0;
+  padding: 4px 28px 28px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .glass-sheet .record-field { font-size: 13px; margin-bottom: 20px; }
 .glass-sheet .record-field textarea, .glass-sheet .record-field input, .glass-sheet .record-card-fields input,
 .glass-sheet .ai-setting select, .glass-sheet .ai-setting input, .glass-sheet .ai-spread-preview input {
-  background: var(--fgs-solid);
+  background: rgb(from var(--fgs-veil) r g b / .20);
   border: 1px solid rgb(from var(--fgs-ink) r g b / .13);
   border-radius: 10px;
   box-shadow: none;
@@ -62,7 +68,7 @@
 .glass-sheet .record-primary:hover:not(:disabled) { background: color-mix(in srgb,var(--fgs-tint),var(--fgs-ink-muted) 18%); }
 .glass-sheet .record-primary:active:not(:disabled) { transform: scale(.985); }
 .glass-sheet button:disabled { opacity: .42; }
-.glass-sheet .record-primary:disabled { background: var(--fgs-solid); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); opacity: .8; }
+.glass-sheet .record-primary:disabled { background: rgb(from var(--fgs-veil) r g b / .16); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); opacity: .75; }
 .glass-sheet .record-intro { margin-bottom: 16px; font-size: 12px; }
 .glass-sheet .record-card-fields li { display: grid; grid-template-columns: minmax(0,1fr) minmax(140px,.85fr); align-items: center; gap: 16px; padding: 12px 0; }
 .glass-sheet .record-card-fields input { margin: 0; }
@@ -90,7 +96,7 @@
 .glass-sheet .sheet-link strong { font-size: 15px; letter-spacing: .04em; }
 .glass-sheet .sheet-link > span:last-child { font-size: 18px; opacity: .7; }
 .glass-sheet .sheet-link-icon svg { width: 22px; height: 22px; stroke-width: 1.6; }
-.glass-sheet .sheet-link:hover { background: rgb(from var(--fgs-veil) r g b / .28); }
+.glass-sheet .sheet-link:hover { background: rgb(from var(--fgs-ink) r g b / .045); }
 .glass-sheet .tool-group { flex-wrap: nowrap; gap: 12px; padding: 8px 0; align-items: center; }
 .glass-sheet .tool-heading { min-width: 28px; font-size: 12px; }
 .glass-sheet .tool-group button { padding: 8px 10px; min-height: 36px; border-radius: 999px; }
@@ -130,7 +136,7 @@
   .glass-sheet > .sheet-heading { padding: 20px 20px 16px; }
   .sheet-heading h2 { font-size: 22px; }
   .glass-sheet .sheet-content { padding: 4px 16px 20px; }
-  .glass-sheet #ai-body, .glass-sheet #records-body { margin: 0 8px 8px; padding: 18px 16px; }
+  .glass-sheet #ai-body, .glass-sheet #records-body { margin: 0; padding: 4px 20px 24px; }
   .glass-sheet .record-card-fields li { grid-template-columns: 1fr; gap: 8px; }
   .glass-sheet .ai-settings { gap: 12px; }
   .glass-sheet .tool-group { gap: 8px; }
@@ -143,3 +149,26 @@
   .glass-sheet.fg-glass { background: var(--fgs-solid); }
   .glass-sheet button:disabled { opacity: 1; color: var(--muted); }
 }
+
+/* Explicit icon geometry avoids font-dependent baselines in round buttons. */
+.control-icon { display: block; width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; }
+.glass-sheet :is(.sheet-close,#previous,#next,#zoom-out,#zoom-in,#glass-transparency-reset) { display: inline-grid; place-items: center; padding: 0; line-height: 1; letter-spacing: 0; flex-shrink: 0; }
+.glass-sheet :is(#previous,#next) { width: 36px; }
+.glass-sheet .glass-transparency-control [data-help] { width: 28px; height: 28px; min-height: 28px; }
+.glass-sheet .record-field :is(input,textarea):focus, .glass-sheet .ai-setting :is(input,select):focus, .glass-sheet .ai-spread-preview input:focus { background: rgb(from var(--fgs-veil) r g b / .36); }
+.glass-sheet .record-history-row:hover { background: rgb(from var(--fgs-ink) r g b / .045); }
+.glass-sheet .record-spread { background: rgb(from var(--fgs-veil) r g b / .12); }
+.appearance-switch.fg-glass { display: flex; align-items: center; padding: 4px; margin: 0; min-width: 0; border-radius: 999px; pointer-events: auto; color: var(--fgs-ink); }
+.appearance-switch label { position: relative; z-index: 1; cursor: pointer; }
+.appearance-switch label > span { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px; font: 12px/1.2 var(--fgs-font-ui); color: var(--fgs-ink-muted); }
+.appearance-switch label:hover > span { background: rgb(from var(--fgs-ink) r g b / .045); }
+.appearance-switch input:checked + span { background: var(--fgs-pearl); color: var(--fgs-on-pearl); box-shadow: var(--fgs-shadow-pearl); }
+.appearance-switch input:focus-visible + span { outline: 2px solid var(--fgs-focus); outline-offset: 2px; }
+.appearance-switch .control-icon { width: 16px; height: 16px; }
+@media (max-width: 700px) {
+  .view-and-appearance { gap: 6px; }
+  .appearance-switch label > span { min-width: 34px; padding: 0 7px; }
+  .appearance-switch label > span > span { display: none; }
+  .glass-sheet .glass-transparency-control { gap: 8px; }
+}
+@media (prefers-contrast: more) { .appearance-switch.fg-glass { background: var(--fgs-solid); } }

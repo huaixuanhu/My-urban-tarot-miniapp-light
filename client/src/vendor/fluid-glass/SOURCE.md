@@ -15,5 +15,5 @@ Adaptations:
 - The application retains its own disclosure navigation, focus, asynchronous request state and reduced-motion control. Sheets disable whole-surface press expansion; inner native controls provide their own response.
 - Chromium can use the upstream live backdrop displacement. Other engines use the upstream CSS blur/highlight fallback because this app's background is a live WebGL canvas, not a static image.
 
-Current adoption/validation owner: governance/STATE.md stage2.5.6 and DESIGN.md revision26. The application-level transparency control uses this snapshot's existing setFog API without changing the vendor engine. This snapshot does not assert native Apple optical fidelity or independent cross-browser performance qualification.
+Current adoption/validation owner: governance/STATE.md stage2.5.6 and DESIGN.md revision27. Revision27 adapts reading haze at the whole-shell level and adds a glass appearance radio group; the vendor engine remains unchanged. The application-level transparency control uses this snapshot's existing setFog API without changing the vendor engine. This snapshot does not assert native Apple optical fidelity or independent cross-browser performance qualification.
 

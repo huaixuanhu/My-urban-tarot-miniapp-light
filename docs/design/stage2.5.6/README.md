@@ -1,6 +1,6 @@
 # stage2.5.6 — local fluid-glass sheets
 
-Parent and authority: [governance/STATE.md](../../../governance/STATE.md), stage2.5.6, derived from stage2 reconstruction; the transparency follow-up below belongs to stage2.5.6.1. Scope: the user's2026-10-29 request to apply the latest collection's fluid-glass material to More, records, AI and related sheets, followed by adjustable transparency. This is a bounded implementation/evidence record, not a parallel plan. Design owner: [DESIGN.md](../../../DESIGN.md), candidate revision26, extending revision25. User visual acceptance remains pending.
+Parent and authority: [governance/STATE.md](../../../governance/STATE.md), stage2.5.6, derived from stage2 reconstruction; the transparency follow-up below belongs to stage2.5.6.1. Scope: the user's2026-10-29 request to apply the latest collection's fluid-glass material to More, records, AI and related sheets, followed by adjustable transparency. This is a bounded implementation/evidence record, not a parallel plan. Design owner: [DESIGN.md](../../../DESIGN.md), candidate revision27, extending revisions25/26 through stage2.5.6.2 below. Revision26 is checkpointed at a616d660; the new visual refinement awaits user acceptance. Earlier entries preserve their original evidence boundaries.
 
 ## Source and implementation
 
@@ -48,3 +48,22 @@ The requested native slider controls the existing material fog parameter; increa
 Chromium checks: Home/End reach0/100; day veil alpha changes from0.9 to0 while shell opacity stays1. Keyboard70% survives a page reload; reset restores32. Night uses the same parameter while AI paper remains rgb(28,31,37). An entered question remains through transparency/theme/panel changes. At390×844, More's content width equals scrollWidth355px; the153px slider, percentage, reset and help all fit. Clicking the range midpoint produces50%. Contextual help and its Escape dismissal work; the original viewport is restored afterward. System reduced-transparency behavior is retained from the engine/source and was not separately exercised on a configured OS.
 
 Fresh `pnpm check:all` passes the same314 tests, compiled runtimes and build. Browser fixture counters remain calls0, attempts0, randomCalls0, records0; no new generation, acquisition or save was needed for this presentation change. Screenshot: [transparency-day.jpg](transparency-day.jpg). Changes remain local and uncommitted.
+
+## stage2.5.6.2 — panel coherence and appearance
+
+Parent: STATE.md stage2.5.6.2, following the user's screenshot feedback. The requested prior checkpoint is a616d660. The new fixes are uncommitted. This entry supersedes the earlier opaque reading-ground treatment for the current candidate while retaining those historical observations.
+
+AI and records now read directly on a continuous hazed glass shell. Their body background is transparent, without inset margin/radius/shadow; text-heavy shells retain a minimum haze even at100% transparency. Input surfaces and disabled actions are quieter. Appearance uses system/day/night native radios in one glass capsule. All round panel control icons are centered SVGs; whitespace/letter-spacing cannot offset their glyphs. The small transparency help ring regains the standard28px target. Menu/history hover no longer creates a white inset tile.
+
+Final independent read-only review found no concrete blocker in the four changed product files; radio accessibility, preference updates, SVG labels and unchanged request paths were checked. Fresh `pnpm check:all` passes all314 tests, governance, TypeScript, compiled runtimes and production build (ignored log `.local/fluid-glass/check-polish.log`). Existing large-chunk advisory remains. Read-only audit and desktop Chromium observation confirm:
+
+- AI and record body backgrounds are computed transparent. Day/night AI and day records were visually inspected; AI0/100 transparency retains continuous reading haze. No separate pasted white rectangle remains in these inspected views.
+- System/day/night native radios respond to keyboard arrows, update selected/visible state and preserve the question draft. The existing appearance preference remains the only owner.
+- SVG centers match button centers; measured offsets are0 within subpixel animation precision. Close, previous/next, zoom and transparency reset use the same treatment.
+- At390×844, appearance spans x260.5–370.5 and does not overlap the wordmark (right146.9). AI body scrollWidth/clientWidth both355px; form controls remain available by internal scrolling.
+- Current fixture counters remain calls0, attempts0, randomCalls0, records0. No provider or storage operation was needed. Restore original66% transparency and desktop viewport after checks; leave day AI preview open for review.
+- All65 inherited generated-file hashes are unchanged. Product changes are limited to index markup, reading appearance binding and panel/appearance CSS; no AI prompt/backend/schema change.
+
+Rendered evidence: [More/day](polish-more-day.jpg), [AI/day](polish-ai-day.jpg), [AI/night](polish-ai-night.jpg). The thin yellow banner belongs to the credential-free test harness.
+
+Remaining bounded UI items: AI model/effort/budget retain native option popups, so popup styling varies by OS; labels and keyboard behavior remain reliable. Actual large saved readings and interpretation density should be revisited with the upcoming detail choices, rather than assumed solved by shell styling. Full Safari/Firefox, physical-phone, assistive-technology and quantitative contrast/performance qualification remain unperformed. No new user acceptance, further commit, push or deployment is claimed.

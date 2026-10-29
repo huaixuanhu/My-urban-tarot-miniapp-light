@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-10-29 — stage2.5.6.2 UI refinement and stage2.5.7 research
+
+Executor: Codex (GPT-6); two bounded read-only agents audited UI consistency and researched practitioner/community sources. Read current installed governance/design skills and owners; use OpenAI Docs for API prompting guidance. Save authorized checkpoint a616d660 before editing. Replace appearance select with native radios, normalize icon geometry, remove opaque inset bodies and retain continuous reading haze; fix adjacent hover/help targets.314 aggregate tests/runtime/build checks pass. Actual Chromium verifies day/night and system selection, keyboard radio controls,0/100 transparency, retained question draft, centered SVGs and390px no-overflow layout. Fixture calls/attempts/randomCalls/records remain0. No provider/cloud access or backend changes. Research compares five practitioner/community sources with current prompt/schema and official OpenAI guidance; conclusions are proposals, not community consensus or measured efficiency. Current generated-file preservation and documentation checks pass. New UI/research remains uncommitted, with no push/deployment. Evidence owners: docs/design/stage2.5.6/README.md and docs/ai/stage2.5.7/README.md.
+
 ## 2026-10-29 — stage2.5.6.1 transparency control
 
 Executor: Codex (GPT-6), no delegation. Reuse the pinned material engine, add a native slider and separately stored local preference, with frame-coalesced input and storage-failure handling. Chromium confirms0/100 endpoints, pointer50%, keyboard70%, refresh persistence, default32 reset, retained question draft, opaque reading ground and390px no-overflow layout. Aggregate314 tests/runtime/build checks pass. This synthetic preview session issued no AI/random request and saved no record. No cloud/provider access, commit, push or deployment. Existing65 generated changes remain protected; evidence extends docs/design/stage2.5.6/README.md.

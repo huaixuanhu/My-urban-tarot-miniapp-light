@@ -531,14 +531,14 @@ appearanceController = createAppearancePreference({
   storage: appearanceStorage, mediaQuery: matchMedia('(prefers-color-scheme: dark)'),
   onChange({ preference, theme }) {
     document.documentElement.dataset.theme = theme;
-    $('appearance').value = preference;
+    document.querySelectorAll('input[name="appearance"]').forEach(input => { input.checked = input.value === preference; });
     sceneStyle?.apply(theme, outline);
     screenGlass?.applyAppearance(theme);
     room?.applyAppearance(theme); roomPass?.applyAppearance(theme);
     invalidate();
   },
 });
-$('appearance').addEventListener('change', event => appearanceController.set(event.target.value));
+$('appearance').addEventListener('change', event => { if (event.target.matches('input[name="appearance"]')) appearanceController.set(event.target.value); });
 
 $('reveal').addEventListener('click', event => {
   if (event.detail === 0 && !$('reveal').disabled) readerFocusRequest = { id: reading.selectedId, round };
