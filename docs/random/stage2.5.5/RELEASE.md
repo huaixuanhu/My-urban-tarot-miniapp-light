@@ -22,7 +22,23 @@ At2026-10-29T07:05:50.687Z,002 and003 were committed together in one explicit Po
 
 The authenticated Vercel console confirms `ANU_API_KEY` as a Production-only Secret and the existing Production Neon connection. The all-environments variable listing contains no `OPENAI_API_KEY`. Environment editing used the console because the connector can inspect projects/deployments but denies environment-variable access. No access policy was weakened. Secret values remain outside Git and release evidence.
 
-The reviewed product tree remains unchanged. The release-preparation commit adds only authority, architecture and evidence documentation. Push and deployed revision receipts are recorded separately below when observed.
+The reviewed product tree remains unchanged. Release-preparation commit`de7917a1abc8faf02de73f158d1a3e472860400b` adds only authority, architecture and evidence documentation and was pushed successfully; remote main matched it. The final closeout commit carries the hosted evidence below and also changes only documentation/screenshots.
+
+## Publication and hosted verification
+
+Vercel Git deployment`dpl_CnmtCxKcHy7MQfWvrP8AsCXyaCin` is READY,Production,source git,for`de7917a1abc8faf02de73f158d1a3e472860400b`. The canonical domain is attached; unique deployment host is`my-urban-tarot-miniapp-light-rn1nh36vu-anorias-projects.vercel.app`. Rollback candidate before release:`dpl_5Q2B9Mshe1hifPk5danHrDQEVkXW` at`7e06f02fb7f855f904e29a38b1a149849798030b`.
+
+Actual authenticated browser verification at the canonical site:
+
+1. The random-source panel reads shared0/1024 and no acquisition timestamp from the hosted API/database.
+2. Disable quantum mode, complete the ordinary shuffle, draw/reveal three cards. Re-enable quantum mode and request another shuffle: the server returns shortage and the same three cards remain, with current source still ordinary.
+3. Save a uniquely labelled synthetic record. SQL and hosted page agree on three cards and source`local`. Refresh the browser, open the shared list and detail, and verify Seven of Disks/The Chariot/Ace of Swords,all reversed,positions and source. Evidence:production-record.png.
+4. An explicit test of the inactive AI endpoint returns “AI 解读尚未接通，这次没有调用。”;the AI table still has0 rows. No OpenAI request is dispatched.
+5. Delete only synthetic record`cd1b9999-7812-4b9a-a6b5-a5b702dcf219`,matching its saved request hash and complete document. At2026-10-29T07:17:42.656Z,record count is restored to0,AI rows0,collection operations0,and pool version0/cursor0/total0/no batch. Retain the failed shortage operation as a normal audit receipt. Private cleanup receipt:.local/anu-release-cleanup.json.
+
+Anonymous checks:canonical page/API302 to the existing Cloudflare Access host;direct primary Vercel page/API403;unique deployment redirects302 to Vercel login. Authenticated app behavior was observed under the owner's real Cloudflare session;Mimi's separate login and another physical device were not exercised. Browser logs contain no new application warning/error;old Cloudflare login-page messages predate this deployment. No Vercel→ANU call was made. The next owner acquisition is the remaining provider-connectivity observation,not an automatically scheduled task.
+
+Final local aggregate remains314/314 with build/runtime/governance checks passing;.local/anu-release-check-all.log. All65 inherited generated-file fingerprints remain unchanged. The local retained869-value pool and one-call marker remain separate from cloud state. Production-pool screenshot records the shortage-preserves-table behavior;the final displayed empty pool is ready for the owner's first manual acquisition.
 
 ## Non-blocking retained observations
 

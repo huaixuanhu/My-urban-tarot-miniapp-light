@@ -23,7 +23,7 @@ Local Vite/Express/Electron execution does not run the Vercel-specific identity 
 
 `reading-glass.mjs`, `reading-screen-glass.mjs`, `reading-back.mjs` and `reading-scene-style.mjs` own glass, controls, backs and lighting. `reading-room.mjs` loads static day/night cottage assets from `client/src/assets/`; room-only blur and furniture cutaway remain separate from sharp cards. Model provenance and reproduction are retained under docs/design/stage2.4.12. The original cottage is a separate, unchanged application.
 
-`reading-appearance.mjs` remembers light/dark/system preference. Stage2.5.1 adds glass sheets and explicit shared-record saving: question, original card facts/meanings, placement, personal interpretation and reflection. The active table and unsaved writing remain in memory; opening a historical record does not replace them. Refresh starts a new table. Stage2.5.4 adds optional AI interpretation in local source; production activation remains pending.
+`reading-appearance.mjs` remembers light/dark/system preference. Stage2.5.1 adds glass sheets and explicit shared-record saving: question, original card facts/meanings, placement, personal interpretation and reflection. The active table and unsaved writing remain in memory; opening a historical record does not replace them. Refresh starts a new table. The optional AI interface is deployed,but its paid provider remains inactive.
 
 ## Shared records
 
@@ -71,7 +71,7 @@ Saved records retain the selected source. Quantum metadata must match a complete
 
 Review refinements: fan geometry now uses the existing independent motion seed, so relabeling card identities leaves a fixed-seed layout/pick ordinal unchanged. Metadata polling lasts at most two minutes per visible panel visit (15-second interval); reopening or returning visibility resumes it. AI snapshots deliberately omit random-source claims; the separately saved main record remains the verified allocation owner. Duplicated tabs may inherit the same recovery ID and recover the same deck; this is not a new independent draw.
 
-Release order is explicit: verify the dedicated database target and schema, configure server-only keys, then deploy and verify protected hosted behavior. The stage2.5.5.4 release preparation completed002/003 and Production ANU configuration after a clear Claude review. A push to the existing main integration publishes the included AI interface as well, while its paid provider remains inactive. Exact publication and hosted verification receipts are owned by [release evidence](docs/random/stage2.5.5/RELEASE.md).
+Release order is explicit: verify the dedicated database target and schema,configure server-only keys,then deploy and verify protected hosted behavior. Stage2.5.5.4 is published at https://augurwell.anoriaquant.dev after a clear Claude review,002/003 setup and Production ANU configuration. Hosted pool/status,ordinary save/refresh and shortage-preserves-table checks pass. Cloud inventory starts empty;the owner must manually collect before a quantum shuffle. This release made no new ANU request. The included AI interface is deployed while its paid provider remains inactive. Exact receipts:[release evidence](docs/random/stage2.5.5/RELEASE.md).
 
 
 ### One real ANU batch locally
