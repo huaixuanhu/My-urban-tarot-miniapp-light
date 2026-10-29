@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-29 — production quantum flow verified
+
+One explicitly authorized hosted ANU acquisition returned1024 valid values. The quantum shuffle consumed155 and retained869;three-card reveal/save/refresh preserved identities,orientations,positions,labels and complete source metadata. Exact test-record cleanup restored the baseline while retaining operation receipts and inventory. No runtime source or AI change. Evidence:docs/random/stage2.5.5/RELEASE.md.
+
 ## 2026-10-29 — reviewed quantum release and closeout
 
 Claude Code cleared the real-ANU product with314 tests,15 PostgreSQL checks and9 recovery scenarios. The existing private site now runs the reviewed application with additive cloud storage and Production-only ANU Secret. Hosted empty-pool,mode/shortage preservation,three-card save/refresh and AI-unavailable checks pass;synthetic records are removed. AI remains inactive;no new ANU collection occurred and cloud inventory is0/1024. Access protection remains effective. Publication and closeout receipts:docs/random/stage2.5.5/RELEASE.md.

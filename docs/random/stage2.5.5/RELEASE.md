@@ -1,6 +1,6 @@
 # ANU production release receipt
 
-Derived from governance/STATE.md stage2.5.5.4. This document records the bounded release of the reviewed shared quantum pool and accumulated application source to the existing private Augurwell site. STATE.md owns current authority and continuation; LIVE.md retains the distinct local one-call evidence.
+Derived from governance/STATE.md stages2.5.5.4 and2.5.5.5. This document records the bounded release of the reviewed shared quantum pool and accumulated application source to the existing private Augurwell site. STATE.md owns current authority and continuation; LIVE.md retains the distinct local one-call evidence.
 
 ## Release boundary
 
@@ -47,3 +47,21 @@ Claude noted the ordinary loopback development server still has selective privat
 ## Recovery and limits
 
 Restore the preceding verified application deployment if release fails. Retain additive tables and existing records; do not run destructive schema rollback. Environment changes affect subsequent deployments only. The known local314-test and15-PostgreSQL evidence does not prove hosted authentication, ANU connectivity from Vercel or Mimi's separate login. Hosted verification must distinguish those claims explicitly.
+
+## Subsequent production quantum verification — stage2.5.5.5
+
+The user explicitly requested one production acquisition and the complete quantum shuffle/draw/save/readback flow after release. This section supersedes the earlier remaining-provider-observation statement; the earlier zero-inventory observations remain historical. Tested deployment:dpl_6G7GZ1FsBWfapAvYCZM33pWJwA7S,READY Production,commit6f73ab03f029eccdfcc289665d08a752ae6bd3a6,at the canonical private site. Runtime source remains the reviewed67758561 tree.
+
+At2026-10-29T08:55:33.580Z,the dedicated database baseline was pool version0,cursor0,total0,no active collection,zero records/AI rows,and only the earlier failed shortage draw. The browser's quantum switch was on. One click on “采集1024个” completed operation/batch703d6569-d355-41af-b205-6e96049520ab at2026-10-29T08:56:03.983Z (Melbourne19:56:03). The provider accepted1024 uint16 values;pool version advanced to1,cursor0,total1024,operation status completed,batch/time matched,and collection lease cleared. Exactly one new collection operation exists;there was no retry or second acquisition.
+
+One quantum shuffle completed drawf5c93653-d7f2-405f-91bb-fb9d57d731e4. SQL verifies78 distinct identities in0…77,78 Boolean orientations,sourceanu,same batch/time,consumed155,and pool version2/cursor155/remaining869. The browser then selected/revealed Prince of Wands (physical34),Ace of Wands (22),Eight of Wands (29),all reversed. It arranged them at(-2,-0.7),(0,-0.7),(2,-0.7),added distinct position labels and synthetic notes,and saved record03eb00a8-39ce-4f43-9611-627fee69ddab. Whole saved randomness JSON equals the completed draw's provenance;each saved orientation equals deck.reversed[physicalId]. These three outcomes are a functional sample,not a statistical fairness claim.
+
+After a browser refresh,the shared list and detail displayed the same three card identities/orientations,position preview,labels,notes and “ANU量子随机／获取于19:56／消耗155个”. Readback screenshot:production-quantum-record.png. Selecting,revealing,arranging,saving and reading left cursor155 and remaining869 unchanged. Browser warning/error list was empty for this observed session.
+
+At2026-10-29T08:58:51.766Z,cleanup removed only that synthetic record by exact UUID,request hash and full saved document. Records returned to0,AI rows0;the earlier failed shortage operation and new completed collect/draw receipts remain. Pool is still version2,cursor155,total1024,remaining869,no active lease. The refreshed random-source panel shows869/1024 and19:56:03,with quantum mode still enabled;production-quantum-pool.png. These are dated receipts;later manual play can change inventory.
+
+Private receipts remain ignored and permission0600 under.local/:anu-production-quantum-baseline.json,anu-production-quantum-collect.json,anu-production-quantum-draw.json,anu-production-quantum-record.json,anu-production-quantum-save.json andanu-production-quantum-final.json. They contain no new copied provider key. Raw inventory was not exported or printed. The separate local869-value pool/exhausted local request marker and frozen AI evidence are unchanged.
+
+The requested production flow is complete. Successful provider acceptance proves Vercel-to-ANU connectivity and application integration;it does not independently certify laboratory entropy,measure click-time quantum events,or qualify Mimi's separate login/physical devices. No AI call,embedding change,source redesign,access-policy change or scheduled acquisition occurred. The carrying closeout commit contains documentation/screenshots only;the tested runtime source remains unchanged.
+
+Closeout gate:pnpm check:all passes314/314 tests plus governance,TypeScript,compiled runtime probes and build;private log.local/anu-production-quantum-check-all.log. The existing large-bundle advisory remains. All65 inherited generated-file SHA-256 values match the baseline after validation. No runtime file changed in this verification slice.
