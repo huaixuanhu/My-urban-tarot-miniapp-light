@@ -25,7 +25,7 @@ export function publicInterpretation(attempt, now = new Date()) {
   }
   // The source snapshot belongs with the answer, but verified subject is not
   // needed in the interpretation view or its eventual shared-record attachment.
-  result.reading = structuredClone(reading); delete result.reading.createdBy;
+  result.reading = structuredClone(reading); delete result.reading.createdBy; delete result.reading.randomness;
   return result;
 }
 

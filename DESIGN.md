@@ -193,3 +193,6 @@ Candidate21 validation update (2026-10-28): dedicated Neon setup and Production-
 ## stage2.5.5 — candidate revision24: explicit randomness
 
 Parent: governance/STATE.md stage2.5.5; user-approved direction, local day/night/narrow fixture verified; user visual acceptance pending. More gains 随机来源 in the existing glass-sheet system. Show next-shuffle quantum toggle, current round source, shared remaining/1024, last successful API receipt time and manual collect action. Detail belongs to contextual help. Collection and toggle preserve the active table; pending/failure/shortage never destroy drafts. Quantum is default, preference is per device; ordinary mode is explicitly local demonstration randomness. Initial quantum table waits for explicit start. Reuse existing focus/Escape/reduced-motion/day/night behavior. Keep original card faces, choreography and camera.
+
+
+Revision24 review refinement (stage2.5.5.1): retain the accepted fan pose formulas and varied presentation, but obtain its shape from an independent motion seed; card relabeling cannot affect the visible picking geometry. Pool metadata refresh stops after a two-minute visible visit, resumes on reopen/visibility, and adds no extra controls. Final synthetic joint record flow and screenshot are in docs/random/stage2.5.5/REVIEW.md; user visual acceptance is still separate.

@@ -280,3 +280,33 @@ test('legacy records and empty AI list retain the original normalized contract',
   const r = reading(); assert.deepEqual(normalizeRecordInput({ ...r, aiInterpretationIds: [] }), normalizeRecordInput(r));
   assert.equal('aiInterpretations' in buildStoredRecord(r, { savedAt: clock, createdBy: 'test' }), false);
 });
+
+
+test('AI snapshots and replay fingerprints exclude unverified random-source claims', async () => {
+  const f = fixture(), body = input();
+  body.reading.randomness = { source: 'anu', requestId: randomUUID(), batchId: randomUUID(), fetchedAt: clock, consumed: 155 };
+  const original = structuredClone(body);
+  assert.equal(normalizeAIInput(body).reading.randomness, undefined);
+  assert.deepEqual(body, original);
+  const res = await f.handler(await request(body));
+  assert.equal(res.status, 201);
+  assert.equal((await res.json()).interpretation.reading.randomness, undefined);
+  assert.equal(f.store.entries.get(body.id).reading.randomness, undefined);
+  assert.equal(JSON.parse(f.payloads[0].input).randomness, undefined);
+  body.reading.randomness = { source: 'local' };
+  assert.equal((await f.handler(await request(body))).status, 200);
+  assert.equal(f.calls.generate, 1);
+});
+
+test('AI readback omits unverified source claims in older stored snapshots', async () => {
+  const f = fixture(), body = input();
+  await f.handler(await request(body));
+  const stored = f.store.entries.get(body.id);
+  stored.reading.randomness = { source: 'anu', requestId: randomUUID(), batchId: randomUUID(), fetchedAt: clock, consumed: 155 };
+  const source = structuredClone(stored.reading.randomness);
+  assert.equal(publicInterpretation(stored).reading.randomness, undefined);
+  const res = await f.handler(await request(undefined, { query: `?id=${body.id}` }));
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).interpretation.reading.randomness, undefined);
+  assert.deepEqual(stored.reading.randomness, source);
+});

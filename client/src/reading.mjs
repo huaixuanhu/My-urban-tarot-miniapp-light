@@ -274,7 +274,7 @@ async function beginReset() {
     const seed = crypto.getRandomValues(new Uint32Array(1))[0]; // Motion only.
     const snapshot = ids.map(id => ({ id, ...currentPoses.get(id) }));
     const run = createReadingReset({ seed, order, snapshot, deckIds: reading.order.filter(id => !reading.placed[id]) });
-    const nextFan = createReadingFan(next.order);
+    const nextFan = createReadingFan(next.order, seed);
     $('reader-details').open = false;
     round += 1; pendingReveals.clear(); noticeText = '';
     hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });

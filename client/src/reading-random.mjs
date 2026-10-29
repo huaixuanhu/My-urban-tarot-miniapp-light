@@ -1,6 +1,9 @@
 import { createRandomSession } from './reading-random-data.mjs';
 
-export function createReadingRandom({ document, storage, operationStorage, getReading, disclosures, onChange = () => {} }) {
+const pollInterval = 15000, pollWindow = 120000;
+const browserClock = { now: () => performance.now(), setInterval: (callback, delay) => setInterval(callback, delay), clearInterval: timer => clearInterval(timer) };
+
+export function createReadingRandom({ document, storage, operationStorage, getReading, disclosures, onChange = () => {}, client, clock = browserClock }) {
   const $ = id => document.getElementById(id);
   let disposed = false;
   const listeners = [];
@@ -23,19 +26,30 @@ export function createReadingRandom({ document, storage, operationStorage, getRe
     $('random-resume').disabled = state.busy;
     $('random-status').textContent = state.message || (state.pending ? '有一笔操作尚未确认，请查询结果。' : state.pool && state.pool.remaining < 155 ? '量子库存不足，请手动采集。普通随机仍可使用。' : '');
   }
-  session = createRandomSession({ storage, operationStorage, onChange() { render(); onChange(); } });
+  session = createRandomSession({ storage, operationStorage, client, onChange() { render(); onChange(); } });
+  let timer = null;
+  function stopPolling() { if (timer !== null) { clock.clearInterval(timer); timer = null; } }
+  function startPolling() {
+    stopPolling();
+    if (disposed || document.hidden || !disclosures.isOpen('reading-random')) return;
+    const deadline = clock.now() + pollWindow;
+    session.refresh();
+    timer = clock.setInterval(() => {
+      if (disposed || document.hidden || !disclosures.isOpen('reading-random') || clock.now() >= deadline) { stopPolling(); return; }
+      session.refresh();
+    }, pollInterval);
+  }
   listen($('random-mode'), 'change', () => session.setMode($('random-mode').checked ? 'quantum' : 'local'));
   listen($('random-collect'), 'click', () => { session.collect().catch(() => {}); });
   listen($('random-recover'), 'click', () => { session.recover().catch(() => {}); });
   listen($('random-resume'), 'click', () => { session.resume().catch(() => {}); });
-  listen(document, 'reading:disclosurechange', event => { if (event.detail.id === 'reading-random' && event.detail.open) session.refresh(); });
-  listen(document, 'visibilitychange', () => { if (!document.hidden && disclosures.isOpen('reading-random')) session.refresh(); });
-  const timer = setInterval(() => { if (!document.hidden && disclosures.isOpen('reading-random')) session.refresh(); }, 15000);
+  listen(document, 'reading:disclosurechange', event => { if (event.detail.id === 'reading-random') event.detail.open ? startPolling() : stopPolling(); });
+  listen(document, 'visibilitychange', () => { document.hidden ? stopPolling() : startPolling(); });
   render();
   return {
     prepareDeck: () => session.prepareDeck(),
     update: render,
     get state() { return session.state; },
-    dispose() { disposed = true; session.dispose(); listeners.forEach(cleanup => cleanup()); clearInterval(timer); },
+    dispose() { disposed = true; session.dispose(); listeners.forEach(cleanup => cleanup()); stopPolling(); },
   };
 }

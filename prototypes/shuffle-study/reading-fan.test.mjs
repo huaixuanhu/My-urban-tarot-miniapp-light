@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Euler, Matrix4, OrthographicCamera, Vector3 } from 'three';
+import { Euler, Matrix4, OrthographicCamera, Raycaster, Vector2, Vector3 } from 'three';
 import { CARD_COUNT, CARD_WIDTH, CARD_LENGTH, CARD_THICKNESS } from '../../client/src/motion.mjs';
 import { createReadingFan } from '../../client/src/reading-fan.mjs';
+import { createReadingProjection } from '../../client/src/reading-projection.mjs';
+import { pickFan } from '../../client/src/reading-picking.mjs';
 import { DEFAULT_VIEW, VIEW_LIMITS, VIEW_TARGET, getViewPosition, getViewSize } from '../../client/src/reading-view.mjs';
 
 function preparedOrders(count) {
@@ -19,6 +21,8 @@ function preparedOrders(count) {
 }
 
 const orders = preparedOrders(512);
+// Keep the existing geometry coverage varied after decoupling layout from order.
+const layoutSeeds = orders.map((_, index) => Math.imul(index + 1, 0x9e3779b9) >>> 0);
 function matrixFor(pose) {
   const matrix = new Matrix4().makeRotationFromEuler(new Euler(pose.rx, pose.ry, pose.rz, 'XYZ'));
   return matrix.setPosition(pose.x, pose.y, pose.z);
@@ -33,15 +37,72 @@ function solidCorners(pose) {
   return corners;
 }
 
-test('prepared fan is deterministic, immutable, and varies with a new physical order', () => {
-  const order = [...orders[0]], before = [...order], fan = createReadingFan(order);
+test('prepared fan is deterministic, immutable, and varies with an independent presentation seed', () => {
+  const order = [...orders[0]], before = [...order], seed = layoutSeeds[0];
+  const fan = createReadingFan(order, seed);
   assert.deepEqual(order, before);
-  assert.deepEqual(fan, createReadingFan(before));
-  assert.notDeepEqual(fan, createReadingFan(orders[1]));
+  assert.deepEqual(fan, createReadingFan(before, seed));
+  assert.notDeepEqual(fan, createReadingFan(before, layoutSeeds[1]));
   assert.equal(fan.length, CARD_COUNT);
   assert.ok(Object.isFrozen(fan) && fan.every(Object.isFrozen));
   order.reverse();
-  assert.deepEqual(fan, createReadingFan(before));
+  assert.deepEqual(fan, createReadingFan(before, seed));
+});
+
+test('fan geometry is invariant under physical-card relabeling', () => {
+  const canonical = Array.from({ length: CARD_COUNT }, (_, id) => id);
+  const swapped = [...canonical]; [swapped[0], swapped[1]] = [swapped[1], swapped[0]];
+  const relabeled = [swapped, [...canonical].reverse(), ...orders.slice(0, 8)];
+  for (const seed of [0, 1, 2196374898, 0xffffffff]) {
+    const expected = createReadingFan(canonical, seed);
+    for (const order of relabeled) assert.deepEqual(createReadingFan(order, seed), expected);
+  }
+  // Omitting the seed gives one fixed staging layout for every physical order.
+  const staging = createReadingFan(canonical);
+  assert.deepEqual(staging, createReadingFan(canonical, 2196374898));
+  for (const order of relabeled) assert.deepEqual(createReadingFan(order), staging);
+});
+
+test('the same screen coordinates pick the same ordinal after physical-card relabeling', () => {
+  const canonical = Array.from({ length: CARD_COUNT }, (_, id) => id);
+  const swapped = [...canonical]; [swapped[0], swapped[1]] = [swapped[1], swapped[0]];
+  const relabeled = [swapped, [...canonical].reverse(), orders[0]];
+  const projection = createReadingProjection(), raycaster = new Raycaster();
+  const views = [DEFAULT_VIEW,
+    { yaw: Math.PI / 2, elevation: DEFAULT_VIEW.elevation, zoom: 1 },
+    { yaw: 0, elevation: VIEW_LIMITS.elevation.max, zoom: 1 }];
+  for (const seed of [0, 0xffffffff]) {
+    const fan = createReadingFan(canonical, seed);
+    for (const removed of [[], [0, 9, 37, 62, 77]]) {
+      const candidates = order => createReadingFan(order, seed).map((pose, ordinal) => ({ id: order[ordinal], ordinal, pose }))
+        .filter(card => !removed.includes(card.ordinal));
+      const base = candidates(canonical);
+      const variants = relabeled.map(order => ({ order, cards: candidates(order) }));
+      // Cover card centers, a gap boundary and empty table, with and without prior draws.
+      const points = [5, 17, 38, 55, 70].map(ordinal => fan[ordinal]);
+      points.push({ x: (fan[5].x + fan[6].x) / 2, y: (fan[5].y + fan[6].y) / 2, z: (fan[5].z + fan[6].z) / 2 });
+      points.push({ x: 0, y: 0.05, z: -0.7 });
+      for (const view of views) {
+        const camera = projection.update(view, { width: 1440, height: 1000 });
+        for (const [index, point] of points.entries()) {
+          const screen = new Vector3(point.x, point.y, point.z).project(camera);
+          raycaster.setFromCamera(new Vector2(screen.x, screen.y), camera);
+          const expected = canonical.indexOf(pickFan(raycaster.ray, base));
+          if (index < 5) assert.equal(expected, [5, 17, 38, 55, 70][index]);
+          for (const { order, cards } of variants) {
+            assert.equal(order.indexOf(pickFan(raycaster.ray, cards)), expected);
+          }
+        }
+      }
+    }
+  }
+});
+
+test('invalid presentation seeds are rejected without coercion', () => {
+  for (const seed of [-1, 0x100000000, 0.5, NaN, Infinity, null, '12', {}, 12n]) {
+    assert.throws(() => createReadingFan(orders[0], seed), RangeError);
+  }
+  for (const seed of [0, 0xffffffff]) assert.doesNotThrow(() => createReadingFan(orders[0], seed));
 });
 
 test('invalid or sparse physical orders are rejected', () => {
@@ -52,8 +113,8 @@ test('invalid or sparse physical orders are rejected', () => {
 });
 
 test('irregular cards retain parallel planes and a positive solid-paper gap', () => {
-  for (const order of orders) {
-    const fan = createReadingFan(order);
+  for (const [index, order] of orders.entries()) {
+    const fan = createReadingFan(order, layoutSeeds[index]);
     const first = fan[0], normal = new Vector3(0, 1, 0).applyEuler(new Euler(first.rx, first.ry, first.rz, 'XYZ'));
     for (let i = 0; i < fan.length; i++) {
       const pose = fan[i];
@@ -70,9 +131,9 @@ test('irregular cards retain parallel planes and a positive solid-paper gap', ()
   }
 });
 
-test('full solid corners clear the cloth across 512 prepared orders', t => {
+test('full solid corners clear the cloth across 512 independent presentation seeds', t => {
   let minimum = Infinity, maximum = -Infinity;
-  for (const order of orders) for (const pose of createReadingFan(order)) for (const corner of solidCorners(pose)) {
+  for (const [index, order] of orders.entries()) for (const pose of createReadingFan(order, layoutSeeds[index])) for (const corner of solidCorners(pose)) {
     minimum = Math.min(minimum, corner.y); maximum = Math.max(maximum, corner.y);
     // 0.015 conservatively exceeds the cloth's current highest point.
     assert.ok(corner.y - 0.015 > 0.025, `Insufficient cloth clearance: ${corner.y}`);
@@ -89,7 +150,7 @@ test('complete prepared fans fit the home view and four orbit corners at normal 
     const camera = new OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0.1, 100);
     camera.position.set(position.x, position.y, position.z);
     camera.lookAt(VIEW_TARGET.x, VIEW_TARGET.y, VIEW_TARGET.z); camera.updateMatrixWorld();
-    for (const order of orders.slice(0, 8)) for (const pose of createReadingFan(order)) for (const corner of solidCorners(pose)) {
+    for (const [index, order] of orders.slice(0, 8).entries()) for (const pose of createReadingFan(order, layoutSeeds[index])) for (const corner of solidCorners(pose)) {
       const screen = corner.project(camera);
       assert.ok(Math.abs(screen.x) <= 1 && Math.abs(screen.y) <= 1 && Math.abs(screen.z) <= 1);
     }

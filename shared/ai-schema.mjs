@@ -14,6 +14,9 @@ export function normalizeAIInput(value) {
   let id, reading;
   try { id = normalizeRecordId(value.id); reading = normalizeRecordInput(value.reading); }
   catch (error) { if (error instanceof RecordValidationError) invalid(error.message); throw error; }
+  // Random-source metadata is not needed for interpretation and has not been
+  // verified on this route. Keep allocation provenance solely in shared records.
+  delete reading.randomness;
   if (!reading.question) invalid('请先写下这次想了解的问题。');
   if (reading.interpretation || reading.reflection || reading.aiInterpretationIds?.length) invalid('AI 请求仅接收问题和牌阵，不接收已有解读。');
   if (!AI_MODELS.some(model => model.id === value.model)) invalid('请选择 6.1 Terra 或 6.1 Sol。');

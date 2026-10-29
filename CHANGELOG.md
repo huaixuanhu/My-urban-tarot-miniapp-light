@@ -183,3 +183,8 @@ The user accepted revision20 and authorized committing/pushing the accumulated l
 ## 2026-10-29 — accepted optional-AI local checkpoint
 
 The user accepts the current AI framework and contextual-help UI for a local checkpoint. Commit the evaluated models, protected optional interpretation flow and UI evidence together; production AI activation remains pending. Continuation: STATE.md stage2.5.4.5.
+
+
+## 2026-10-29 — quantum cross-review refinements
+
+Separate fan presentation from card order, recognise missing schema before starting work, sanitize asynchronous reply failures, remove unverified source labels from AI snapshots, distinguish draw/collect expiry and stop idle metadata polling.308 tests and the final synthetic joint-save flow pass. Local-only review evidence: docs/random/stage2.5.5/REVIEW.md.

@@ -11,7 +11,7 @@ The accepted glass-table reading experience is the sole application. Its current
 - `pnpm build`: application output in `dist/public`, plus the existing Express fallback in `dist/index.js`.
 - `pnpm preview`: preview that built application locally. `pnpm start` runs the Express fallback.
 - For previous local bookmarks, `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs` serves the same client at port5174. Hosted `/reading.html` redirects to `/`.
-- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,129 application/motion tests,44 record tests,56 AI tests,52 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
+- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,58 AI tests,59 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
 
 Local Vite/Express/Electron execution does not run the Vercel-specific identity gate. Do not use these local servers as a protected public host. Electron still points to `dist/public/index.html`; packaged desktop execution has not been qualified by this web replacement.
 
@@ -67,3 +67,8 @@ More → 随机来源 controls the **next** shuffle. Quantum mode is the default
 Saved records retain the selected source. Quantum metadata must match a completed server allocation, including each saved card's orientation; legacy records remain source-unknown. This proves association with an allocation, not the user's picking gestures or immunity to deliberately choosing a known card.
 
 `pnpm test:random` and `pnpm check:random-runtime` are in the aggregate gate. `pnpm check:random-postgres` separately starts a disposable local PostgreSQL cluster over a private Unix socket, executes the real migration/adapter SQL, and cleans it up. It requires `initdb`, `pg_ctl` and `psql`; it never reads app credentials or contacts cloud services. `pnpm dev:random-preview 5175` runs the banner-labelled synthetic preview on an optional local port; all ANU claims there are fixture data, not real acquisitions. Evidence and review handoff: [stage2.5.5](docs/random/stage2.5.5/README.md).
+
+
+Review refinements: fan geometry now uses the existing independent motion seed, so relabeling card identities leaves a fixed-seed layout/pick ordinal unchanged. Metadata polling lasts at most two minutes per visible panel visit (15-second interval); reopening or returning visibility resumes it. AI snapshots deliberately omit random-source claims; the separately saved main record remains the verified allocation owner. Duplicated tabs may inherit the same recovery ID and recover the same deck; this is not a new independent draw.
+
+Release order is explicit and still pending: verify the dedicated database target, apply003 and verify the tables, configure server-only `ANU_API_KEY`, perform one separately authorised real-format/connectivity check, then deploy and verify protected hosted behavior. A push to the existing main integration can deploy all included local features, including the still-local AI work, so publication must account for both features' activation prerequisites. No publication was performed here.

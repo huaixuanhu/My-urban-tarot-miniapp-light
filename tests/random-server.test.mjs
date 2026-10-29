@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { createRandomHandler, RandomStorageNotConfigured } from '../server/random/service.mjs';
+import { createRandomHandler, RandomStorageNotConfigured, publicOperation } from '../server/random/service.mjs';
 import { createMemoryRandomStore } from '../server/random/memory-store.mjs';
 import { createANUProvider, RandomProviderError } from '../server/random/provider.mjs';
 const origin = 'https://augurwell.anoriaquant.dev';
@@ -223,6 +223,9 @@ test('expired draw GET fences late commit before terminal recovery is published'
   const pool = await f.store.getPool(); f.advance(61000);
   const response = await f.request(null, { query: `?id=${draw.id}` });
   assert.equal(response.body.operation.terminal, true); assert.equal(response.body.operation.status, 'unknown');
+  assert.match(response.body.operation.message, /洗牌/);
+  assert.match(response.body.operation.message, /这次未扣除量子库存/);
+  assert.doesNotMatch(response.body.operation.message, /采集次数|额度/);
   assert.equal(await f.store.commitDraw(draw.id, pool.version, 155, {}, new Date().toISOString()), null);
   assert.equal((await f.store.getPool()).cursor, 0);
   assert.equal((await f.request(input('draw'))).body.operation.status, 'completed');
@@ -234,6 +237,7 @@ test('expired collection GET fences late response and allows explicit new collec
   const old = input('collect'), pending = f.request(old); await enter.promise; f.advance(61000);
   const expired = await f.request(null, { query: `?id=${old.id}` });
   assert.equal(expired.body.operation.terminal, true); assert.equal(expired.body.pool.collecting, false);
+  assert.match(expired.body.operation.message, /可能已消耗采集次数/);
   const fresh = input('collect'); assert.equal((await f.request(fresh)).status, 201);
   finish.resolve(Array(1024).fill(123)); await pending;
   assert.equal((await f.store.getPool()).batchId, fresh.id); assert.equal((await f.store.getPool()).values[0], 0);
@@ -272,4 +276,57 @@ test('lost collection commit response can be recovered without fetching another 
   assert.equal(recovered.body.operation.status, 'completed'); assert.equal(recovered.body.operation.terminal, true);
   assert.equal(recovered.body.pool.batchId, collect.id); assert.equal(f.calls(), 1);
   await f.request(collect); assert.equal(f.calls(), 1);
+});
+
+
+test('missing required random tables or columns fail definitively before claim or provider access', async () => {
+  for (const code of ['42P01', '42703']) for (const action of ['collect', 'draw']) for (const missing of ['get', 'getPool']) {
+    const store = createMemoryRandomStore(), originalGet = store.get.bind(store);
+    let claims = 0, providers = 0;
+    store[missing] = async () => { throw Object.assign(new Error('private database details'), { code }); };
+    store.claim = async () => { claims++; throw new Error('must not claim'); };
+    const f = fixture({ store, getProvider: async () => { providers++; throw new Error('must not create provider'); } });
+    const request = input(action), result = await f.request(request);
+    assert.equal(result.status, 503); assert.equal(result.body.error.code, 'RANDOM_NOT_CONFIGURED');
+    assert.equal(JSON.stringify(result.body).includes('private database details'), false);
+    assert.equal(claims, 0); assert.equal(providers, 0); assert.equal(f.calls(), 0);
+    assert.equal(await originalGet(request.id), null); assert.deepEqual(f.errors, []);
+  }
+});
+
+test('read-only metadata and operation lookups classify missing tables without mutation', async () => {
+  for (const query of ['', `?id=${randomUUID()}`]) {
+    let writes = 0;
+    const missing = async () => { throw Object.assign(new Error('private schema details'), { code: '42P01' }); };
+    const f = fixture({ store: { get: missing, getPool: missing, claim: async () => { writes++; }, fail: async () => { writes++; } } });
+    const result = await f.request(null, { query });
+    assert.equal(result.status, 503); assert.equal(result.body.error.code, 'RANDOM_NOT_CONFIGURED');
+    assert.equal(writes, 0); assert.equal(f.calls(), 0);
+  }
+});
+
+test('non-schema read failures and schema failures after claim stay uncertain', async () => {
+  for (const stage of ['read', 'claim', 'commit', 'reply']) {
+    const store = createMemoryRandomStore();
+    const f = fixture({ store });
+    if (stage === 'read') store.get = async () => { throw Object.assign(new Error('network'), { code: '08006' }); };
+    if (stage === 'claim') store.claim = async () => { throw Object.assign(new Error('schema changed'), { code: '42P01' }); };
+    if (stage === 'commit') store.completeCollection = async () => { throw Object.assign(new Error('schema changed'), { code: '42P01' }); };
+    if (stage === 'reply') {
+      const originalGetPool = store.getPool.bind(store); let reads = 0;
+      store.getPool = async () => { if (++reads === 2) throw Object.assign(new Error('schema changed'), { code: '42P01' }); return originalGetPool(); };
+    }
+    const result = await f.request(input('collect'));
+    assert.equal(result.status, 503); assert.equal(result.body.error.code, 'RANDOM_STORAGE_UNCERTAIN');
+    assert.equal(f.calls(), ['commit', 'reply'].includes(stage) ? 1 : 0);
+  }
+});
+
+test('pending display distinguishes collection from draw without claiming a draw uses provider quota', () => {
+  const createdAt = '2026-10-29T00:00:00.000Z', now = new Date('2026-10-29T00:01:01.000Z');
+  const draw = publicOperation({ ...input('draw'), status: 'pending', createdAt }, now);
+  const collect = publicOperation({ ...input('collect'), status: 'pending', createdAt }, now);
+  assert.equal(draw.status, 'unknown'); assert.equal(draw.terminal, false);
+  assert.match(draw.message, /洗牌/); assert.doesNotMatch(draw.message, /采集|额度/);
+  assert.match(collect.message, /采集/); assert.equal(collect.terminal, false);
 });

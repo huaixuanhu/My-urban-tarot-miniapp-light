@@ -3,13 +3,19 @@ import { CARD_COUNT } from './motion.mjs';
 const ROLL = -0.10;
 const normalX = -Math.sin(ROLL), normalY = Math.cos(ROLL);
 const layerDistance = 0.013;
+// Preserve the original canonical-order staging shape without reading card IDs.
+const DEFAULT_LAYOUT_SEED = 2196374898;
 
-/** One stable, loosely swept fan for the prepared order. Never reroll on hover. */
-export function createReadingFan(order) {
+/** Stable presentation geometry independent of card identities. Never reroll on hover. */
+export function createReadingFan(order, layoutSeed = DEFAULT_LAYOUT_SEED) {
   if (!Array.isArray(order) || order.length !== CARD_COUNT || new Set(order).size !== CARD_COUNT || !Array.from(order).every(id => Number.isInteger(id) && id >= 0 && id < CARD_COUNT)) {
     throw new RangeError('Fan requires all 78 unique physical card IDs.');
   }
-  let seed = order.reduce((hash, id) => Math.imul(hash ^ (id + 1), 16777619) >>> 0, 2166136261);
+  if (!Number.isInteger(layoutSeed) || layoutSeed < 0 || layoutSeed > 0xffffffff) {
+    throw new RangeError('Fan layout seed must be a uint32 integer.');
+  }
+  // Presentation only: callers supply a seed independent of the prepared deck.
+  let seed = layoutSeed;
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const steps = Array.from({ length: CARD_COUNT - 1 }, () => 0.70 + random() * 0.60);
   const total = steps.reduce((sum, step) => sum + step, 0);

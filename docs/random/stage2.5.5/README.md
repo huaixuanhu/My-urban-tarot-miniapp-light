@@ -38,3 +38,8 @@ The65 inherited generated files are preserved byte-for-byte and excluded from st
 ## Cross-host review
 
 Review target: the local commit carrying this document, diff from `8727ae5ad642b08769e9ab04ef99441bc63c966e`. Requested destination: existing Claude Code tarot chat “10-29 先项目概览” in “My-urban-tarot-miniapp-light”. Review is dispatched only after local commit. Findings and reviewed revision will be recorded separately; preparation of this packet does not claim Claude has reviewed it.
+
+
+## stage2.5.5.1 — review follow-up
+
+The initial implementation was locally committed as `79bcff65` and independently reviewed by Claude Code. Corrected fan independence, schema failure handling, AI snapshot provenance, expiry copy, idle polling and asynchronous reply error handling are owned by [REVIEW.md](REVIEW.md). Final aggregate308 tests pass; the new local browser joint quantum/mock-AI save flow also passed. No live ANU or production activation was performed. The original evidence above remains a record of the first candidate.

@@ -14,7 +14,9 @@ export function publicOperation(operation, now = new Date()) {
   const result = { id: operation.id, action: operation.action, status: operation.status, terminal: operation.status !== 'pending', createdAt: operation.createdAt };
   for (const key of ['completedAt', 'message', 'deck', 'batchId', 'fetchedAt']) if (operation[key] !== undefined) result[key] = structuredClone(operation[key]);
   if (result.status === 'pending' && now.valueOf() - Date.parse(result.createdAt) >= COLLECTION_LEASE_MS) {
-    result.status = 'unknown'; result.message = '这次操作尚未确认，请查询原操作。不会自动重新采集或扣除库存。';
+    result.status = 'unknown'; result.message = operation.action === 'collect'
+      ? '这次采集尚未确认，请查询原操作。不会自动重新采集。'
+      : '这次洗牌尚未确认，请查询原操作。不会自动再次洗牌或扣除库存。';
   }
   return result;
 }
@@ -36,6 +38,15 @@ async function readInput(request) {
   if (!input || Array.isArray(input) || typeof input !== 'object' || Object.keys(input).sort().join(',') !== 'action,id' || !['collect', 'draw'].includes(input.action)) throw new RecordValidationError('随机操作不正确。');
   return { id: normalizeRecordId(input.id), action: input.action };
 }
+// Only read-only schema probes may classify a missing relation as unconfigured.
+// Never translate write/finalization errors: an accepted action may have succeeded.
+async function readRequiredSchema(read) {
+  try { return await read(); }
+  catch (error) {
+    if (['42P01', '42703'].includes(error?.code)) throw new RandomStorageNotConfigured();
+    throw error;
+  }
+}
 /** Pending operation ownership is durable: HTTP retries and GETs never re-run work. */
 export function createRandomHandler({ accessGuard, getStore, getProvider, now = () => new Date(), onError = () => {} }) {
   return async request => {
@@ -54,7 +65,10 @@ export function createRandomHandler({ accessGuard, getStore, getProvider, now = 
         if (operation?.status === 'pending' && now().valueOf() - Date.parse(operation.createdAt) >= COLLECTION_LEASE_MS) {
           // Fence before exposing a terminal result. A late owner can no longer
           // publish a collection or deduct inventory. No provider call occurs.
-          return store.fail(operation.id, 'unknown', '这次操作已超时并停止继续写入；可能已消耗采集次数，可手动开始新操作。', now().toISOString());
+          const message = operation.action === 'collect'
+            ? '这次采集已超时并停止继续写入；可能已消耗采集次数，可手动开始新操作。'
+            : '这次洗牌已超时并停止继续写入，这次未扣除量子库存，可手动重新洗牌。';
+          return store.fail(operation.id, 'unknown', message, now().toISOString());
         }
         return operation;
       };
@@ -62,8 +76,8 @@ export function createRandomHandler({ accessGuard, getStore, getProvider, now = 
         if (keys.length && (keys.length !== 1 || keys[0] !== 'id')) throw new RecordValidationError('查询地址不正确。');
         const id = keys.length ? normalizeRecordId(url.searchParams.get('id')) : null;
         const store = await getStore();
-        if (!id) return json({ pool: poolMetadata(await store.getPool(), now()) });
-        const operation = await reconcile(store, await store.get(id));
+        if (!id) return json({ pool: poolMetadata(await readRequiredSchema(() => store.getPool()), now()) });
+        const operation = await reconcile(store, await readRequiredSchema(() => store.get(id)));
         if (!operation) return problem('NOT_FOUND', '尚未找到这个操作；不要自动重复提交。', 404);
         const view = publicOperation(operation, now());
         return json({ operation: view, pool: poolMetadata(await store.getPool(), now()) }, ['pending', 'unknown'].includes(view.status) ? 202 : 200);
@@ -76,21 +90,24 @@ export function createRandomHandler({ accessGuard, getStore, getProvider, now = 
         const view = publicOperation(operation, now());
         return json({ operation: view, pool: poolMetadata(await store.getPool(), now()) }, ['pending', 'unknown'].includes(view.status) ? 202 : fresh && view.status === 'completed' ? 201 : 200);
       };
-      const existing = await store.get(input.id);
+      const existing = await readRequiredSchema(() => store.get(input.id));
       if (existing) {
         if (existing.action !== input.action || existing.createdBy !== subject) return problem('RANDOM_CONFLICT', '这个操作编号已被使用，请查询原操作。', 409);
-        return reply(await reconcile(store, existing));
+        return await reply(await reconcile(store, existing));
       }
+      // Probe both required relations for new operations before any claim/provider
+      // access. Do not cache this snapshot: draws and replies must read fresh state.
+      await readRequiredSchema(() => store.getPool());
       // Detect absent credentials before claiming an operation or changing the pool.
       const provider = input.action === 'collect' ? await getProvider() : null;
       const claimed = await store.claim({ ...input, status: 'pending', createdAt: now().toISOString(), createdBy: subject });
       if (!claimed.inserted) {
         if (claimed.operation.action !== input.action || claimed.operation.createdBy !== subject) return problem('RANDOM_CONFLICT', '这个操作编号已被使用，请查询原操作。', 409);
-        return reply(await reconcile(store, claimed.operation));
+        return await reply(await reconcile(store, claimed.operation));
       }
       const fail = (status, message) => store.fail(input.id, status, message, now().toISOString());
       if (input.action === 'collect') {
-        if (!await store.startCollection(input.id, now().toISOString())) return reply(await fail('failed', '共享数据正在采集或请求间隔过短，请稍后手动再试。'));
+        if (!await store.startCollection(input.id, now().toISOString())) return await reply(await fail('failed', '共享数据正在采集或请求间隔过短，请稍后手动再试。'));
         let values;
         try {
           values = await provider.collect();
@@ -98,11 +115,11 @@ export function createRandomHandler({ accessGuard, getStore, getProvider, now = 
         } catch (error) {
           const unknown = !(error instanceof RandomProviderError) || error.kind === 'unknown';
           onError(unknown ? 'RANDOM_PROVIDER_UNKNOWN' : 'RANDOM_PROVIDER_FAILED');
-          return reply(await fail(unknown ? 'unknown' : 'failed', unknown ? '采集结果尚未确认，旧库存已保留；系统不会自动重试。' : 'ANU 未返回有效数据，请检查额度或稍后再试。旧库存已保留。'));
+          return await reply(await fail(unknown ? 'unknown' : 'failed', unknown ? '采集结果尚未确认，旧库存已保留；系统不会自动重试。' : 'ANU 未返回有效数据，请检查额度或稍后再试。旧库存已保留。'));
         }
         const completed = await store.completeCollection(input.id, values, now().toISOString());
-        if (!completed) return reply(await fail('unknown', '这次采集已被更新的操作取代，没有覆盖新库存。'));
-        return reply(completed, true);
+        if (!completed) return await reply(await fail('unknown', '这次采集已被更新的操作取代，没有覆盖新库存。'));
+        return await reply(completed, true);
       }
       // CAS failures mean another authorised operation won; recompute solely from
       // its new cursor. Never return a candidate before the atomic commit succeeds.
@@ -111,15 +128,15 @@ export function createRandomHandler({ accessGuard, getStore, getProvider, now = 
         let generated;
         try { generated = generateDeck(pool.values, pool.cursor); }
         catch (error) {
-          if (error instanceof RandomDataExhausted) return reply(await fail('failed', '量子数据不足以再洗一副牌，请先手动采集。当前牌桌没有改变。'));
+          if (error instanceof RandomDataExhausted) return await reply(await fail('failed', '量子数据不足以再洗一副牌，请先手动采集。当前牌桌没有改变。'));
           throw error;
         }
         const deck = { order: generated.order, reversed: generated.reversed,
           randomness: { source: 'anu', requestId: input.id, batchId: pool.batchId, fetchedAt: pool.fetchedAt, consumed: generated.consumed } };
         const committed = await store.commitDraw(input.id, pool.version, generated.consumed, deck, now().toISOString());
-        if (committed) return reply(committed, true);
+        if (committed) return await reply(committed, true);
       }
-      return reply(await fail('failed', '共享库存正在变化，请稍后手动再试。当前牌桌没有改变。'));
+      return await reply(await fail('failed', '共享库存正在变化，请稍后手动再试。当前牌桌没有改变。'));
     } catch (error) {
       if (error instanceof RecordValidationError) return problem('INVALID_RANDOM_REQUEST', error.message, 400);
       if (error instanceof RandomStorageNotConfigured || (error instanceof RandomProviderError && error.kind === 'not_configured')) return problem('RANDOM_NOT_CONFIGURED', '共享量子数据尚未接通，这次没有采集或洗牌。', 503);
