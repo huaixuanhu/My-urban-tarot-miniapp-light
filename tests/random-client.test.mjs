@@ -112,3 +112,37 @@ test('unconfigured service refuses before claiming and clears the initial operat
  const session=createRandomSession({operationStorage:handles,newId:()=>id,client});await assert.rejects(session.prepareDeck(),/尚未配置/);
  assert.equal(calls,1);assert.equal(session.state.pending,null);assert.equal(handles.getItem(RANDOM_OPERATION_KEY),null);
 });
+
+test('visitor stays local without reading or overwriting member preferences and recovery handles', async()=>{
+ const touches=[];
+ const protectedStorage={getItem:key=>{touches.push(['read',key]);return 'quantum'},setItem:(key,value)=>touches.push(['write',key,value]),removeItem:key=>touches.push(['remove',key])};
+ const calls=[];
+ const session=createRandomSession({quantumAccess:false,storage:protectedStorage,operationStorage:protectedStorage,localDeck:deck,
+  client:{metadata:async()=>{calls.push('metadata');return {pool}},run:async()=>{calls.push('run');return result()},operation:async()=>{calls.push('operation');return result()}}});
+ assert.equal(session.state.quantumAccess,false);assert.equal(session.state.mode,'local');assert.equal(session.state.pending,null);
+ assert.equal(session.setMode('quantum'),false);assert.equal(session.state.mode,'local');assert.match(session.state.message,/邮箱验证/);
+ assert.equal((await session.prepareDeck()).randomness.source,'local');
+ assert.equal(session.setMode('local'),true);assert.equal(session.state.message,'');
+ await session.refresh();
+ assert.deepEqual(touches,[]);assert.deepEqual(calls,[]);assert.equal(session.state.pool,null);
+ session.dispose();
+});
+
+test('visitor cannot dispatch collection or operation recovery even when called directly', async()=>{
+ let calls=0,ids=0;
+ const session=createRandomSession({quantumAccess:false,newId:()=>{ids++;return id},localDeck:deck,
+  client:{metadata:async()=>{calls++;return {pool}},run:async()=>{calls++;return result()},operation:async()=>{calls++;return result()}}});
+ for(const method of ['collect','recover','resume']) await assert.rejects(session[method](),error=>error.code==='QUANTUM_ACCESS_REQUIRED');
+ await session.refresh();
+ assert.equal(session.state.pending,null);assert.equal(session.state.busy,false);assert.equal(calls,0);assert.equal(ids,0);
+ assert.equal((await session.prepareDeck()).randomness.source,'local');
+ session.dispose();
+});
+
+test('disposed visitor has no local deck work, requests or state publications', async()=>{
+ let decks=0,publishes=0,calls=0;
+ const session=createRandomSession({quantumAccess:false,localDeck:()=>{decks++;return deck()},onChange:()=>publishes++,client:{metadata:async()=>{calls++;return {pool}}}});
+ session.dispose();session.setMode('quantum');session.setMode('local');await session.refresh();
+ for(const method of ['collect','recover','resume','prepareDeck']) await assert.rejects(session[method](),/正在处理/);
+ assert.equal(decks,0);assert.equal(publishes,0);assert.equal(calls,0);
+});

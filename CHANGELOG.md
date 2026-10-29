@@ -1,5 +1,10 @@
 # Change history
 
+## 2026-10-30 — side random choice and visitor foundation
+
+Expose next-shuffle system/quantum choices beside the table, move acquisition mechanics to Shared Remaining help and use the headline “抽取 感受 感知”. Add a bounded local visitor rehearsal with system shuffling and visible quantum/email requirements; actual accounts, public access and verification remain deferred. Keep current-round provenance, provider safeguards and member storage intact.
+
+
 ## 2026-10-30 — soft night reflections and richer engraving
 
 Broaden night reflections into warmer soft light and extend the accepted faint glass etching with crescents, orbits and sparse stars. Keep original day lighting, card area and gameplay. Local batch under STATE.md stage2.5.9.1.

@@ -126,7 +126,7 @@ function updateUI() {
   for (const id of ['previous', 'next', 'place']) $(id).disabled = busy || !readingReady || deckFocusId === null;
   $('deck-position').textContent = deckFocusId === null ? '牌带已空' : `第 ${reading.order.indexOf(deckFocusId) + 1} / 78 张`;
   $('deck-hint').textContent = !readingReady ? '先开始洗牌，再沿牌带挑选' : hoverId !== null && !reading.placed[hoverId] ? `第 ${reading.order.indexOf(hoverId) + 1} 张 · 按住拖到桌面` : '沿牌带挑选 · 按住拖出';
-  $('progress').textContent = preparingReset ? '正在准备本轮随机牌序…' : reset ? '正在洗牌…' : !readingReady ? '随机来源可在「更多」中选择' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
+  $('progress').textContent = preparingReset ? '正在准备本轮随机牌序…' : reset ? '正在洗牌…' : !readingReady ? '选择随机方式，开始这一轮。' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
   if (!reset && noticeText && performance.now() < noticeUntil) $('progress').textContent = noticeText;
   const list = $('placed-list');
   const signature = placed.map(card => `${card.id}:${isOpened(card)}:${card.id === reading.selectedId}`).join('|');
@@ -552,7 +552,8 @@ recordsController = createReadingRecords({ root: $('records-body'), getReading: 
 aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });
 let operationStorage;
 try { operationStorage = window.sessionStorage; } catch { /* In-page operation recovery remains available. */ }
-randomController = createReadingRandom({ document, storage: appearanceStorage, operationStorage, getReading: () => reading, disclosures, onChange: () => { if (!disposed) updateUI(); } });
+// Visitor marker is injected only by the credential-free local fixture; it grants no access.
+randomController = createReadingRandom({ document, quantumAccess: document.body.dataset.visitorPreview !== 'true', storage: appearanceStorage, operationStorage, getReading: () => reading, disclosures, onChange: () => { if (!disposed) updateUI(); } });
 updateUI();
 $('return').addEventListener('click', () => { if (!tableBusy()) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
 $('undo').addEventListener('click', () => { if (!tableBusy()) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });

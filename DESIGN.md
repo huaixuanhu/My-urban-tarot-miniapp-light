@@ -1,6 +1,12 @@
 # Urban Tarot design owner
 
-Accepted local baseline: revision28, stage2.5.8 restrained ritual language and quantum identity, explicitly accepted by the user before stage2.5.9. Revision27 is saved as requested checkpoint34972294. The user delegates a careful enhancement of the occult atmosphere and a distinctive quantum symbol within the established glass world. Prior gameplay, room, original artwork and request behavior remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
+Current local candidate: revision30, stage2.5.9.2 side random choice and visitor foundation, following revision29 soft night light/engraving and accepted revision28. The user delegates these bounded refinements and local batch commits; visitor accounts/gate design belongs to a later separate conversation. Current authority: governance/STATE.md.
+
+## stage2.5.9.2 — candidate revision30: visible source choice
+
+Parent: STATE.md stage2.5.9.2. Extend the existing pearl/clear-glass radio language with a small side group labelled “下次洗牌”; retain icons plus short 系统/量子 labels and a separate applied-source badge. Native pointer/keyboard behavior, clear focus and source persistence remain. On widths480px and below, stack the two choices vertically to leave space for card reading. Hide the group until its controller is ready. Empty heading becomes “抽取 感受 感知”.
+
+Source definitions belong to the group/title question mark; shared-stock/replacement/reception-time semantics belong to Shared Remaining. Existing dwell/focus/click/Escape help behavior applies. Visitor preview keeps system selected and a small lock plus verification hint on the quantum choice; selecting quantum opens an honest not-yet-connected verification explanation, with no email form or request. Existing members have no visitor hint or accessible description. No probability, accuracy or predictive benefit is implied. Basis and actual screenshot/browser evidence: docs/design/stage2.5.9/README.md. This is local delegated evolution awaiting user review, with no release claim.
 
 ## stage2.5.9.1 — candidate revision29: soft night light and lunar engraving
 

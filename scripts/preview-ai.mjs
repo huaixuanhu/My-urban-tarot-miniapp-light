@@ -1,5 +1,5 @@
 /** Local UI/HTTP fixture only. Never imported by the app or deployed API.
- * pnpm exec tsx scripts/preview-ai.mjs
+ * pnpm exec tsx scripts/preview-ai.mjs [port] [--visitor]
  * Uses synthetic signing keys and in-memory records, NEVER cloud, OpenAI or ANU.
  */
 import http from 'node:http';
@@ -14,7 +14,8 @@ import { createMemoryRandomStore } from '../server/random/memory-store.mjs';
 import { RandomProviderError } from '../server/random/provider.mjs';
 import { createInterpretationsHandler } from '../server/ai/service.mjs';
 
-const port = Number(process.argv[2] || 5174), localOrigin = `http://127.0.0.1:${port}`, appOrigin = `https://${accessConfig.hostname}`;
+const visitorPreview = process.argv.includes('--visitor');
+const port = Number(process.argv.slice(2).find(argument => argument !== '--visitor') || 5174), localOrigin = `http://127.0.0.1:${port}`, appOrigin = `https://${accessConfig.hostname}`;
 const attempts = new Map(), records = new Map();
 let scenario = 'completed', calls = 0;
 let randomScenario = 'completed', randomCalls = 0;
@@ -92,7 +93,9 @@ const random = createRandomHandler({ accessGuard, getStore: async () => randomSt
 const record = createRecordsHandler({ accessGuard, getStore: async () => recordStore });
 const vite = await createVite({ server: { middlewareMode: true, hmr: { port: port + 1000 } }, plugins: [{
   name: 'explicit-local-ai-fixture', transformIndexHtml(html) {
-    return html.replace('<body>', '<body><aside role="note" style="position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;background:#fff3c9;color:#42351e;font:12px/24px system-ui;pointer-events:none">本地验证 · 合成随机数据、模拟 AI 与记录 · 未调用 ANU，无费用，不写入云端</aside>');
+    const body = visitorPreview ? '<body data-visitor-preview="true">' : '<body>';
+    const notice = visitorPreview ? '本地访客预览 · 可用系统随机 · 邮箱验证尚未接入 · 无外部调用' : '本地验证 · 合成随机数据、模拟 AI 与记录 · 未调用 ANU，无费用，不写入云端';
+    return html.replace('<body>', `${body}<aside role="note" style="position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;background:#fff3c9;color:#42351e;font:12px/24px system-ui;pointer-events:none">${notice}</aside>`);
   },
 }] });
 const server = http.createServer(async (req, res) => {
@@ -116,10 +119,16 @@ const server = http.createServer(async (req, res) => {
           }
         }
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify({ fixture: true, scenario, calls, randomScenario, randomCalls, attempts: attempts.size, records: records.size })); return;
+        res.end(JSON.stringify({ fixture: true, visitorPreview, scenario, calls, randomScenario, randomCalls, attempts: attempts.size, records: records.size })); return;
       }
       const handler = url.pathname === '/api/interpretations' ? interpret : url.pathname === '/api/records' ? record : url.pathname === '/api/random' ? random : null;
       if (!handler) { res.writeHead(404); res.end(); return; }
+      // The local visitor fixture never synthesizes a signed-in identity.
+      // This test seam is not a deployed authentication or public-access gate.
+      if (visitorPreview) {
+        res.writeHead(401, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+        res.end(JSON.stringify({ error: { code: 'ACCESS_REQUIRED', message: '此功能需要邮箱验证；本地访客预览尚未接入验证。' } })); return;
+      }
       const headers = new Headers({ 'cf-access-jwt-assertion': await syntheticToken() });
       if (req.method !== 'GET') { headers.set('origin', appOrigin); headers.set('content-type', req.headers['content-type'] || ''); }
       const response = await handler(new Request(`${appOrigin}${url.pathname}${url.search}`, {
@@ -130,6 +139,6 @@ const server = http.createServer(async (req, res) => {
     vite.middlewares(req, res);
   } catch { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { code: 'LOCAL_FIXTURE_ERROR', message: '本地模拟服务发生错误，没有发起外部调用。' } })); }
 });
-server.listen(port, '127.0.0.1', () => console.log(`LOCAL SYNTHETIC PREVIEW ${localOrigin} — no ANU/OpenAI/Neon connections.`));
+server.listen(port, '127.0.0.1', () => console.log(`LOCAL ${visitorPreview ? 'VISITOR' : 'SYNTHETIC'} PREVIEW ${localOrigin} — no ANU/OpenAI/Neon connections.`));
 async function stop() { server.close(); await vite.close(); process.exit(0); }
 process.once('SIGINT', stop); process.once('SIGTERM', stop);

@@ -22,19 +22,19 @@ function fakeClock() {
   };
 }
 
-function setup() {
+function setup({ quantumAccess = true } = {}) {
   const clock = fakeClock(), elements = new Map(), document = new EventTarget();
   document.hidden = false;
-  document.getElementById = id => { if (!elements.has(id)) elements.set(id, new EventTarget()); return elements.get(id); };
+  document.getElementById = id => { if (!elements.has(id)) elements.set(id, Object.assign(new EventTarget(), { attributes: {}, setAttribute(key, value) { this.attributes[key] = value; }, removeAttribute(key) { delete this.attributes[key]; } })); return elements.get(id); };
   let open = false, requests = 0, reading = {};
   const controller = createReadingRandom({
-    document, clock, getReading: () => reading, disclosures: { isOpen: () => open },
+    document, clock, quantumAccess, getReading: () => reading, disclosures: { isOpen: () => open, open: () => { open = true; } },
     client: { metadata: async () => { requests += 1; return { pool: { batchId: null, fetchedAt: null, total: 0, remaining: 0, collecting: false } }; } },
   });
   return {
     controller, clock, elements,
     reading(value) { reading = value; controller.update(); },
-    mode(value) { const toggle = document.getElementById('random-mode'); toggle.checked = value === 'quantum'; toggle.dispatchEvent(new Event('change')); },
+    mode(value) { const toggle = document.getElementById(value === 'quantum' ? 'random-mode' : 'random-mode-local'); toggle.checked = true; toggle.dispatchEvent(new Event('change')); },
     get requests() { return requests; },
     panel(value) { open = value; const event = new Event('reading:disclosurechange'); event.detail = { id: 'reading-random', open }; document.dispatchEvent(event); },
     visible(value) { document.hidden = !value; document.dispatchEvent(new Event('visibilitychange')); },
@@ -97,11 +97,36 @@ test('round source mark follows the applied reading, never next-round preference
   assert.equal(get('random-quantum-icon').hidden, false);
   ui.reading({ randomness: { source: 'local' } });
   ui.mode('quantum');
-  assert.equal(get('random-round-label').textContent, '普通随机');
+  assert.equal(get('random-round-label').textContent, '系统随机');
   assert.equal(get('random-quantum-icon').hidden, true);
   assert.equal(get('random-local-icon').hidden, false);
   ui.reading({});
   assert.equal(get('random-round-source').hidden, true);
   assert.equal(get('random-local-icon').hidden, true);
+  ui.controller.dispose();
+});
+
+
+test('visitor side choice keeps local decks available while quantum controls and polling stay blocked', async () => {
+  const ui = setup({ quantumAccess: false }), get = id => ui.elements.get(id);
+  assert.equal(ui.controller.state.mode, 'local');
+  assert.equal(get('random-mode-local').checked, true);
+  assert.equal(get('random-mode').checked, false);
+  assert.equal(get('random-lock').hidden, false);
+  assert.equal(get('random-access-hint').hidden, false);
+  assert.equal(get('random-mode').attributes['aria-describedby'], 'random-access-hint');
+  assert.equal(get('random-collect').hidden, true);
+  assert.equal(get('random-remaining').textContent, '验证后可见');
+  ui.mode('quantum');
+  assert.equal(ui.controller.state.mode, 'local');
+  assert.equal(get('random-mode').checked, false);
+  assert.equal(get('random-access-message').hidden, false);
+  ui.panel(true); ui.visible(false); ui.visible(true); ui.clock.advance(300000);
+  assert.equal(ui.requests, 0);
+  assert.equal(ui.clock.active, 0);
+  const deck = await ui.controller.prepareDeck();
+  assert.equal(deck.order.length, 78);
+  assert.equal(new Set(deck.order).size, 78);
+  assert.equal(deck.randomness.source, 'local');
   ui.controller.dispose();
 });

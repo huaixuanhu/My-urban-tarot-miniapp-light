@@ -40,14 +40,18 @@ export function createRandomClient(fetcher = fetch) {
 }
 
 /** No mount, mode switch or metadata read can collect entropy or create a deck. */
-export function createRandomSession({ client = createRandomClient(), storage, operationStorage, localDeck = generateLocalDeck, newId = () => crypto.randomUUID(), onChange = () => {} } = {}) {
-  let mode = read(storage, RANDOM_MODE_KEY) === 'local' ? 'local' : 'quantum';
+export function createRandomSession({ client = createRandomClient(), storage, operationStorage, localDeck = generateLocalDeck, newId = () => crypto.randomUUID(), onChange = () => {}, quantumAccess = true } = {}) {
+  // This controls local UI capability only. Hosted authorization stays server-owned.
+  const quantumAllowed = quantumAccess === true;
+  const accessMessage = '量子随机需要邮箱验证，验证入口稍后开放。';
+  const accessError = () => Object.assign(new Error(accessMessage), { code: 'QUANTUM_ACCESS_REQUIRED', definite: true });
+  let mode = !quantumAllowed || read(storage, RANDOM_MODE_KEY) === 'local' ? 'local' : 'quantum';
   let pending = null, pool = null, busy = false, prepared = null, message = '', disposed = false, revision = 0;
   try {
-    const saved = JSON.parse(read(operationStorage, RANDOM_OPERATION_KEY));
+    const saved = quantumAllowed ? JSON.parse(read(operationStorage, RANDOM_OPERATION_KEY)) : null;
     if (saved && uuid(saved.id) && ['collect', 'draw'].includes(saved.action)) pending = { id: saved.id, action: saved.action, status: 'unknown' };
   } catch { /* Invalid or missing saved handle does not authorize a request. */ }
-  const snapshot = () => ({ mode, pending: pending && { ...pending }, pool: pool && { ...pool }, busy, prepared: !!prepared, message });
+  const snapshot = () => ({ mode, quantumAccess: quantumAllowed, pending: pending && { ...pending }, pool: pool && { ...pool }, busy, prepared: !!prepared, message });
   const publish = () => { if (!disposed) onChange(snapshot()); };
   function setPending(value) { pending = value; write(operationStorage, RANDOM_OPERATION_KEY, value ? JSON.stringify({ id: value.id, action: value.action }) : null); }
   function acceptPool(value) {
@@ -75,6 +79,7 @@ export function createRandomSession({ client = createRandomClient(), storage, op
   }
   async function execute(action, recovering = false, resuming = false) {
     if (disposed || busy) throw new Error('正在处理，请稍候。');
+    if (!quantumAllowed) throw accessError();
     const reusing = recovering || resuming;
     if (!reusing && pending) throw new Error('请先查询上一笔量子操作，避免重复消耗。');
     if (recovering && !pending) return null;
@@ -98,9 +103,17 @@ export function createRandomSession({ client = createRandomClient(), storage, op
   }
   return {
     get state() { return snapshot(); },
-    setMode(value) { if (disposed || !modes.has(value)) return; mode = value; write(storage, RANDOM_MODE_KEY, mode); publish(); },
+    setMode(value) {
+      if (disposed || !modes.has(value)) return;
+      if (!quantumAllowed && value === 'quantum') { message = accessMessage; publish(); return false; }
+      mode = value;
+      if (quantumAllowed) write(storage, RANDOM_MODE_KEY, mode);
+      else message = '';
+      publish();
+      return true;
+    },
     async refresh() {
-      if (disposed || busy) return;
+      if (disposed || busy || !quantumAllowed) return;
       const at = revision;
       try { const result = await client.metadata(); if (!disposed && at === revision && !busy) { acceptPool(result.pool); publish(); } }
       catch (error) { if (!disposed && at === revision) { message = error.message; publish(); } }

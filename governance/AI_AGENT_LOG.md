@@ -1,5 +1,10 @@
 # Agent continuity log
 
+## 2026-10-30 — stage2.5.9.2 source selection and visitor foundation
+
+Executor: Codex (GPT-6), with scoped session/fixture agent and independent read-only integration review. Implement native side source choice, source/inventory help separation and requested headline. Retain only a local visitor capability/preview seam; the user expressly leaves actual gate/account design to a separate conversation. Visitor tests prove no member-store reads/writes or quantum dispatch; system decks remain usable.319-test aggregate passes. Browser verification covers pointer/keyboard choice, truthful provenance, warm high-angle lighting, visitor three-card draw/reveal and390px layout. Fixed a hidden accessible-description leak and a narrow reader/control overlap exposed by actual review. Fixture counters: main acquisitions stay3 (baseline3), AI0/records0; visitor all0.65 inherited file hashes unchanged. No real provider/cloud/access operation, push or deployment. Evidence: docs/design/stage2.5.9/README.md; local split commits authorized.
+
+
 ## 2026-10-30 — stage2.5.9.1 lighting and engraving
 
 Executor: Codex (GPT-6), with bounded scene implementation agent. Saved the user-accepted revision28 checkpoint9dae1d1f, then softened night glass response/existing light falloff and enriched a single procedural engraving. Integrated319-test aggregate, syntax, finite canvas operations and repeat-safe disposal checks pass. Actual Chromium default/high-angle views show broad warm halos with quiet peripheral motifs. No real provider/cloud/access change; local split commits authorized. Stage2.5.9.2 interaction changes remain a separate following slice.

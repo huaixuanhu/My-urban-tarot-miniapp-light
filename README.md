@@ -11,7 +11,7 @@ The accepted glass-table reading experience is the sole application. Its current
 - `pnpm build`: application output in `dist/public`, plus the existing Express fallback in `dist/index.js`.
 - `pnpm preview`: preview that built application locally. `pnpm start` runs the Express fallback.
 - For previous local bookmarks, `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs` serves the same client at port5174. Hosted `/reading.html` redirects to `/`.
-- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,58 AI tests,66 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
+- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,58 AI tests,70 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
 
 Local Vite/Express/Electron execution does not run the Vercel-specific identity gate. Do not use these local servers as a protected public host. Electron still points to `dist/public/index.html`; packaged desktop execution has not been qualified by this web replacement.
 
@@ -36,6 +36,8 @@ Local Vite/Express/Electron execution does not run the Vercel-specific identity 
 Vite development/preview intentionally returns a clear unconfigured response at `/api/records`; it does not bypass hosted identity or pretend browser storage is cloud storage. The records feature was published on2026-10-28. An authenticated formal-page save, direct database comparison and page-refresh history/detail readback passed with disposable synthetic content. Mimi's separate real login remains untested. Live resource and release status are owned solely by STATE.md stage2.5.1/stage2.5.3; bounded evidence is in [the release receipt](docs/design/stage2.5.3/README.md).
 
 `pnpm test:records` runs the synthetic contract/client checks. The optional real-database harness is `pnpm exec tsx scripts/check-records-neon.mjs --confirm-dedicated-validation-database`, with server-only `AUGURWELL_RECORDS_TEST_DATABASE_URL` and exact `AUGURWELL_RECORDS_TEST_EXPECTED_HOST`. It requires an existing empty dedicated table, uses synthetic identities/data, cleans only its exact fixtures and verifies the empty baseline. It is deliberately excluded from `check:all`.
+
+The table-side “下次洗牌” native radio group selects system or quantum randomness; the applied-round badge remains independent. Source help and shared-inventory mechanism help are separate. `createRandomSession({ quantumAccess: false })` is a local capability foundation only: system shuffling works, quantum reads/actions are denied, and member preference/recovery storage is untouched. It grants no hosted access. For the credential-free visitor rehearsal use `pnpm exec tsx scripts/preview-ai.mjs 5176 --visitor`; the fixture injects a local-only body marker and returns401 for protected APIs without a synthetic login. Actual public audience, account/email verification and server capability wiring are deferred to a separate conversation under STATE.md stage2.5.9.
 
 ## Development tools
 

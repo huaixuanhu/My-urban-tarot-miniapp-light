@@ -196,3 +196,34 @@
   .random-round-source { gap: 4px; font-size: 9px; }
   .random-round-source .quantum-mark { width: 19px; height: 19px; }
 }
+
+/* The next round is a small side choice, distinct from current-round provenance. */
+.random-choice { position: absolute; z-index: 2; top: 186px; left: 3.4%; width: max-content; max-width: 210px; pointer-events: auto; color: var(--ink); }
+.random-choice-heading { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 10px; letter-spacing: .08em; margin-bottom: 5px; }
+.random-choice-heading .help-trigger { width: 28px; height: 28px; min-height: 28px; }
+.random-choice-switch.fg-glass { display: flex; align-items: stretch; padding: 4px; margin: 0; border-radius: 999px; min-width: 0; width: max-content; color: var(--fgs-ink); }
+.random-choice-switch label { position: relative; z-index: 1; cursor: pointer; }
+.random-choice-switch label > span { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px; min-height: 36px; border-radius: 999px; font: 12px/1.2 var(--fgs-font-ui); color: var(--fgs-ink-muted); }
+.random-choice-switch .control-icon, .random-choice-switch .quantum-mark { width: 17px; height: 17px; }
+.random-choice-switch label:hover > span { background: rgb(from var(--fgs-ink) r g b / .05); }
+.random-choice-switch input:checked + span { background: var(--fgs-pearl); color: var(--fgs-on-pearl); box-shadow: var(--fgs-shadow-pearl); }
+.random-choice-switch input:focus-visible + span { outline: 2px solid var(--fgs-focus); outline-offset: 2px; }
+.random-lock { display: inline-flex; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.2; }
+.random-lock svg { width: 100%; height: 100%; }
+.random-access-hint { display: block; margin: 8px 0 0 5px; color: var(--muted); font-size: 10px; }
+.random-access-message { color: var(--ink); font: 13px/1.8 var(--fgs-font-ui); margin: 4px 0 16px; }
+.random-facts dt { display: flex; align-items: center; gap: 3px; }
+.glass-sheet .random-facts > div { grid-template-columns: 110px minmax(0, 1fr); }
+.is-resetting .random-choice { opacity: 0; pointer-events: none; }
+@media (max-width: 980px) { .random-choice { left: 3%; top: 166px; } }
+@media (max-width: 680px) {
+  .random-choice { left: 5%; top: 144px; max-width: 190px; }
+  .random-choice-switch label > span { padding-inline: 10px; }
+}
+@media (max-height: 600px) { .random-choice { top: 132px; } }
+@media (prefers-contrast: more) { .random-choice-switch.fg-glass { background: var(--fgs-solid); } }
+@media (max-width: 480px) {
+  .random-choice { width: 116px; max-width: 116px; }
+  .random-choice-switch.fg-glass { flex-direction: column; border-radius: 22px; }
+  .random-choice-switch label > span { justify-content: flex-start; min-height: 34px; }
+}
