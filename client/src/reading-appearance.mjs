@@ -1,5 +1,5 @@
-// Appearance is the only remembered preference. Card and reading state stay
-// entirely outside this controller.
+// This controller remembers the appearance mode. Card and reading state stay
+// entirely outside it; sheet material preferences have their own controller.
 export const APPEARANCE_STORAGE_KEY = 'augurwell.appearance';
 
 const normalize = value => value === 'light' || value === 'dark' ? value : 'system';

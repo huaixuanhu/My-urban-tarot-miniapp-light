@@ -1,0 +1,261 @@
+/* Adapted from huaixuanhu/My-design-system-collection, adc4f29fc8c471de49bfc7c08ccda8fe7a698868, systems/fluid-glass/project/components. See SOURCE.md. */
+/* 玻璃流体材质 · component styles. Classes are fg-*; material values come from the upstream token snapshot below.
+   The upstream generator is not installed here. This namespaced adapter is maintained with SOURCE.md provenance.
+   Colours take their alpha with relative colour syntax, rgb(from var(--fgs-x) r g b / a).
+   层（从下到上）：背后的内容 → 玻璃身体（模糊；第 1 级再加边带的折射）→ 压暗层和薄层 → 菲涅耳反光 → 发丝亮线 → 按下的光 → 内容。
+   面上没有渐变、内阴影、色散和焦散；轮廓线极淡。脚本 fluid-glass.js 可选：没有它时是第 0 级（纯 CSS），有它时按浏览器升到第 1 级。 */
+
+/* @tokens-start: upstream token snapshot, locally namespaced */
+:root, [data-theme="light"] { --fgs-canvas: #ECE7DF; --fgs-paper: #FBF9F5; --fgs-solid: #F7F4EF; --fgs-ink: #23201C; --fgs-ink-muted: #5E5850; --fgs-line: #23201C24; --fgs-focus: #23201C; --fgs-on-dim: #FFFFFF; --fgs-ink-on-light: #23201C; --fgs-ink-muted-on-light: #5E5850; --fgs-line-on-light: #23201C24; --fgs-veil-on-light: #FFFFFF; --fgs-ink-on-dark: #ECEEF2; --fgs-ink-muted-on-dark: #C9CED6; --fgs-line-on-dark: #ECEEF229; --fgs-veil-on-dark: #101218; --fgs-shade: #5A4B3C; --fgs-veil: #FFFFFF; --fgs-tint: #3A3028; --fgs-on-tint: #FFFFFF; --fgs-tint-flip: #E8ECF2; --fgs-on-tint-flip: #14171C; --fgs-reflect-sky: #FFFFFF; --fgs-reflect-ground: #78808E; --fgs-thread: #706456; --fgs-ring: #60564A57; --fgs-glow: #FFF7E6; --fgs-glass: #FFFDF8; --fgs-pearl-hi: #FFFFFF; --fgs-pearl: #F4F1EC; --fgs-pearl-lo: #E2DCD2; --fgs-on-pearl: #23201C; --fgs-iri-1: #FFC4D6; --fgs-iri-2: #BAD6FF; --fgs-lens-sky: #FBF9F4; --fgs-lens-ground: #D6D1C9; --fgs-lens-tint: #FFF7EB; --fgs-veil-a-0: .10; --fgs-veil-a-1: .30; --fgs-veil-a-2: .90; --fgs-hi-k: 1; --fgs-rf-k: .95; --fgs-lens-beam: 1; --fgs-shadow-paper: inset 0 1px 0 rgb(255 255 255 / .9), 0 0 0 1px rgb(90 75 60 / .05), .5px 1px 1px rgb(90 75 60 / .10), 6px 14px 22px -10px rgb(90 75 60 / .26), 16px 34px 46px -24px rgb(90 75 60 / .20); --fgs-shadow-pearl: inset 0 1px 0 rgb(255 255 255 / .95), inset 0 -1px 2px rgb(90 75 60 / .10), 0 1px 1.5px rgb(90 75 60 / .18), .5px 3px 7px -2px rgb(90 75 60 / .26); }
+[data-theme="moon"] { --fgs-canvas: #E6E9EE; --fgs-paper: #FAFBFD; --fgs-solid: #F4F6F9; --fgs-ink: #1C2129; --fgs-ink-muted: #545D6A; --fgs-line: #1C212924; --fgs-focus: #1C2129; --fgs-shade: #3C465A; --fgs-veil: #FFFFFF; --fgs-tint: #2C3646; --fgs-on-tint: #FFFFFF; --fgs-tint-flip: #E8ECF2; --fgs-on-tint-flip: #14171C; --fgs-thread: #5C687A; --fgs-ring: #48546852; --fgs-glow: #F4F9FF; --fgs-glass: #F8FBFF; --fgs-pearl-hi: #FFFFFF; --fgs-pearl: #F0F3F7; --fgs-pearl-lo: #DCE2EA; --fgs-on-pearl: #1C2129; --fgs-iri-1: #E8CAF0; --fgs-iri-2: #B0D4FF; --fgs-lens-sky: #F6F8FB; --fgs-lens-ground: #CCD1DB; --fgs-lens-tint: #F0F7FF; --fgs-veil-a-0: .10; --fgs-veil-a-1: .30; --fgs-veil-a-2: .90; --fgs-hi-k: 1; --fgs-rf-k: .95; --fgs-lens-beam: 1; --fgs-shadow-paper: inset 0 1px 0 rgb(255 255 255 / .9), 0 0 0 1px rgb(60 70 90 / .05), .5px 1px 1px rgb(60 70 90 / .10), 6px 14px 22px -10px rgb(60 70 90 / .26), 16px 34px 46px -24px rgb(60 70 90 / .20); --fgs-shadow-pearl: inset 0 1px 0 rgb(255 255 255 / .95), inset 0 -1px 2px rgb(60 70 90 / .10), 0 1px 1.5px rgb(60 70 90 / .18), .5px 3px 7px -2px rgb(60 70 90 / .26); }
+[data-theme="dark"] { --fgs-canvas: #111317; --fgs-paper: #1C1F25; --fgs-solid: #1E2127; --fgs-ink: #ECEEF2; --fgs-ink-muted: #A3AAB5; --fgs-line: #ECEEF224; --fgs-focus: #ECEEF2; --fgs-shade: #000000; --fgs-veil: #101218; --fgs-tint: #E8ECF2; --fgs-on-tint: #14171C; --fgs-tint-flip: #3A3028; --fgs-on-tint-flip: #FFFFFF; --fgs-thread: #C4CEDE; --fgs-ring: #FFFFFF4C; --fgs-glow: #C4D4F4; --fgs-glass: #FFFFFF; --fgs-pearl-hi: #F3F4F7; --fgs-pearl: #DADDE3; --fgs-pearl-lo: #BCC1CA; --fgs-on-pearl: #14171C; --fgs-iri-1: #ECCCF0; --fgs-iri-2: #B4D2FF; --fgs-lens-sky: #2B2E38; --fgs-lens-ground: #181B22; --fgs-lens-tint: #CCDBFF; --fgs-veil-a-0: .24; --fgs-veil-a-1: .46; --fgs-veil-a-2: .92; --fgs-hi-k: .75; --fgs-rf-k: .80; --fgs-lens-beam: .7; --fgs-shadow-paper: inset 0 1px 0 rgb(255 255 255 / .12), 0 0 0 1px rgb(0 0 0 / .3), .5px 1px 1px rgb(0 0 0 / .3), 6px 14px 22px -10px rgb(0 0 0 / .5), 16px 34px 46px -24px rgb(0 0 0 / .4); --fgs-shadow-pearl: inset 0 1px 0 rgb(255 255 255 / .95), inset 0 -1px 2px rgb(0 0 0 / .18), 0 1px 1.5px rgb(0 0 0 / .4), .5px 3px 7px -2px rgb(0 0 0 / .5); }
+:root { --fgs-veil-a-tint-min: .70; --fgs-veil-a-tint-0: .74; --fgs-veil-a-tint-1: .88; --fgs-veil-a-tint-2: .97; --fgs-dim-a: .35; --fgs-saturate: 1.05; --fgs-outline-a: .11; --fgs-contact-a: .08; --fgs-drop-a: .26; --fgs-busy-k: 1.9; --fgs-thick-k-thin: 1; --fgs-thick-k-mid: 1.6; --fgs-thick-k-thick: 2.4; --fgs-opacity-disabled: .48; --fgs-opacity-near: .5; --fgs-adapt-lum: .5; --fgs-adapt-busy: .04; --fgs-lens-n: 1.5; --fgs-lens-thin-w: 8px; --fgs-lens-thin-th: 6px; --fgs-lens-thin-d: 5px; --fgs-lens-mid-w: 16px; --fgs-lens-mid-th: 14px; --fgs-lens-mid-d: 11px; --fgs-lens-thick-w: 20px; --fgs-lens-thick-th: 18px; --fgs-lens-thick-d: 14px; --fgs-lens-thin-max: 64px; --fgs-lens-mid-max: 220px; --fgs-lens-pad: 24px; --fgs-lens-light: 225deg; --fgs-lens-key: 80; --fgs-lens-fill: 48; --fgs-blur-thin: 6px; --fgs-blur-mid: 10px; --fgs-blur-thick: 16px; --fgs-blur-fog-0: .25; --fgs-blur-fog-1: 1.8; --fgs-blur-fog-2: 2.5; --fgs-blur-edge: 14px; --fgs-radius-pill: 999px; --fgs-radius-menu: 18px; --fgs-radius-menu-item: 10px; --fgs-radius-sheet: 22px; --fgs-radius-card: 14px; --fgs-radius-card-art: 8px; --fgs-radius-scene: 26px; --fgs-space-1: 4px; --fgs-space-2: 8px; --fgs-space-3: 12px; --fgs-space-4: 16px; --fgs-space-5: 20px; --fgs-space-6: 24px; --fgs-space-7: 32px; --fgs-space-8: 48px; --fgs-dur-press-mouse: 140ms; --fgs-dur-release-mouse: 460ms; --fgs-dur-in-mouse: 160ms; --fgs-dur-spread-mouse: 420ms; --fgs-dur-out-mouse: 360ms; --fgs-dur-hold-mouse: 170ms; --fgs-dur-press-touch: 170ms; --fgs-dur-release-touch: 560ms; --fgs-dur-in-touch: 240ms; --fgs-dur-spread-touch: 650ms; --fgs-dur-out-touch: 560ms; --fgs-dur-hold-touch: 240ms; --fgs-dur-materialize: 380ms; --fgs-dur-dematerialize: 300ms; --fgs-dur-move: 340ms; --fgs-dur-fast: 160ms; --fgs-ease-out: cubic-bezier(.22, .7, .2, 1); --fgs-ease-spring: cubic-bezier(.34, 1.56, .64, 1); --fgs-press-grow: 1.03; --fgs-press-glow-thin: 170px; --fgs-press-glow-mid: 260px; --fgs-press-glow-thick: 360px; --fgs-materialize-from: .94; --fgs-font-serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif; --fgs-font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", sans-serif; }
+.fg-display { font-family: var(--fgs-font-serif); font-size: 44px; line-height: 48px; font-weight: 400; letter-spacing: .08em; }
+.fg-title { font-family: var(--fgs-font-serif); font-size: 24px; line-height: 32px; font-weight: 400; letter-spacing: .08em; }
+.fg-heading { font-family: var(--fgs-font-serif); font-size: 20px; line-height: 28px; font-weight: 400; letter-spacing: .06em; }
+.fg-tab { font-family: var(--fgs-font-serif); font-size: 17px; line-height: 24px; font-weight: 500; letter-spacing: .22em; }
+.fg-label { font-family: var(--fgs-font-serif); font-size: 16px; line-height: 20px; font-weight: 500; letter-spacing: .2em; }
+.fg-body-lg { font-family: var(--fgs-font-ui); font-size: 17px; line-height: 28px; font-weight: 400; }
+.fg-body { font-family: var(--fgs-font-ui); font-size: 15px; line-height: 24px; font-weight: 400; }
+.fg-meta { font-family: var(--fgs-font-ui); font-size: 13px; line-height: 20px; font-weight: 400; }
+.fg-eyebrow { font-family: var(--fgs-font-ui); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .1em; }
+/* @tokens-end */
+
+/* ---------- Base ---------- */
+
+:root, [data-theme="light"], [data-theme="moon"] { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
+
+:root {
+  /* 透明度滑块，标准在中间：0 透明、.5 标准（默认）、.75 加雾、1 近实色。减少透明度（系统设置）把下限提到 .75。
+     f1 走 0→.5，f2 走 .5→.75，f3 走 .75→1，各段线性。 */
+  --fg-fog: .5;
+  --fg-fog-min: 0;
+  --fg-fog-eff: max(var(--fg-fog), var(--fg-fog-min));
+  --fg-f1: min(calc(var(--fg-fog-eff) / .5), 1);
+  --fg-f2: min(max(calc((var(--fg-fog-eff) - .5) / .25), 0), 1);
+  --fg-f3: max(calc((var(--fg-fog-eff) - .75) / .25), 0);
+  --fg-spring: var(--fgs-ease-spring);
+}
+@media (prefers-reduced-transparency: reduce) { :root { --fg-fog-min: .75; } }
+
+
+.fg-vh { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.fg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.fg-ico { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+
+/* ---------- 材质：玻璃 ---------- */
+
+.fg-glass {
+  --fg-px: 50%;
+  --fg-py: 50%;
+  --fg-k-sh: 1;
+  --fg-dim: 0;
+  --fg-veil-boost: 0;
+  --fg-blur-base: var(--fgs-blur-thin);
+  --fg-k-th: var(--fgs-thick-k-thin);
+  --fg-gr: var(--fgs-press-glow-thin);
+  --fg-veil: var(--fgs-veil);
+  --fg-veil-min: 0;
+  --fg-veil-0: var(--fgs-veil-a-0);
+  --fg-veil-1: var(--fgs-veil-a-1);
+  --fg-veil-2: var(--fgs-veil-a-2);
+  --fg-veil-a: calc(var(--fg-veil-min) + (var(--fg-veil-0) - var(--fg-veil-min)) * var(--fg-f1) + (var(--fg-veil-1) - var(--fg-veil-0)) * var(--fg-f2) + (var(--fg-veil-2) - var(--fg-veil-1)) * var(--fg-f3) + var(--fg-veil-boost));
+  --fg-blur-k: calc(var(--fgs-blur-fog-0) + (1 - var(--fgs-blur-fog-0)) * var(--fg-f1) + (var(--fgs-blur-fog-1) - 1) * var(--fg-f2) + (var(--fgs-blur-fog-2) - var(--fgs-blur-fog-1)) * var(--fg-f3));
+  --fg-blur: calc(var(--fg-blur-base) * var(--fg-blur-k));
+  --fg-ink: var(--fgs-ink);
+  --fg-ink-muted: var(--fgs-ink-muted);
+  --fg-line: var(--fgs-line);
+  --fg-hi-k: var(--fgs-hi-k);
+  --fg-rf-k: var(--fgs-rf-k);
+  --fg-k: var(--fgs-press-grow);
+  /* 按下的时长：默认按鼠标，脚本按指针类型改写 */
+  --fg-t-press: var(--fgs-dur-press-mouse);
+  --fg-t-release: var(--fgs-dur-release-mouse);
+  --fg-t-in: var(--fgs-dur-in-mouse);
+  --fg-t-spread: var(--fgs-dur-spread-mouse);
+  --fg-t-out: var(--fgs-dur-out-mouse);
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  padding: 0;
+  color: var(--fg-ink);
+  background: transparent;
+  -webkit-backdrop-filter: blur(var(--fg-blur)) saturate(var(--fgs-saturate));
+  backdrop-filter: blur(var(--fg-blur)) saturate(var(--fgs-saturate));
+  /* 第 0 级的边：轮廓线极淡；左上一道发丝亮线、右下一道弱的；两色反光用带偏移的内阴影近似 */
+  box-shadow:
+    0 0 0 .6px rgb(from var(--fgs-shade) r g b / calc(var(--fgs-outline-a) * var(--fg-k-sh))),
+    0 1px 2px rgb(from var(--fgs-shade) r g b / calc(var(--fgs-contact-a) * var(--fg-k-sh))),
+    0 calc(6px * var(--fg-k-th)) calc(14px * var(--fg-k-th)) calc(-10px * var(--fg-k-th)) rgb(from var(--fgs-shade) r g b / calc(var(--fgs-drop-a) * var(--fg-k-sh))),
+    inset .6px .6px 0 rgb(255 255 255 / calc(.7 * var(--fg-hi-k))),
+    inset -.6px -.6px 0 rgb(255 255 255 / calc(.28 * var(--fg-hi-k))),
+    inset 3px 3px 7px -5px rgb(from var(--fgs-reflect-sky) r g b / calc(.55 * var(--fg-rf-k))),
+    inset -3px -3px 7px -5px rgb(from var(--fgs-reflect-ground) r g b / calc(.5 * var(--fg-rf-k)));
+  transition: transform var(--fg-t-release) var(--fg-spring), box-shadow var(--fgs-dur-fast) var(--fgs-ease-out);
+}
+.fg-glass--mid, .fg-glass[data-fg-thick="mid"] { --fg-blur-base: var(--fgs-blur-mid); --fg-k-th: var(--fgs-thick-k-mid); --fg-gr: var(--fgs-press-glow-mid); }
+.fg-glass--thick, .fg-glass[data-fg-thick="thick"] { --fg-blur-base: var(--fgs-blur-thick); --fg-k-th: var(--fgs-thick-k-thick); --fg-gr: var(--fgs-press-glow-thick); }
+.fg-glass[data-fg-under="busy"] { --fg-k-sh: var(--fgs-busy-k); }
+/* 小件随背后翻明暗：副本模式下脚本量出来，别的模式由产品标注 data-fg-on */
+.fg-glass[data-fg-on="light"] { --fg-ink: var(--fgs-ink-on-light); --fg-ink-muted: var(--fgs-ink-muted-on-light); --fg-line: var(--fgs-line-on-light); --fg-veil: var(--fgs-veil-on-light); --fg-veil-0: .10; --fg-veil-1: .30; --fg-veil-2: .90; --fg-hi-k: 1; }
+.fg-glass[data-fg-on="dark"] { --fg-ink: var(--fgs-ink-on-dark); --fg-ink-muted: var(--fgs-ink-muted-on-dark); --fg-line: var(--fgs-line-on-dark); --fg-veil: var(--fgs-veil-on-dark); --fg-veil-0: .24; --fg-veil-1: .46; --fg-veil-2: .92; --fg-hi-k: .8; --fg-rf-k: .8; }
+/* 清变体：身体不模糊、没有薄层；压在亮的图上时加压暗层，字用白色粗体。滑块从 .5 到 .75 退成常规（脚本在 :root 上标 data-fg-fog-high） */
+.fg-glass--clear, [data-fg-variant="clear"] .fg-glass { --fg-veil-min: 0; --fg-veil-0: 0; --fg-veil-1: 0; --fg-veil-2: 0; --fg-blur: calc(var(--fg-blur-base) * var(--fg-blur-k) * var(--fg-f2)); }
+[data-fg-dim] .fg-glass, .fg-glass[data-fg-dim] { --fg-dim: calc(var(--fgs-dim-a) * (1 - var(--fg-f2))); --fg-ink: var(--fgs-on-dim); --fg-ink-muted: rgb(255 255 255 / .84); --fg-line: rgb(255 255 255 / .22); font-weight: 600; }
+:root[data-fg-fog-high] [data-fg-dim] .fg-glass, :root[data-fg-fog-high] .fg-glass[data-fg-dim] { font-weight: inherit; --fg-ink: var(--fgs-ink); --fg-ink-muted: var(--fgs-ink-muted); --fg-line: var(--fgs-line); }
+:root[data-fg-fog-high] .fg-glass--clear, :root[data-fg-fog-high] [data-fg-variant="clear"] .fg-glass { --fg-veil-0: var(--fgs-veil-a-0); --fg-veil-1: var(--fgs-veil-a-1); --fg-veil-2: var(--fgs-veil-a-2); }
+/* 染色玻璃：只给一屏一个主要动作 */
+.fg-glass--tinted { --fg-veil: var(--fgs-tint); --fg-veil-min: var(--fgs-veil-a-tint-min); --fg-veil-0: var(--fgs-veil-a-tint-0); --fg-veil-1: var(--fgs-veil-a-tint-1); --fg-veil-2: var(--fgs-veil-a-tint-2); --fg-ink: var(--fgs-on-tint); --fg-ink-muted: var(--fgs-on-tint); }
+/* 染色玻璃翻转时薄层仍按染色的透明度走（自适应规则的 .24 会让字读不清）；只在和主题相反的底上翻：浅主题翻暗底，夜翻亮底 */
+.fg-glass--tinted[data-fg-on] { --fg-veil: var(--fgs-tint); --fg-ink: var(--fgs-on-tint); --fg-ink-muted: var(--fgs-on-tint); --fg-veil-min: var(--fgs-veil-a-tint-min); --fg-veil-0: var(--fgs-veil-a-tint-0); --fg-veil-1: var(--fgs-veil-a-tint-1); --fg-veil-2: var(--fgs-veil-a-tint-2); --fg-hi-k: var(--fgs-hi-k); }
+.fg-glass--tinted[data-fg-on="dark"] { --fg-veil: var(--fgs-tint-flip); --fg-ink: var(--fgs-on-tint-flip); --fg-ink-muted: var(--fgs-on-tint-flip); }
+[data-theme="dark"] .fg-glass--tinted[data-fg-on="dark"] { --fg-veil: var(--fgs-tint); --fg-ink: var(--fgs-on-tint); --fg-ink-muted: var(--fgs-on-tint); }
+[data-theme="dark"] .fg-glass--tinted[data-fg-on="light"] { --fg-veil: var(--fgs-tint-flip); --fg-ink: var(--fgs-on-tint-flip); --fg-ink-muted: var(--fgs-on-tint-flip); }
+
+/* 压暗层和薄层 */
+.fg-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(rgb(0 0 0 / var(--fg-dim)), rgb(0 0 0 / var(--fg-dim))),
+    rgb(from var(--fg-veil) r g b / var(--fg-veil-a));
+  transition: opacity var(--fgs-dur-fast) var(--fgs-ease-out);
+}
+/* 装饰层都在负的层级（玻璃自己是一个隔离的层叠上下文），所以文字和内容不用包元素就在上面 */
+
+/* 第 1 级（脚本插入的层）。lens：backdrop 模式下自己挂 backdrop-filter: url()，副本模式下里面是裁切 > 滤镜 > 副本三层。 */
+.fg-glass[data-fg-lens] { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.fg-glass[data-fg-lens] {
+  box-shadow:
+    0 0 0 .6px rgb(from var(--fgs-shade) r g b / calc(var(--fgs-outline-a) * var(--fg-k-sh))),
+    0 1px 2px rgb(from var(--fgs-shade) r g b / calc(var(--fgs-contact-a) * var(--fg-k-sh))),
+    0 calc(6px * var(--fg-k-th)) calc(14px * var(--fg-k-th)) calc(-10px * var(--fg-k-th)) rgb(from var(--fgs-shade) r g b / calc(var(--fgs-drop-a) * var(--fg-k-sh)));
+}
+.fg-glass__lens, .fg-glass__flat, .fg-glass__rf, .fg-glass__hi, .fg-glass__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fg-glass__lens, .fg-glass__flat { z-index: -3; }
+.fg-glass__rf, .fg-glass__hi, .fg-glass__glow { z-index: -1; }
+.fg-glass__f { position: absolute; inset: calc(-1 * var(--fgs-lens-pad)); display: block; }
+.fg-glass__lens i, .fg-glass__flat i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-color: var(--fgs-canvas);
+  background-image: var(--fg-env, none);
+  background-repeat: no-repeat;
+  background-size: var(--fg-ew, 100%) var(--fg-eh, 100%);
+  background-position: calc(-1 * var(--fg-ox, 0px) + var(--fgs-lens-pad)) calc(-1 * var(--fg-oy, 0px) + var(--fgs-lens-pad));
+  transform-origin: var(--fg-o-x, 50%) var(--fg-o-y, 50%);
+  transition: transform var(--fg-t-release) var(--fg-spring);
+}
+.fg-glass__flat { display: none; }
+.fg-glass__flat i { inset: calc(-1 * var(--fgs-lens-pad)); filter: blur(var(--fg-blur)); }
+[data-fg-mode="backdrop"] .fg-glass__flat { -webkit-backdrop-filter: blur(var(--fg-blur)) saturate(var(--fgs-saturate)); backdrop-filter: blur(var(--fg-blur)) saturate(var(--fgs-saturate)); }
+/* 菲涅耳反光和发丝亮线：脚本按尺寸生成的贴图 */
+.fg-glass__rf { opacity: var(--fg-rf-k); background: var(--fg-rf, none) center / 100% 100% no-repeat; }
+.fg-glass__hi { opacity: var(--fg-hi-k); background: var(--fg-hi, none) center / 100% 100% no-repeat; }
+/* 按下的光：光盘预先画好，用缩放铺开，只动合成器属性 */
+.fg-glass__glow { opacity: 0; transition: opacity var(--fg-t-out) var(--fgs-ease-out); }
+.fg-glass__glow i {
+  position: absolute;
+  left: var(--fg-px);
+  top: var(--fg-py);
+  width: calc(2 * var(--fg-gr));
+  height: calc(2 * var(--fg-gr));
+  margin: calc(-1 * var(--fg-gr)) 0 0 calc(-1 * var(--fg-gr));
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side, rgb(255 255 255 / .55), rgb(255 255 255 / .22) 45%, rgb(255 255 255 / 0) 100%);
+  transform: scale(0);
+  transition: transform var(--fg-t-spread) var(--fgs-ease-out);
+}
+.fg-glass--mid .fg-glass__glow i, .fg-glass[data-fg-thick="mid"] .fg-glass__glow i, .fg-glass--thick .fg-glass__glow i, .fg-glass[data-fg-thick="thick"] .fg-glass__glow i { background: radial-gradient(circle closest-side, rgb(255 255 255 / .40), rgb(255 255 255 / .14) 45%, rgb(255 255 255 / 0) 100%); }
+.fg-glass.is-pressed .fg-glass__glow { opacity: 1; transition-duration: var(--fg-t-in); }
+.fg-glass.is-pressed .fg-glass__glow i { transform: scale(1); }
+.fg-glass.is-near .fg-glass__glow { opacity: var(--fgs-opacity-near); transition-duration: var(--fg-t-in); }
+.fg-glass.is-near .fg-glass__glow i { transform: scale(.88); }
+/* 按下时玻璃片像被压开的一滴，略微胀开；松手弹回。副本模式下里层副本按倒数缩回去，背后的内容留在原地 */
+.fg-glass.is-pressed { transform: scale(var(--fg-k)); transition: transform var(--fg-t-press) var(--fgs-ease-out), box-shadow var(--fgs-dur-fast) var(--fgs-ease-out); }
+[data-fg-mode="copy"] .fg-glass.is-pressed .fg-glass__lens i, [data-fg-mode="copy"] .fg-glass.is-pressed .fg-glass__flat i { transform: scale(calc(1 / var(--fg-k))); transition: transform var(--fg-t-press) var(--fgs-ease-out); }
+[data-fg-mode="copy"][data-fg-engine="chromium"] .fg-glass.is-pressed .fg-glass__lens i, [data-fg-mode="copy"][data-fg-engine="chromium"] .fg-glass.is-pressed .fg-glass__flat i { will-change: transform; }
+/* 没有脚本时的按下：居中亮一下 */
+:root:not([data-fg-js]) .fg-glass:active { transform: scale(var(--fg-k)); transition-duration: var(--fg-t-press); }
+:root:not([data-fg-js]) .fg-glass::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 50%, rgb(255 255 255 / .45), rgb(255 255 255 / 0) 70%); transition: opacity var(--fg-t-out) var(--fgs-ease-out); }
+:root:not([data-fg-js]) .fg-glass:active::after { opacity: 1; transition-duration: var(--fg-t-in); }
+
+.fg-glass:focus { outline: none; }
+.fg-glass:focus-visible, .fg-glass.is-focus { outline: 2px solid var(--fgs-focus); outline-offset: 3px; }
+@media (hover: hover) { .fg-glass:hover:not(:disabled) { --fg-k-sh: 1.25; --fg-veil-boost: .04; } }
+.fg-glass.is-hover { --fg-k-sh: 1.25; --fg-veil-boost: .04; }
+.fg-glass.is-pressed.is-static .fg-glass__glow { opacity: 1; }
+.fg-glass.is-pressed.is-static .fg-glass__glow i { transform: scale(1); }
+/* 不可用：透明度只加在内容上。加在玻璃自己身上会让 backdrop-filter 看不到背后的内容 */
+.fg-glass:disabled { cursor: not-allowed; }
+.fg-glass:disabled > :not(.fg-glass__lens):not(.fg-glass__flat):not(.fg-glass__rf):not(.fg-glass__hi):not(.fg-glass__glow) { opacity: var(--fgs-opacity-disabled); }
+.fg-glass:disabled .fg-glass__glow { display: none; }
+
+/* ---------- 材质：珍珠 ---------- */
+
+.fg-pearl {
+  background:
+    radial-gradient(95% 125% at 30% -8%, rgb(255 255 255 / .95) 0%, rgb(255 255 255 / 0) 58%),
+    radial-gradient(70% 90% at 94% 118%, rgb(from var(--fgs-iri-1) r g b / .34) 0%, rgb(from var(--fgs-iri-1) r g b / 0) 70%),
+    radial-gradient(60% 80% at 2% 104%, rgb(from var(--fgs-iri-2) r g b / .30) 0%, rgb(from var(--fgs-iri-2) r g b / 0) 70%),
+    linear-gradient(180deg, var(--fgs-pearl-hi), var(--fgs-pearl) 58%, var(--fgs-pearl-lo));
+  box-shadow: var(--fgs-shadow-pearl);
+  color: var(--fgs-on-pearl);
+}
+/* 滑动的珍珠：脚本把它放到选中项下面；没有脚本时选中项自己是珍珠 */
+.fg-slide {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: var(--fg-pw, 0px);
+  transform: translateX(var(--fg-pxl, 0px));
+  border-radius: var(--fgs-radius-pill);
+  transition: none;
+}
+.fg-group.is-ready .fg-slide { transition: transform var(--fgs-dur-move) var(--fgs-ease-out), width var(--fgs-dur-move) var(--fgs-ease-out); }
+.fg-group:not(.is-ready) .fg-slide { display: none; }
+
+
+/* 珍珠按钮：面板上的次要动作，不叠玻璃 */
+.fg-pearl-btn {
+  height: 2.4em;
+  padding: 0 1.2em;
+  border: 0;
+  border-radius: var(--fgs-radius-pill);
+  font: 500 14px/1 var(--fgs-font-ui);
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: transform var(--fgs-dur-fast) var(--fg-spring);
+}
+.fg-pearl-btn:active { transform: scale(.97); }
+.fg-pearl-btn:focus-visible { outline: 2px solid var(--fgs-focus); outline-offset: 3px; }
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-glass, .fg-glass::before, .fg-glass::after, .fg-glass__glow, .fg-glass__glow i, .fg-glass__lens, .fg-glass__flat, .fg-glass__lens i, .fg-glass__flat i, .fg-glass__hi, .fg-glass__rf, .fg-menu, .fg-menu__item, .fg-slide, .fg-switch__knob, .fg-bead i { transition-duration: 1ms !important; }
+  .fg-glass.is-pressed, .fg-glass.is-pressed .fg-glass__lens i, .fg-glass.is-pressed .fg-glass__flat i, :root:not([data-fg-js]) .fg-glass:active { transform: none; }
+  .fg-menu, .fg-menu .fg-glass__lens i, .fg-menu .fg-glass__flat i { transform: none; }
+}
+/* 增强对比：玻璃变成实色加对比描边，不要折射、反光和发丝线 */
+@media (prefers-contrast: more) {
+  .fg-glass { --fg-veil-a: 1; --fg-veil: var(--fgs-veil); background: var(--fgs-solid); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 0 0 1.5px currentColor; }
+  .fg-glass--tinted { background: var(--fgs-tint); }
+  .fg-glass .fg-glass__lens, .fg-glass .fg-glass__flat, .fg-glass .fg-glass__hi, .fg-glass .fg-glass__rf { display: none; }
+}
+

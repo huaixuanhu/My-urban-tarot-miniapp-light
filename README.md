@@ -11,7 +11,7 @@ The accepted glass-table reading experience is the sole application. Its current
 - `pnpm build`: application output in `dist/public`, plus the existing Express fallback in `dist/index.js`.
 - `pnpm preview`: preview that built application locally. `pnpm start` runs the Express fallback.
 - For previous local bookmarks, `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs` serves the same client at port5174. Hosted `/reading.html` redirects to `/`.
-- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,58 AI tests,59 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
+- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,58 AI tests,65 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
 
 Local Vite/Express/Electron execution does not run the Vercel-specific identity gate. Do not use these local servers as a protected public host. Electron still points to `dist/public/index.html`; packaged desktop execution has not been qualified by this web replacement.
 
@@ -28,6 +28,8 @@ Local Vite/Express/Electron execution does not run the Vercel-specific identity 
 ## Shared records
 
 `reading-disclosures.mjs` owns More/list/records/AI sheet motion and focus. `reading-records.mjs` renders the form and history; `reading-record-data.mjs` freezes save attempts so retries keep the same identifier and content. Save requires at least one card and every drawn card revealed. Existing records are immutable snapshots; no edit/delete or cloud draft autosave is implemented.
+
+`reading-sheets.css` and `reading-sheet-material.mjs` own the shared panel presentation. More's transparency slider uses the existing fog parameter and remembers a0–100 preference under `augurwell.sheet-transparency` locally;32 restores the former default. Storage failure still permits in-session changes. `client/src/vendor/fluid-glass/` contains a pinned local material adapter from the user's design-system collection; its SOURCE.md records upstream identity, namespaced tokens, optical changes and browser fallback limits. It neither changes the 3D scene nor handles requests or saved reading data. Current local design/evidence: [stage2.5.6](docs/design/stage2.5.6/README.md).
 
 `api/records.ts` serves private GET/POST requests on Vercel. Every request verifies the existing signed Cloudflare identity before storage, and writes require the same origin. Both authorized users read the same collection; the author identifier is attribution only. The server reads `AUGURWELL_RECORDS_DATABASE_URL`; it is never bundled into client code. Apply `server/records/001-create-records.sql` explicitly only to the dedicated Augurwell database. Startup never runs schema changes.
 

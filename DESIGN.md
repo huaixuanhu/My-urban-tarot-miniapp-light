@@ -1,5 +1,27 @@
 # Urban Tarot design owner
 
+Current local candidate: revision26, stage2.5.6.1 adjustable sheet transparency, extending revision25's fluid-glass panels. The user explicitly selected the collection and then requested transparency adjustment; the resulting local appearance awaits user review. Revision24's quantum-source interface and earlier accepted gameplay remain unchanged. Current scope is owned by governance/STATE.md; the historical acceptance record follows.
+
+## stage2.5.6.1 — candidate revision26: adjustable transparency
+
+Parent: governance/STATE.md stage2.5.6.1, derived from revision25. More adds one native0–100 transparency slider, numeric feedback and a small restore-default button. Higher values mean clearer glass. Default32 retains the previous fog0.68; this is a relative material control, not a measured optical transmission percentage. Use the existing material engine to adjust fog/veil without fading text or the entire panel. All sheets share the value; long reading grounds and pearl controls remain unchanged.
+
+Save only this preference under `augurwell.sheet-transparency` in the current browser. A blocked/full store leaves session controls usable. Changing theme or panel keeps the choice; restore returns to32 and is disabled at that value. Native keyboard/mouse behavior and focus rings remain. Explanation lives in a question mark, including the retained system reduced-transparency override. Pointer updates are coalesced per frame and do not regenerate optical maps, modify the scene or issue requests. Local verification and screenshots extend [stage2.5.6](docs/design/stage2.5.6/README.md).
+
+## stage2.5.6 — candidate revision25: fluid-glass sheets
+
+Parent: governance/STATE.md stage2.5.6. Scope: More, records, AI and the related drawn-card/random-source sheets. Source: the user-named My-design-system-collection, inspected main adc4f29fc8c471de49bfc7c08ccda8fe7a698868, systems/fluid-glass/project. The selected source authorizes this bounded material adaptation, not a redesign of the table or a new product workflow.
+
+Use regular glass for the operating shell, a single opaque paper surface for reading/editing, and pearl for small controls within glass. More remains an airy menu; record and AI bodies share a stable readable ground. Keep native form labels, short cost hints, contextual question marks and existing failure/processing messages. Each form retains one primary action. Avoid nested glass cards, decorative gradients and continuous motion. Day maps to upstream sun; night maps to upstream night, without recoloring Urban Tarot artwork or adding an appearance choice.
+
+The glass face stays unpainted; refraction, reflection and highlights are confined to its rounded edge. Retain upstream optical maps and local live-backdrop displacement in supporting Chromium. Clip reflection/highlight maps to the bevel to remove a diagonal flat-face seam exposed by these larger panels. Other engines use the CSS blur/highlight fallback; a live WebGL room cannot use the source's static-image clone fallback. The local snapshot records its upstream identity and adaptations in client/src/vendor/fluid-glass/SOURCE.md.
+
+Sheets rise12px and materialize from94% scale over380ms; close over300ms. Transform only the shell and fade its content/optical child layers separately, because opacity on the glass or an ancestor would isolate its backdrop. Use untransformed layout dimensions for optical maps. Reduced motion settles immediately. Existing disclosure focus, Escape, outside-dismiss and explicit request controls remain authoritative.
+
+Shell radius22px, reading-ground radius14px; More width480px and reading forms660px, bounded by the viewport with internal scrolling. Heading24px and restrained spacing give the hierarchy without additional explanatory copy. Phone-width forms retain all inputs and scroll within the shell. This is local browser evidence, not a complete phone-accessibility or cross-browser qualification.
+
+Verification and rendered evidence: [stage2.5.6](docs/design/stage2.5.6/README.md). Three-card reveal, theme switching, one simulated AI result, local record save/history/detail and contextual-help dismissal were exercised. The original gameplay, database contracts, access checks, AI deduplication and quantum acquisition boundaries are unchanged. No new paid call, cloud write, commit, push or deployment is part of this slice.
+
 Accepted design revision: 20 (glass-size refinement; sole primary application under STATE.md stage2.4.18). Revision21 adds the More glass sheets and structured shared-record interface under stage2.5.1; its cloud save/readback was verified in stage2.5.3, while broader visual acceptance remains unclaimed. Revision22 adds optional AI interpretation under stage2.5.4; the user accepted its framework on2026-10-29 and requested quieter presentation. Revision23 implements that bounded refinement under stage2.5.4.4 and is accepted as a local checkpoint by the user on2026-10-29. Production activation remains unclaimed. Historical acceptance follows below; current scope belongs to governance/STATE.md.
 
 ## stage2.5.4.4 — accepted local revision23: quiet contextual help

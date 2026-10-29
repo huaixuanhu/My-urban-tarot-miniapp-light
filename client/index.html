@@ -14,6 +14,7 @@
     })();
   </script>
   <link rel="stylesheet" href="./src/reading.css" />
+  <link rel="stylesheet" href="./src/reading-sheets.css" />
 </head>
 <body>
   <header class="masthead">
@@ -61,6 +62,7 @@
             <div class="tool-group"><span class="tool-heading">挑牌</span><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">抽出这张</button></div></div>
             <div class="tool-group"><span class="tool-heading">摆放</span><div class="table-actions"><button id="return" disabled>放回牌带</button><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button></div></div>
             <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
+            <div class="tool-group glass-controls"><label class="tool-heading" for="glass-transparency">透明度</label><div class="glass-transparency-control"><input id="glass-transparency" type="range" min="0" max="100" step="1" value="32" aria-label="玻璃透明度" /><output id="glass-transparency-value" for="glass-transparency" aria-hidden="true">32%</output><button id="glass-transparency-reset" type="button" aria-label="恢复默认透明度" title="恢复默认透明度">↺</button><button type="button" data-help-label="玻璃透明度" data-help="向右更通透，向左更柔雾。只调整这些浮层的玻璃外壳，长文字的阅读底面保持清晰。设置记在当前浏览器；系统的减少透明效果设置仍会生效。">?</button></div></div>
           </div>
         </section>
       </details>

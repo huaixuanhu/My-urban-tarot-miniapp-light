@@ -1,5 +1,13 @@
 # Agent continuity log
 
+## 2026-10-29 — stage2.5.6.1 transparency control
+
+Executor: Codex (GPT-6), no delegation. Reuse the pinned material engine, add a native slider and separately stored local preference, with frame-coalesced input and storage-failure handling. Chromium confirms0/100 endpoints, pointer50%, keyboard70%, refresh persistence, default32 reset, retained question draft, opaque reading ground and390px no-overflow layout. Aggregate314 tests/runtime/build checks pass. This synthetic preview session issued no AI/random request and saved no record. No cloud/provider access, commit, push or deployment. Existing65 generated changes remain protected; evidence extends docs/design/stage2.5.6/README.md.
+
+## 2026-10-29 — stage2.5.6 local fluid-glass adoption
+
+Executor: Codex (GPT-6), no delegated agents. Read installed governance/design skills and current owners; inspect the user-named upstream main and pin adc4f29fc8c471de49bfc7c08ccda8fe7a698868. Adapt only panel materials/layout/motion. Remove the observed flat-center optical seam, preserve live-background sampling during animation and use layout-size maps. Aggregate314 tests, runtime checks and build pass. Chromium desktop and390px narrow views cover day/night, More navigation, three reveals, one synthetic AI generation and in-memory save/history/detail, plus help/Escape and reduced motion. Fixture counters: calls1, attempts1, records1, randomCalls0. No real provider or cloud write; current source remains uncommitted. Evidence and limits: docs/design/stage2.5.6/README.md; current owner STATE.md.
+
 ## 2026-10-29 — stage2.5.5.5 production quantum verification
 
 Executor: Codex (GPT-6),with a read-only source-invariant subagent. User explicitly authorized exactly one production1024-value acquisition and the complete quantum flow. Canonical authenticated browser collected once at08:56:03.983Z,shuffled once,drew/revealed three cards,saved labels/notes and refreshed into the exact shared record. SQL confirms one completed collect,one new completed draw,78 unique identities,78 Boolean orientations,155 consumed,869 remaining and whole-record source/orientation correspondence. Correct orientation index is physicalId,not draw order;fan presentation permits arbitrary choices. The synthetic record was removed using ID/hash/full-document equality;records0,AI rows0,inventory unchanged. No provider retry,AI call,configuration change or application edit. Current screenshots and receipts extend RELEASE.md;random-source work is complete. The user's AI embedding work belongs to another conversation.

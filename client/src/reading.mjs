@@ -10,6 +10,7 @@ import { createReadingCardFace } from './reading-art.mjs';
 import { readingCardLabel, createCardLoader, mayFinishReveal } from './reading-content.mjs';
 import { createReadingReader } from './reading-reader.mjs';
 import { createReadingDisclosures } from './reading-disclosures.mjs';
+import { createSheetMaterial } from './reading-sheet-material.mjs';
 import { createReadingRecords } from './reading-records.mjs';
 import { createReadingAI } from './reading-ai.mjs';
 import { createReadingRandom } from './reading-random.mjs';
@@ -545,7 +546,8 @@ $('reveal').addEventListener('click', event => {
 });
 $('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
 initializeInlineHelp(document);
-disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches });
+const sheetMaterial = createSheetMaterial(document, { storage: appearanceStorage });
+disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches, prepareSurface: panel => sheetMaterial.prepare(panel) });
 recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, disclosures });
 aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });
 let operationStorage;
@@ -577,6 +579,6 @@ document.addEventListener('visibilitychange', () => {
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
 }
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disposeHelpTips(document); disclosures?.dispose(); randomController?.dispose(); aiController?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disposeHelpTips(document); disclosures?.dispose(); sheetMaterial.dispose(); randomController?.dispose(); aiController?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 startReading().catch(fail);
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

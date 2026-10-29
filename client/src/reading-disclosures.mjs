@@ -1,5 +1,5 @@
 /** Shared, nonmodal glass sheets. Reading state and record storage stay outside. */
-export function createReadingDisclosures({ document, reducedMotion = () => false }) {
+export function createReadingDisclosures({ document, reducedMotion = () => false, prepareSurface = () => {} }) {
   const $ = id => document.getElementById(id);
   const definitions = [
     ['table-tools', 'tools-toggle'],
@@ -10,7 +10,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
   ];
   const sheets = new Map(definitions.map(([id, triggerId]) => [id, {
     element: $(id), panel: $(id)?.querySelector('.glass-sheet'), trigger: $(triggerId),
-    state: 'closed', animation: null,
+    state: 'closed', animation: null, layers: [],
   }]).filter(([, entry]) => entry.element && entry.panel));
   const cleanups = [];
   let disposed = false;
@@ -26,6 +26,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
 
   function settle(entry, visible) {
     entry.animation?.cancel(); entry.animation = null;
+    entry.layers.forEach(animation => animation.cancel()); entry.layers = [];
     entry.element.open = visible;
     entry.panel.inert = !visible;
     entry.state = visible ? 'open' : 'closed';
@@ -34,14 +35,21 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
 
   function animate(entry, visible) {
     entry.animation?.cancel(); entry.animation = null;
+    entry.layers.forEach(animation => animation.cancel()); entry.layers = [];
     if (noMotion() || typeof entry.panel.animate !== 'function') { settle(entry, visible); return; }
     entry.state = visible ? 'opening' : 'closing';
     entry.panel.dataset.motion = entry.state;
-    const resting = { transform: 'translate(-50%, 0) scale(1)', opacity: 1 };
-    const tucked = { transform: 'translate(-50%, 22px) scale(.985)', opacity: 0 };
+    // Opacity on the glass itself creates a backdrop root and hides the room
+    // from its refraction. Materialize only its content/optical child layers.
+    const resting = { transform: 'translate(-50%, 0) scale(1)' };
+    const tucked = { transform: 'translate(-50%, 12px) scale(.94)' };
+    const timing = { duration: visible ? 380 : 300, easing: 'cubic-bezier(.22,.7,.2,1)', fill: 'both' };
     const animation = entry.panel.animate(visible ? [tucked, resting] : [resting, tucked], {
-      duration: visible ? 260 : 210, easing: visible ? 'cubic-bezier(.2,.75,.25,1)' : 'cubic-bezier(.4,0,.7,.3)', fill: 'both',
+      ...timing,
     });
+    for (const layer of entry.panel.querySelectorAll(':scope > .sheet-heading, :scope > .sheet-content, :scope > .fg-glass__lens, :scope > .fg-glass__rf, :scope > .fg-glass__hi')) {
+      if (typeof layer.animate === 'function') entry.layers.push(layer.animate({ opacity: visible ? [0, 1] : [1, 0] }, timing));
+    }
     entry.animation = animation;
     animation.finished.then(() => {
       if (!disposed && entry.animation === animation) settle(entry, visible);
@@ -74,6 +82,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     entry.element.open = true;
     entry.panel.inert = false;
     entry.trigger?.setAttribute('aria-expanded', 'true');
+    prepareSurface(entry.panel);
     animate(entry, true);
     const focus = id === 'drawn-cards'
       ? $('placed-list')?.querySelector('button') || entry.panel.querySelector('h2')

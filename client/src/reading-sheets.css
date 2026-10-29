@@ -1,0 +1,145 @@
+@import './vendor/fluid-glass/material.css';
+
+/* Scoped adoption: the world, optical dock and original artwork retain their
+   established palette. These tokens belong only to the floating sheets. */
+.glass-sheet.fg-glass {
+  --ink: var(--fgs-ink);
+  --muted: var(--fgs-ink-muted);
+  --line: var(--fgs-line);
+  --focus: var(--fgs-focus);
+  --selected: var(--fgs-ink);
+  --hover: rgb(from var(--fgs-veil) r g b / .24);
+  --quiet-fill: rgb(from var(--fgs-ink) r g b / .06);
+  --fg-veil-boost: 0;
+  position: absolute;
+  padding: 0;
+  border-radius: var(--fgs-radius-sheet);
+  color: var(--ink);
+  font: 14px/1.7 var(--fgs-font-ui);
+  width: min(480px,calc(100vw - 40px));
+}
+.glass-sheet.fg-glass:hover { --fg-k-sh: 1; --fg-veil-boost: 0; }
+.glass-sheet-records.fg-glass, .glass-sheet-ai.fg-glass { width: min(660px,calc(100vw - 40px)); }
+.glass-sheet > .sheet-heading, .glass-sheet > .sheet-content { position: relative; z-index: 1; }
+.glass-sheet > .sheet-heading { align-items: center; padding: 24px 28px 20px; border: 0; gap: 16px; }
+.sheet-heading h2 { margin: 0; font: 400 24px/1.4 var(--fgs-font-serif); letter-spacing: .08em; }
+.sheet-title-line { gap: 8px; }
+.sheet-back { font-size: 12px; margin: -4px 0 8px -6px; min-height: 28px; padding: 2px 6px; }
+.glass-sheet .sheet-close { width: 36px; height: 36px; min-height: 36px; padding: 0; margin: 0; border-radius: 50%; font: 22px/1 var(--fgs-font-ui); }
+.glass-sheet .sheet-close:hover { background: var(--fgs-pearl-hi); }
+.glass-sheet .sheet-content { padding: 4px 24px 24px; scrollbar-gutter: stable; scrollbar-color: rgb(from var(--fgs-ink) r g b / .22) transparent; }
+
+/* Reading/editing gets one quiet paper surface, not nested glass cards. */
+.glass-sheet #ai-body, .glass-sheet #records-body {
+  margin: 0 12px 12px;
+  padding: 24px;
+  border-radius: var(--fgs-radius-card);
+  background: var(--fgs-paper);
+  box-shadow: inset 0 1px 0 rgb(from var(--fgs-reflect-sky) r g b / .14), 0 1px 4px rgb(from var(--fgs-shade) r g b / .06);
+}
+.glass-sheet .record-field { font-size: 13px; margin-bottom: 20px; }
+.glass-sheet .record-field textarea, .glass-sheet .record-field input, .glass-sheet .record-card-fields input,
+.glass-sheet .ai-setting select, .glass-sheet .ai-setting input, .glass-sheet .ai-spread-preview input {
+  background: var(--fgs-solid);
+  border: 1px solid rgb(from var(--fgs-ink) r g b / .13);
+  border-radius: 10px;
+  box-shadow: none;
+  color: var(--ink);
+  font: 13px/1.7 var(--fgs-font-ui);
+  min-height: 44px;
+  padding: 10px 12px;
+}
+.glass-sheet .record-field textarea { margin-top: 8px; min-height: 88px; padding: 12px 14px; line-height: 1.8; }
+.glass-sheet textarea::placeholder, .glass-sheet input::placeholder { color: var(--muted); opacity: .86; }
+.glass-sheet .ai-setting option { background: var(--fgs-paper); }
+.glass-sheet .record-primary {
+  min-height: 48px; margin-top: 16px; padding: 12px 20px;
+  border: 0; border-radius: var(--fgs-radius-pill);
+  background: var(--fgs-tint); color: var(--fgs-on-tint); box-shadow: 0 2px 5px rgb(from var(--fgs-shade) r g b / .12);
+  font: 500 15px/1.6 var(--fgs-font-serif); letter-spacing: .08em;
+  transition: transform 160ms ease, background 160ms ease;
+}
+.glass-sheet .record-primary:hover:not(:disabled) { background: color-mix(in srgb,var(--fgs-tint),var(--fgs-ink-muted) 18%); }
+.glass-sheet .record-primary:active:not(:disabled) { transform: scale(.985); }
+.glass-sheet button:disabled { opacity: .42; }
+.glass-sheet .record-primary:disabled { background: var(--fgs-solid); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); opacity: .8; }
+.glass-sheet .record-intro { margin-bottom: 16px; font-size: 12px; }
+.glass-sheet .record-card-fields li { display: grid; grid-template-columns: minmax(0,1fr) minmax(140px,.85fr); align-items: center; gap: 16px; padding: 12px 0; }
+.glass-sheet .record-card-fields input { margin: 0; }
+.glass-sheet .ai-spread-preview li { padding: 12px 0; }
+.glass-sheet .ai-settings { gap: 16px; margin: 20px 0 12px; }
+.glass-sheet .ai-setting { font-size: 12px; }
+.glass-sheet .ai-cost-row { margin: 12px 0 0; }
+.glass-sheet .ai-cost-hint, .glass-sheet .record-save-hint { font-size: 12px; }
+.glass-sheet .record-navigation { gap: 4px; padding: 0 0 24px; }
+.glass-sheet .record-navigation button { min-height: 40px; font-size: 13px; padding: 8px 20px; color: var(--muted); }
+.glass-sheet .record-navigation button[aria-pressed="true"] { background: var(--fgs-pearl); color: var(--fgs-on-pearl); box-shadow: var(--fgs-shadow-pearl); }
+.glass-sheet .record-history-row { padding: 20px 4px; gap: 8px; }
+.glass-sheet .record-history-row:hover { background: var(--fgs-solid); }
+.glass-sheet .record-history-row strong { font: 400 19px/1.6 var(--fgs-font-serif); }
+.glass-sheet .record-history-row small, .glass-sheet .record-date { font-size: 12px; }
+.glass-sheet .record-prose, .glass-sheet .record-saved-cards p { font-size: 15px; line-height: 1.9; }
+.glass-sheet .ai-answer h3, .glass-sheet .record-detail h3 { font: 400 24px/1.6 var(--fgs-font-serif); }
+.glass-sheet .ai-answer h4, .glass-sheet .record-detail h4 { font-size: 14px; }
+.glass-sheet .record-spread { background: var(--fgs-solid); }
+.glass-sheet .record-status { font-size: 13px; }
+
+/* More stays an airy operating layer: quiet rows, one family of pearl controls. */
+.glass-sheet .sheet-links { gap: 4px; padding: 0 0 20px; margin: 0 0 12px; }
+.glass-sheet .sheet-link { grid-template-columns: 28px 1fr 20px; min-height: 56px; padding: 10px 12px; border-radius: 10px; gap: 16px; }
+.glass-sheet .sheet-link strong { font-size: 15px; letter-spacing: .04em; }
+.glass-sheet .sheet-link > span:last-child { font-size: 18px; opacity: .7; }
+.glass-sheet .sheet-link-icon svg { width: 22px; height: 22px; stroke-width: 1.6; }
+.glass-sheet .sheet-link:hover { background: rgb(from var(--fgs-veil) r g b / .28); }
+.glass-sheet .tool-group { flex-wrap: nowrap; gap: 12px; padding: 8px 0; align-items: center; }
+.glass-sheet .tool-heading { min-width: 28px; font-size: 12px; }
+.glass-sheet .tool-group button { padding: 8px 10px; min-height: 36px; border-radius: 999px; }
+.glass-sheet .deck-navigation { gap: 0; flex-wrap: nowrap; }
+.glass-sheet .deck-navigation > span { min-width: 86px; font-size: 12px; }
+.glass-sheet #place, .glass-sheet .table-actions button:not(:disabled), .glass-sheet .zoom-controls button,
+.glass-sheet .deck-navigation > button:not(#place), .glass-sheet #placed-list button {
+  background: var(--fgs-pearl); color: var(--fgs-on-pearl); box-shadow: var(--fgs-shadow-pearl);
+}
+.glass-sheet #place { margin-left: 12px; padding-inline: 14px; }
+.glass-sheet .table-actions { gap: 8px; }
+.glass-sheet .zoom-controls { gap: 2px; }
+.glass-sheet .zoom-controls button { width: 32px; min-height: 32px; padding: 4px; }
+.glass-sheet .view-controls { gap: 16px; }
+.glass-sheet .view-controls label { font-size: 12px; }
+.glass-sheet .glass-controls .tool-heading { min-width: 42px; }
+.glass-sheet .glass-transparency-control { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.glass-sheet .glass-transparency-control output { min-width: 4ch; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.glass-sheet #glass-transparency { appearance: none; -webkit-appearance: none; flex: 1; min-width: 60px; width: 100%; height: 36px; margin: 0; background: transparent; cursor: pointer; }
+.glass-sheet #glass-transparency::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(to right, var(--muted) var(--glass-progress),var(--line) var(--glass-progress)); }
+.glass-sheet #glass-transparency::-moz-range-track { height: 4px; border-radius: 999px; background: var(--line); }
+.glass-sheet #glass-transparency::-moz-range-progress { height: 4px; border-radius: 999px; background: var(--muted); }
+.glass-sheet #glass-transparency::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border: 1px solid var(--line); border-radius: 50%; background: var(--fgs-pearl); box-shadow: var(--fgs-shadow-pearl); }
+.glass-sheet #glass-transparency::-moz-range-thumb { width: 20px; height: 20px; border: 1px solid var(--line); border-radius: 50%; background: var(--fgs-pearl); box-shadow: var(--fgs-shadow-pearl); }
+.glass-sheet #glass-transparency:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 999px; }
+.glass-sheet #glass-transparency-reset { flex-shrink: 0; width: 32px; min-height: 32px; padding: 0; background: var(--fgs-pearl); color: var(--fgs-on-pearl); box-shadow: var(--fgs-shadow-pearl); }
+.glass-sheet .glass-transparency-control [data-help] { flex-shrink: 0; width: 18px; height: 18px; min-height: 18px; padding: 0; }
+.glass-sheet .random-mode { font-size: 14px; }
+.glass-sheet .random-facts { margin-block: 24px; }
+.glass-sheet .random-facts > div { padding-block: 16px; font-size: 13px; }
+.glass-sheet #placed-list { padding-top: 8px; gap: 12px; }
+.glass-sheet #placed-list button { border: 0; padding-inline: 16px; border-radius: 999px; }
+.glass-sheet #placed-list button[aria-pressed="true"] { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+@media (max-width: 700px) {
+  .glass-sheet.fg-glass { width: calc(100vw - 24px); max-height: calc(100svh - var(--popover-bottom,144px) - 32px); }
+  .glass-sheet > .sheet-heading { padding: 20px 20px 16px; }
+  .sheet-heading h2 { font-size: 22px; }
+  .glass-sheet .sheet-content { padding: 4px 16px 20px; }
+  .glass-sheet #ai-body, .glass-sheet #records-body { margin: 0 8px 8px; padding: 18px 16px; }
+  .glass-sheet .record-card-fields li { grid-template-columns: 1fr; gap: 8px; }
+  .glass-sheet .ai-settings { gap: 12px; }
+  .glass-sheet .tool-group { gap: 8px; }
+  .glass-sheet .deck-navigation > span { min-width: 74px; }
+  .glass-sheet #place { margin-left: 8px; padding-inline: 10px; }
+  .glass-sheet .view-controls { gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .glass-sheet .record-primary { transition: none; } }
+@media (prefers-contrast: more) {
+  .glass-sheet.fg-glass { background: var(--fgs-solid); }
+  .glass-sheet button:disabled { opacity: 1; color: var(--muted); }
+}

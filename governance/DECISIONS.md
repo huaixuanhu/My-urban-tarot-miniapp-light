@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-10-29 — adopt the selected fluid-glass system for sheets
+
+The user explicitly requests the latest systems/fluid-glass from My-design-system-collection for More, records and AI. Pin inspected main adc4f29fc8c471de49bfc7c08ccda8fe7a698868 locally; preserve its separation of regular glass shells, paper reading ground and pearl controls. Keep the live table/dock and all application behavior. Adapt only theme/token names, module packaging, map sizing and the large-panel flat-face seam; document source/fallbacks. Local implementation and synthetic checks are authorized; this does not activate AI, acquire randomness, write cloud data or release the application. Visual acceptance remains with the user.
+
 ## 2026-10-26 — preserve scene colors while adding clear controls
 
 The fixed control lens renders after the existing scene and samples its already-rendered pixels, rather than rendering every object into a new globally tone-mapped pipeline. This preserves the distinction between original unlit card faces and lit surroundings. The physical control mesh is no longer rendered; its framing extent stays unchanged to avoid a camera change. The lower-center position was explicitly confirmed by the user.

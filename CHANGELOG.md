@@ -1,5 +1,13 @@
 # Change history
 
+## 2026-10-29 — adjustable local sheet transparency
+
+Add More's glass transparency slider, shared live response, current-browser preference and restore-default control. Preserve readable paper/pearl surfaces, the table and all provider/data behavior.314 aggregate tests/build and desktop/narrow browser checks pass; no commit or release.
+
+## 2026-10-29 — local fluid-glass panels
+
+Apply the user-selected fluid-glass system to More, records, AI and related sheets with edge optics, pearl controls, stable paper reading surfaces and matching day/night tokens. Preserve gameplay and all request/data behavior.314 automated checks and a synthetic browser reading/save flow pass. Appearance is a local candidate awaiting review; no paid acquisition/generation, cloud write, commit, push or deployment.
+
 ## 2026-10-29 — production quantum flow verified
 
 One explicitly authorized hosted ANU acquisition returned1024 valid values. The quantum shuffle consumed155 and retained869;three-card reveal/save/refresh preserved identities,orientations,positions,labels and complete source metadata. Exact test-record cleanup restored the baseline while retaining operation receipts and inventory. No runtime source or AI change. Evidence:docs/random/stage2.5.5/RELEASE.md.
