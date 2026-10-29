@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-29 — local shared quantum randomness
+
+Add a two-user shared1024-value pool, manual ANU acquisition, next-shuffle random mode switch, last-receipt/remaining display and saved source metadata. Preserve tables on shortage/failure/toggle/refresh. Unbiased source conversion, atomic consumption and stable operation recovery receive exhaustive math, local SQL and browser fixture checks. No cloud migration, key activation, live ANU call, push or deployment. Evidence: docs/random/stage2.5.5/README.md.
+
 ## 2026-10-29 — local optional AI interpretation
 
 Add user-invoked Terra/Sol interpretation with a user-written question, framework-only system instructions, strength/token choices and broad cost hints. Preserve a fixed submitted snapshot, distinguish incomplete/unknown outcomes, and prevent duplicate generation through UI locking, durable same-ID claiming and explicit paid-repeat confirmation. Shared records can separately attach matching server-owned AI results.233 tests and aggregate checks pass; six synthetic live API calls complete (token-rate estimateUSD0.050209). Browser mock save/readback/export and isolated local SQL probes pass. Production schema/key activation, user visual acceptance, commit/push/deployment remain pending; see STATE.md stage2.5.4.

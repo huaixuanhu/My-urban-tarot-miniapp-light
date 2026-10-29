@@ -1,3 +1,4 @@
+import { randomSourceLabel } from '../../shared/random-provenance.mjs';
 import { readingCard } from './reading-content.mjs';
 import { readingCardImage } from './reading-art.mjs';
 import { captureRecord, createSaveAttempt, createRecordsClient } from './reading-record-data.mjs';
@@ -149,6 +150,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
       if (disposed || request !== detailRequest) return;
       detail.replaceChildren(button('← 返回记录', () => { show('history'); historyTab.focus({ preventScroll: true }); }, 'record-back'));
       detail.append(el('p', `${date(record.savedAt)} · ${record.spread.name} · ${record.cards.length} 张`, 'record-intro'), el('h3', record.question || '未命名的占卜'));
+      detail.append(el('p', randomSourceLabel(record.randomness) + (record.randomness?.source === 'anu' ? ` · 获取于 ${date(record.randomness.fetchedAt)} · 消耗 ${record.randomness.consumed} 个` : ''), 'record-intro'));
       const map = el('div', '', 'record-spread'); map.setAttribute('aria-label', '保存时的牌阵位置');
       const cards = [...record.cards].sort((a, b) => a.drawOrder - b.drawOrder);
       // Fixed table-relative coordinates retain relative placement and overlap.

@@ -6,6 +6,10 @@ export async function createNeonRecordStore(connectionString) {
   const { neon } = await import('@neondatabase/serverless');
   const sql = neon(connectionString);
   return {
+    async getRandomDraw(id) {
+      const rows = await sql`SELECT document FROM augurwell_random_operations WHERE id = ${id}::uuid AND action = 'draw' AND status = 'completed'`;
+      return rows[0]?.document ?? null;
+    },
     async getAIInterpretations(ids) {
       const rows = await sql`SELECT document FROM augurwell_ai_interpretations WHERE id = ANY(${ids}::uuid[])`;
       return rows.map(row => row.document);

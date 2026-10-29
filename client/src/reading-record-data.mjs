@@ -6,6 +6,7 @@ export function captureRecord(reading, { id, startedAt, question = '', interpret
   if (!cards.length || cards.some(card => !card.faceUp)) throw new Error('请先翻开桌上的牌，再保存这次占卜。');
   return {
     schemaVersion: 1, id, startedAt, question, interpretation, reflection,
+    ...(reading.randomness ? { randomness: structuredClone(reading.randomness) } : {}),
     spread: { type: 'free', name: '自由摆牌' },
     cards: cards.map(card => ({
       physicalId: card.id, sourceCardId: readingCard(card.id).id, faceUp: true,

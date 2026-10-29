@@ -6,6 +6,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     ['drawn-cards', 'drawn-toggle'],
     ['reading-records', 'records-toggle'],
     ['reading-ai', 'ai-toggle'],
+    ['reading-random', 'random-toggle'],
   ];
   const sheets = new Map(definitions.map(([id, triggerId]) => [id, {
     element: $(id), panel: $(id)?.querySelector('.glass-sheet'), trigger: $(triggerId),

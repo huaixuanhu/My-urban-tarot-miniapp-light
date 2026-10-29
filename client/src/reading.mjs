@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CARD_COUNT, shuffleDeck } from './motion.mjs';
+import { CARD_COUNT } from './motion.mjs';
 import { createReadingReset, sampleReadingResetPose, READING_RESET_DURATION_MS as RESET_DURATION_MS, readingShuffleProgressAt as shuffleProgressAt } from './reading-reset.mjs';
 import { createCardGeometry, applyCardFlex } from './card-geometry.mjs';
 import { sampleFlex } from './flex.mjs';
@@ -12,6 +12,7 @@ import { createReadingReader } from './reading-reader.mjs';
 import { createReadingDisclosures } from './reading-disclosures.mjs';
 import { createReadingRecords } from './reading-records.mjs';
 import { createReadingAI } from './reading-ai.mjs';
+import { createReadingRandom } from './reading-random.mjs';
 import { initializeInlineHelp, disposeHelpTips } from './reading-help.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
 import { createReadingProjection } from './reading-projection.mjs';
@@ -32,14 +33,14 @@ const smooth = t => { const u = clamp(t, 0, 1); return u * u * u * (u * (u * 6 -
 const mixPose = (a, b, t) => Object.fromEntries(['x', 'y', 'z', 'rx', 'ry', 'rz'].map(key => [key, a[key] + (b[key] - a[key]) * t]));
 // The original shuffle interleaves its two halves before opening the fan.
 const interleaved = order => Array.from({ length: CARD_COUNT }, (_, i) => order[i % 2 === 0 ? i / 2 : 39 + (i - 1) / 2]);
-function freshReading(order = shuffleDeck(ids)) {
-  const bytes = crypto.getRandomValues(new Uint8Array(CARD_COUNT));
-  return createReading({ order: interleaved(order), reversed: [...bytes].map(byte => byte < 128) });
+function freshReading(deck) {
+  return { ...createReading({ order: interleaved(deck.order), reversed: deck.reversed }), randomness: structuredClone(deck.randomness) };
 }
-let reading = freshReading();
+// An unprepared table is visual staging only; it cannot supply drawable cards.
+let reading = createReading(), readingReady = false, preparingReset = false;
 let readingFan = createReadingFan(reading.order);
 let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass;
-let appearanceController, disclosures, recordsController, aiController;
+let appearanceController, disclosures, recordsController, aiController, randomController;
 let scheduled = 0, failed = false, disposed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
 const flips = new Map(), currentPoses = new Map(), pendingReveals = new Map();
@@ -69,9 +70,11 @@ function texture(canvas) {
   result.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   return result;
 }
+const tableBusy = () => !!reset || preparingReset || failed;
 const isOpened = card => !!card?.faceUp && !flips.has(card.id);
 function invalidate() { if (!scheduled && !failed && !document.hidden) scheduled = requestAnimationFrame(frame); }
 function dispatch(action) {
+  if (tableBusy() || !readingReady) return false;
   const before = reading;
   reading = reduceReading(reading, action);
   if (reading === before) return false;
@@ -89,16 +92,19 @@ function announce(text) {
 }
 function updateUI() {
   recordsController?.update();
+  randomController?.update();
+  $('records-body').inert = preparingReset || !!reset;
+  $('ai-body').inert = preparingReset || !!reset;
   const placed = placedInOrder(), opened = placed.filter(isOpened).length;
   const selected = reading.placed[reading.selectedId];
-  const busy = !!reset || failed;
+  const busy = tableBusy();
   $('table').classList.toggle('is-resetting', !!reset);
   $('table').classList.toggle('has-cards', placed.length > 0);
   $('table').dataset.readingState = failed ? 'error' : reset ? 'resetting' : isOpened(selected) ? 'revealed' : placed.length ? 'hidden' : 'empty';
   $('reset-message').hidden = !reset;
   $('counts').textContent = `已抽 ${placed.length} · 已揭示 ${opened}`;
   $('dock-count').textContent = `已揭示 ${opened} 张`;
-  $('instruction').textContent = placed.length ? '自由摆放 · 双击翻开' : '从牌带拖出一张，放在你想放的位置。';
+  $('instruction').textContent = !readingReady ? '点击「开始」准备这一轮牌。' : placed.length ? '自由摆放 · 双击翻开' : '从牌带拖出一张，放在你想放的位置。';
   $('selected-label').textContent = selected ? (isOpened(selected) ? `${readingCardLabel(selected.id)} · ${reading.reversed[selected.id] ? '逆位' : '正位'}` : `已选第 ${placed.indexOf(selected) + 1} 张 · ${flips.has(selected.id) ? '正在翻开' : '未翻开'}`) : '选中一张桌上的牌';
   $('reveal').hidden = isOpened(selected);
   $('meaning').hidden = !isOpened(selected);
@@ -110,15 +116,16 @@ function updateUI() {
   $('undo').disabled = busy || !canUndo(reading);
   $('arrange').disabled = busy || placed.length < 3 || flips.size > 0;
   $('reset').disabled = busy;
+  $('reset').innerHTML = readingReady ? '<span aria-hidden="true">↻</span> 重洗' : '<span aria-hidden="true">↻</span> 开始';
   $('view-home').disabled = busy || (isDefaultView(view) && zoomTarget === 1 && !viewTransition);
   $('zoom-in').disabled = busy || zoomTarget >= ZOOM_LIMITS.max;
   $('zoom-out').disabled = busy || zoomTarget <= ZOOM_LIMITS.min;
   $('zoom-level').textContent = `${Math.round(view.zoom * 100)}%`;
   $('reduce').disabled = failed;
-  for (const id of ['previous', 'next', 'place']) $(id).disabled = busy || deckFocusId === null;
+  for (const id of ['previous', 'next', 'place']) $(id).disabled = busy || !readingReady || deckFocusId === null;
   $('deck-position').textContent = deckFocusId === null ? '牌带已空' : `第 ${reading.order.indexOf(deckFocusId) + 1} / 78 张`;
-  $('deck-hint').textContent = hoverId !== null && !reading.placed[hoverId] ? `第 ${reading.order.indexOf(hoverId) + 1} 张 · 按住拖到桌面` : '沿牌带挑选 · 按住拖出';
-  $('progress').textContent = reset ? '正在洗牌…' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
+  $('deck-hint').textContent = !readingReady ? '先开始洗牌，再沿牌带挑选' : hoverId !== null && !reading.placed[hoverId] ? `第 ${reading.order.indexOf(hoverId) + 1} 张 · 按住拖到桌面` : '沿牌带挑选 · 按住拖出';
+  $('progress').textContent = preparingReset ? '正在准备本轮随机牌序…' : reset ? '正在洗牌…' : !readingReady ? '随机来源可在「更多」中选择' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
   if (!reset && noticeText && performance.now() < noticeUntil) $('progress').textContent = noticeText;
   const list = $('placed-list');
   const signature = placed.map(card => `${card.id}:${isOpened(card)}:${card.id === reading.selectedId}`).join('|');
@@ -238,12 +245,12 @@ function frame(now) {
 }
 
 async function reveal(id) {
-  if (failed || reset || drag?.started || pendingReveals.has(id) || !reading.placed[id] || reading.placed[id].faceUp) return;
+  if (failed || reset || preparingReset || !readingReady || drag?.started || pendingReveals.has(id) || !reading.placed[id] || reading.placed[id].faceUp) return;
   const request = { id, round, drawOrder: reading.placed[id].drawOrder };
   pendingReveals.set(id, request); updateUI();
   try {
     await loadFace(id);
-    if (failed || reset || drag?.started || !mayFinishReveal(reading, request, round)) return;
+    if (failed || reset || preparingReset || !readingReady || drag?.started || !mayFinishReveal(reading, request, round)) return;
     if (!$('reduce').checked) flips.set(id, { started: performance.now(), direction: crypto.getRandomValues(new Uint8Array(1))[0] < 128 ? -1 : 1 });
     dispatch({ type: 'reveal', id });
   } catch {
@@ -253,30 +260,39 @@ async function reveal(id) {
     updateUI();
   }
 }
-function beginReset() {
-  if (reset || failed) return;
+async function beginReset() {
+  if (tableBusy() || disposed || !randomController || currentPoses.size !== CARD_COUNT) return;
   if (!aiController?.mayReset() || !recordsController?.mayReset()) return;
+  preparingReset = true; cancelDrag(); lastTap = null; hoverId = null;
   disclosures.closeAll({ motion: false });
-  $('reader-details').open = false;
-  round += 1; pendingReveals.clear();
-  cancelDrag(); lastTap = null; hoverId = null;
-  noticeText = '';
-  const order = shuffleDeck(ids), seed = crypto.getRandomValues(new Uint32Array(1))[0];
-  // Preserve the remaining fan as a rigid packet while it leaves the table;
-  // reorder its layers offscreen before the unchanged accepted choreography.
-  const snapshot = ids.map(id => ({ id, ...currentPoses.get(id) }));
-  hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
-  reset = { elapsed: 0, lastTime: performance.now(), run: createReadingReset({ seed, order, snapshot, deckIds: reading.order.filter(id => !reading.placed[id]) }), next: freshReading(order) };
-  reset.nextFan = createReadingFan(reset.next.order);
-  flips.clear();
-  transitionView({ ...view, zoom: 1 });
-  if ($('reduce').checked) finishReset();
-  updateUI(); invalidate();
+  updateUI();
+  try {
+    const deck = await randomController.prepareDeck();
+    if (disposed || failed || !deck) return;
+    // Construct and validate everything before touching the existing reading.
+    const next = freshReading(deck), order = deck.order;
+    const seed = crypto.getRandomValues(new Uint32Array(1))[0]; // Motion only.
+    const snapshot = ids.map(id => ({ id, ...currentPoses.get(id) }));
+    const run = createReadingReset({ seed, order, snapshot, deckIds: reading.order.filter(id => !reading.placed[id]) });
+    const nextFan = createReadingFan(next.order);
+    $('reader-details').open = false;
+    round += 1; pendingReveals.clear(); noticeText = '';
+    hoverOffsets.forEach(offset => { offset.x = 0; offset.y = 0; });
+    reset = { elapsed: 0, lastTime: performance.now(), run, next, nextFan };
+    flips.clear();
+    transitionView({ ...view, zoom: 1 });
+    if ($('reduce').checked) finishReset();
+  } catch (error) {
+    if (!disposed) { announce(error.message || '随机牌序暂时无法准备，当前牌桌已保留。'); disclosures.open('reading-random'); }
+  } finally {
+    preparingReset = false;
+    if (!disposed) { updateUI(); invalidate(); }
+  }
 }
 function finishReset() {
   if (!reset) return;
   viewTransition = null; zoomTarget = 1; applyView({ ...view, zoom: 1 });
-  reading = reset.next; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
+  reading = reset.next; readingReady = true; readingFan = reset.nextFan; reset = null; hoverId = null; lastTap = null;
   aiController?.reset();
   recordsController?.reset();
   updateControlBounds();
@@ -318,9 +334,9 @@ function cancelDrag() {
   renderer.domElement.style.cursor = 'grab'; updateUI(); invalidate();
 }
 function onPointerDown(event) {
-  if (reset || failed || event.button !== 0 || drag || viewDrag) return;
+  if (tableBusy() || event.button !== 0 || drag || viewDrag) return;
   viewTransition = null; zoomTarget = view.zoom;
-  const id = pick(event);
+  const id = readingReady ? pick(event) : null;
   if (id === null) {
     lastTap = null; hoverId = null;
     viewDrag = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, startView: { ...view }, started: false };
@@ -338,7 +354,7 @@ function onPointerDown(event) {
   event.preventDefault(); updateUI();
 }
 function onPointerMove(event) {
-  if (reset || failed) return;
+  if (tableBusy()) return;
   if (viewDrag) {
     if (event.pointerId !== viewDrag.pointerId) return;
     updateViewDrag(event); return;
@@ -351,7 +367,7 @@ function onPointerMove(event) {
     if (drag.started) renderer.domElement.style.cursor = 'grabbing';
     invalidate(); return;
   }
-  const id = pick(event);
+  const id = readingReady ? pick(event) : null;
   if (id !== hoverId) { hoverId = id; renderer.domElement.style.cursor = 'grab'; updateUI(); invalidate(); }
 }
 function onPointerUp(event) {
@@ -384,7 +400,7 @@ function onPointerUp(event) {
   updateUI(); if (notice) announce(notice); invalidate();
 }
 function stepDeck(direction) {
-  if (reset) return;
+  if (tableBusy() || !readingReady) return;
   const available = reading.order.filter(id => !reading.placed[id]);
   if (!available.length) return;
   const index = available.indexOf(deckFocusId);
@@ -392,7 +408,7 @@ function stepDeck(direction) {
   hoverId = deckFocusId; dispatch({ type: 'select', id: null }); updateUI(); invalidate();
 }
 function placeFocused() {
-  if (reset || deckFocusId === null) return;
+  if (tableBusy() || !readingReady || deckFocusId === null) return;
   const index = Object.keys(reading.placed).length;
   dispatch({ type: 'draw', id: deckFocusId, x: [-2, 0, 2][index % 3], z: -0.7 + Math.floor(index / 3) % 8 * 0.16 });
   hoverId = null;
@@ -438,7 +454,7 @@ function updateViewDrag(event) {
   if (viewDrag.started) { applyView(dragView(viewDrag.startView, dx, dy)); updateUI(); }
 }
 function changeZoom(deltaY, deltaMode = 0) {
-  if (reset || failed || drag || viewDrag) return;
+  if (tableBusy() || drag || viewDrag) return;
   if (viewTransition) zoomTarget = view.zoom;
   viewTransition = null; hoverId = null; lastTap = null;
   zoomTarget = wheelZoom(zoomTarget, deltaY, deltaMode, renderer.domElement.getBoundingClientRect().height);
@@ -497,7 +513,7 @@ try {
   renderer.domElement.addEventListener('keydown', event => {
     if (!event.ctrlKey && !event.metaKey && ['+', '=', '-'].includes(event.key)) { event.preventDefault(); changeZoom(event.key === '-' ? 120 : -120); return; }
     if (event.shiftKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
-      event.preventDefault(); if (reset || failed) return;
+      event.preventDefault(); if (tableBusy()) return;
       cancelDrag(); viewTransition = null; zoomTarget = view.zoom; hoverId = null; lastTap = null;
       applyView(dragView(view, event.key === 'ArrowLeft' ? -28 : event.key === 'ArrowRight' ? 28 : 0, event.key === 'ArrowUp' ? 28 : event.key === 'ArrowDown' ? -28 : 0));
       updateUI(); return;
@@ -530,15 +546,19 @@ $('reveal').addEventListener('click', event => {
 $('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
 initializeInlineHelp(document);
 disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches });
-recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => !!reset || failed || flips.size > 0 || pendingReveals.size > 0, disclosures });
-aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => !!reset || failed || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });
-$('return').addEventListener('click', () => { if (!reset) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
-$('undo').addEventListener('click', () => { if (!reset) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });
-$('arrange').addEventListener('click', () => { if (!reset) { cancelDrag(); dispatch({ type: 'arrange3', positions: [{ x: -2, z: -0.7 }, { x: 0, z: -0.7 }, { x: 2, z: -0.7 }] }); } });
+recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, disclosures });
+aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });
+let operationStorage;
+try { operationStorage = window.sessionStorage; } catch { /* In-page operation recovery remains available. */ }
+randomController = createReadingRandom({ document, storage: appearanceStorage, operationStorage, getReading: () => reading, disclosures, onChange: () => { if (!disposed) updateUI(); } });
+updateUI();
+$('return').addEventListener('click', () => { if (!tableBusy()) { lastTap = null; dispatch({ type: 'return', id: reading.selectedId }); } });
+$('undo').addEventListener('click', () => { if (!tableBusy()) { cancelDrag(); lastTap = null; dispatch({ type: 'undo' }); } });
+$('arrange').addEventListener('click', () => { if (!tableBusy()) { cancelDrag(); dispatch({ type: 'arrange3', positions: [{ x: -2, z: -0.7 }, { x: 0, z: -0.7 }, { x: 2, z: -0.7 }] }); } });
 $('reset').addEventListener('click', beginReset);
 $('zoom-in').addEventListener('click', () => changeZoom(-120));
 $('zoom-out').addEventListener('click', () => changeZoom(120));
-$('view-home').addEventListener('click', () => { if (!reset && !failed) homeView(); });
+$('view-home').addEventListener('click', () => { if (!tableBusy()) homeView(); });
 $('skip').addEventListener('click', finishReset);
 $('previous').addEventListener('click', () => stepDeck(-1));
 $('next').addEventListener('click', () => stepDeck(1));
@@ -557,6 +577,6 @@ document.addEventListener('visibilitychange', () => {
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
 }
-addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disposeHelpTips(document); disclosures?.dispose(); aiController?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
+addEventListener('pagehide', event => { cancelAnimationFrame(scheduled); scheduled = 0; if (!event.persisted) { disposed = true; appearanceController?.dispose(); disposeHelpTips(document); disclosures?.dispose(); randomController?.dispose(); aiController?.dispose(); recordsController?.dispose(); screenGlass?.dispose(); roomPass?.dispose(); room?.dispose(); sceneStyle?.dispose(); resizeObserver?.disconnect(); renderer?.dispose(); } });
 startReading().catch(fail);
 addEventListener('pageshow', () => { if (reset) reset.lastTime = performance.now(); invalidate(); });

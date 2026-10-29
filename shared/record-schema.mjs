@@ -40,9 +40,20 @@ function dateTime(value, name) {
   return value;
 }
 
+function normalizeRandomness(value) {
+  if (value === undefined) return undefined;
+  object(value, ['source', 'requestId', 'batchId', 'fetchedAt', 'consumed'], '随机来源');
+  if (value.source === 'local') {
+    if (Object.keys(value).some(key => key !== 'source')) invalid('普通随机不能带有量子批次。');
+    return { source: 'local' };
+  }
+  if (value.source !== 'anu' || !Number.isInteger(value.consumed) || value.consumed < 155 || value.consumed > 1024) invalid('量子来源格式不正确。');
+  return { source: 'anu', requestId: normalizeRecordId(value.requestId), batchId: normalizeRecordId(value.batchId), fetchedAt: dateTime(value.fetchedAt, '量子数据获取时间'), consumed: value.consumed };
+}
+
 /** Strict client input; canonical source content and authorship are server-owned. */
 export function normalizeRecordInput(value) {
-  object(value, ['schemaVersion', 'id', 'startedAt', 'question', 'interpretation', 'reflection', 'spread', 'cards', 'aiInterpretationIds'], '记录');
+  object(value, ['schemaVersion', 'id', 'startedAt', 'question', 'interpretation', 'reflection', 'spread', 'cards', 'aiInterpretationIds', 'randomness'], '记录');
   if (value.schemaVersion !== RECORD_SCHEMA_VERSION) invalid('暂不支持这个记录版本。');
   object(value.spread, ['type', 'name'], '牌阵');
   if (value.spread.type !== 'free') invalid('当前只支持自由摆牌记录。');
@@ -78,6 +89,7 @@ export function normalizeRecordInput(value) {
     reflection: text(value.reflection, RECORD_LIMITS.reflection, '补充想法'),
     spread: { type: 'free', name: text(value.spread.name, RECORD_LIMITS.spreadName, '牌阵名称', '自由摆牌') || '自由摆牌' },
     cards,
+    ...(value.randomness !== undefined ? { randomness: normalizeRandomness(value.randomness) } : {}),
     ...(aiInterpretationIds?.length ? { aiInterpretationIds } : {}),
   };
 }

@@ -16,7 +16,7 @@
     "check:governance": ".venv/bin/python governance/governance_package_check.py --project-root . --target . --project-lifecycle durable",
     "check:access-runtime": "node scripts/check-access-runtime.mjs",
     "test:access": "tsx --test tests/access.test.ts",
-    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm test:records && pnpm check:records-runtime && pnpm test:ai && pnpm check:ai-runtime && pnpm build",
+    "check:all": "pnpm check:governance && pnpm check && pnpm check:access-runtime && pnpm test:access && pnpm test:reading && pnpm test:records && pnpm check:records-runtime && pnpm test:ai && pnpm check:ai-runtime && pnpm test:random && pnpm check:random-runtime && pnpm build",
     "format": "prettier --write .",
     "electron:dev": "electron .",
     "electron:build": "pnpm build:client && electron-builder --mac",
@@ -28,7 +28,11 @@
     "check:records-runtime": "node scripts/check-records-runtime.mjs",
     "test:ai": "tsx --test tests/ai-*.test.mjs",
     "check:ai-runtime": "node scripts/check-ai-runtime.mjs",
-    "dev:ai-preview": "tsx scripts/preview-ai.mjs"
+    "dev:ai-preview": "tsx scripts/preview-ai.mjs",
+    "test:random": "tsx --test tests/random-*.test.mjs",
+    "check:random-runtime": "node scripts/check-random-runtime.mjs",
+    "check:random-postgres": "node scripts/check-random-postgres.mjs",
+    "dev:random-preview": "tsx scripts/preview-ai.mjs"
   },
   "build": {
     "appId": "com.urbantatot.app",

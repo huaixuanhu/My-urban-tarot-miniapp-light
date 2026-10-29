@@ -27,7 +27,7 @@
     <section class="table" id="table" aria-label="自由摆牌桌">
       <div id="scene"></div>
       <div class="invitation"><p>A MOMENT FOR YOURSELF</p><h1>留一点空白。</h1><span id="instruction">从下方拖出一张牌，放到你想放的位置。</span></div>
-      <div class="table-note"><span id="counts">剩余 78 张 · 已抽 0 张</span></div>
+      <div class="table-note"><span id="random-round-source" class="random-round-source"></span><span id="counts">剩余 78 张 · 已抽 0 张</span></div>
       <div id="deck-hint" class="deck-hint" aria-live="polite">沿牌带慢慢挑选</div>
       <div id="reset-message" class="reset-message" hidden><span>收起这一刻，再开始。</span><button id="skip">跳过动作</button></div>
       <div id="loading" class="cover">正在准备牌桌…</div>
@@ -54,12 +54,27 @@
           <div class="tool-body sheet-content">
             <nav class="sheet-links" aria-label="牌桌内容">
               <button id="ai-toggle" class="sheet-link" aria-expanded="false" aria-controls="reading-ai"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg></span><span><strong>AI解读</strong></span><span aria-hidden="true">↗</span></button>
+              <button id="random-toggle" class="sheet-link" aria-expanded="false" aria-controls="reading-random"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12c3-10 6 10 9 0s6 10 9 0M3 7h18M3 17h18"/></svg></span><span><strong>随机来源</strong></span><span aria-hidden="true">↗</span></button>
               <button id="records-toggle" class="sheet-link" aria-expanded="false" aria-controls="reading-records"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3v12H7a3 3 0 0 1-3-3v-11a1 1 0 0 1 1-1Z"/><path d="M8 4.5v15M11 9h5M11 13h4"/></svg></span><span><strong>占卜记录</strong></span><span aria-hidden="true">↗</span></button>
               <button id="drawn-toggle" class="sheet-link" aria-expanded="false" aria-controls="drawn-cards"><span class="sheet-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="11" height="17" rx="2"/><path d="m5 6-2 13a2 2 0 0 0 1.7 2.3l7.3 1"/></svg></span><span><strong>桌上的牌</strong></span><span aria-hidden="true">↗</span></button>
             </nav>
             <div class="tool-group"><span class="tool-heading">挑牌</span><div class="deck-navigation" aria-label="逐张挑牌"><button id="previous" aria-label="上一张可抽牌">←</button><span id="deck-position">第 1 / 78 张</span><button id="next" aria-label="下一张可抽牌">→</button><button id="place">抽出这张</button></div></div>
             <div class="tool-group"><span class="tool-heading">摆放</span><div class="table-actions"><button id="return" disabled>放回牌带</button><button id="undo" disabled>撤销上一步</button><button id="arrange" disabled>整理三张</button></div></div>
             <div class="tool-group"><span class="tool-heading">视角</span><div class="view-controls"><div class="zoom-controls" aria-label="牌桌缩放"><button id="zoom-out" aria-label="拉远牌桌">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="拉近牌面">+</button></div><label><input type="checkbox" id="reduce" /> 减少动态</label></div></div>
+          </div>
+        </section>
+      </details>
+      <details class="reading-random" id="reading-random">
+        <summary class="sr-only" tabindex="-1">随机来源</summary>
+        <section class="glass-sheet" aria-labelledby="random-title">
+          <header class="sheet-heading"><div><button class="sheet-back" data-sheet-back>‹ 更多</button><div class="sheet-title-line"><h2 id="random-title" tabindex="-1">随机来源</h2><button type="button" data-help-label="随机来源" data-help="开关只影响下一次洗牌。量子库存由两人共享；每次采集取回 1024 个数，成功后替换旧库存，不改变当前牌桌。获取时间指接口接收时间，不代表实验室测量时刻。普通随机用于演示和测试，不消耗量子库存。">?</button></div></div><button class="sheet-close" data-sheet-close aria-label="收起随机来源">×</button></header>
+          <div class="sheet-content random-content">
+            <label class="random-mode"><span>下次洗牌使用量子随机</span><input id="random-mode" type="checkbox" role="switch" checked></label>
+            <dl class="random-facts"><div><dt>本轮来源</dt><dd id="random-current">尚未洗牌</dd></div><div><dt>共享剩余</dt><dd id="random-remaining">尚未读取</dd></div><div><dt>上次获取</dt><dd id="random-fetched">—</dd></div></dl>
+            <button id="random-collect" class="record-primary" type="button">采集 1024 个</button>
+            <button id="random-recover" class="random-recover" type="button" hidden>查询上次操作</button>
+            <button id="random-resume" class="random-recover" type="button" hidden>继续这次操作</button>
+            <p id="random-status" class="record-status" role="status"></p>
           </div>
         </section>
       </details>

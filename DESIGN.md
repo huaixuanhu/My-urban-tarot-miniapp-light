@@ -189,3 +189,7 @@ Derived from [governance/STATE.md](governance/STATE.md) stage2.5.1. The user's 2
 
 
 Candidate21 validation update (2026-10-28): dedicated Neon setup and Production-only server binding are complete with real-storage synthetic checks, as owned by STATE.md stage2.5.1. No new UI deployment or user visual acceptance follows from that setup. Day/night sheet screenshots and the repaired reset-row regression are recorded in docs/design/stage2.5.1/README.md.
+
+## stage2.5.5 — candidate revision24: explicit randomness
+
+Parent: governance/STATE.md stage2.5.5; user-approved direction, local day/night/narrow fixture verified; user visual acceptance pending. More gains 随机来源 in the existing glass-sheet system. Show next-shuffle quantum toggle, current round source, shared remaining/1024, last successful API receipt time and manual collect action. Detail belongs to contextual help. Collection and toggle preserve the active table; pending/failure/shortage never destroy drafts. Quantum is default, preference is per device; ordinary mode is explicitly local demonstration randomness. Initial quantum table waits for explicit start. Reuse existing focus/Escape/reduced-motion/day/night behavior. Keep original card faces, choreography and camera.

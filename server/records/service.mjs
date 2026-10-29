@@ -1,3 +1,4 @@
+import { verifiedRandomProvenance } from '../../shared/random-provenance.mjs';
 import { createHash } from 'node:crypto';
 import { decodeJwt } from 'jose';
 import { buildStoredRecord, normalizeRecordId, normalizeRecordInput, RECORD_BODY_LIMIT, RecordValidationError, summarizeRecord } from '../../shared/record-schema.mjs';
@@ -74,6 +75,12 @@ export function createRecordsHandler({ accessGuard, getStore, now = () => new Da
         const input = normalizeRecordInput(parsed.value), hash = fingerprint(input);
         const store = await getStore();
         const record = buildStoredRecord(input, { savedAt: now().toISOString(), createdBy: subject });
+        if (input.randomness?.source === 'anu') {
+          if (typeof store.getRandomDraw !== 'function') throw new RecordStorageUnavailable();
+          const operation = await store.getRandomDraw(input.randomness.requestId);
+          try { record.randomness = verifiedRandomProvenance(input, operation); }
+          catch (error) { throw new RecordValidationError(error.message); }
+        }
         if (input.aiInterpretationIds?.length) {
           if (typeof store.getAIInterpretations !== 'function') throw new RecordStorageUnavailable();
           const found = await store.getAIInterpretations(input.aiInterpretationIds);

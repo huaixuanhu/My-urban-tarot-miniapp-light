@@ -1,6 +1,6 @@
 /** Local UI/HTTP fixture only. Never imported by the app or deployed API.
  * pnpm exec tsx scripts/preview-ai.mjs
- * Uses synthetic signing keys and in-memory records, NEVER cloud or OpenAI.
+ * Uses synthetic signing keys and in-memory records, NEVER cloud, OpenAI or ANU.
  */
 import http from 'node:http';
 import { randomUUID } from 'node:crypto';
@@ -9,11 +9,16 @@ import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { accessConfig } from '../access/config.ts';
 import { createAccessGuard } from '../access/guard.ts';
 import { createRecordsHandler } from '../server/records/service.mjs';
+import { createRandomHandler } from '../server/random/service.mjs';
+import { createMemoryRandomStore } from '../server/random/memory-store.mjs';
+import { RandomProviderError } from '../server/random/provider.mjs';
 import { createInterpretationsHandler } from '../server/ai/service.mjs';
 
-const port = 5174, localOrigin = `http://127.0.0.1:${port}`, appOrigin = `https://${accessConfig.hostname}`;
+const port = Number(process.argv[2] || 5174), localOrigin = `http://127.0.0.1:${port}`, appOrigin = `https://${accessConfig.hostname}`;
 const attempts = new Map(), records = new Map();
 let scenario = 'completed', calls = 0;
+let randomScenario = 'completed', randomCalls = 0;
+const randomStore = createMemoryRandomStore();
 const clone = value => structuredClone(value);
 const aiStore = {
   async claim(attempt, hash) {
@@ -38,6 +43,7 @@ const recordStore = {
       .sort((a, b) => b.savedAt.localeCompare(a.savedAt) || b.id.localeCompare(a.id))
       .filter(row => !cursor || row.savedAt < cursor.savedAt || (row.savedAt === cursor.savedAt && row.id < cursor.id)).slice(0, limit);
   },
+  async getRandomDraw(id) { return randomStore.get(id); },
   async getAIInterpretations(ids) { return Promise.all(ids.map(id => aiStore.get(id))); },
 };
 const keys = await generateKeyPair('RS256'), kid = randomUUID();
@@ -73,10 +79,20 @@ const provider = {
   },
 };
 const interpret = createInterpretationsHandler({ accessGuard, getStore: async () => aiStore, getProvider: async () => provider });
+const random = createRandomHandler({ accessGuard, getStore: async () => randomStore, getProvider: async () => ({
+  async collect() {
+    randomCalls++;
+    const mode = randomScenario;
+    await new Promise(resolve => setTimeout(resolve, mode === 'slow' ? 10000 : 350));
+    if (mode === 'failed') throw new RandomProviderError('rejected');
+    if (mode === 'unknown') throw new RandomProviderError('unknown');
+    return Array.from({ length: 1024 }, (_, i) => (i * 193 + randomCalls * 59) % 65000);
+  },
+}) });
 const record = createRecordsHandler({ accessGuard, getStore: async () => recordStore });
-const vite = await createVite({ server: { middlewareMode: true }, plugins: [{
+const vite = await createVite({ server: { middlewareMode: true, hmr: { port: port + 1000 } }, plugins: [{
   name: 'explicit-local-ai-fixture', transformIndexHtml(html) {
-    return html.replace('<body>', '<body><aside role="note" style="position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;background:#fff3c9;color:#42351e;font:12px/24px system-ui;pointer-events:none">本地验证 · 模拟 AI 与记录 · 无费用，不写入云端</aside>');
+    return html.replace('<body>', '<body><aside role="note" style="position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;background:#fff3c9;color:#42351e;font:12px/24px system-ui;pointer-events:none">本地验证 · 合成随机数据、模拟 AI 与记录 · 未调用 ANU，无费用，不写入云端</aside>');
   },
 }] });
 const server = http.createServer(async (req, res) => {
@@ -90,13 +106,19 @@ const server = http.createServer(async (req, res) => {
       if (url.pathname === '/api/_preview') {
         if (req.method === 'POST') {
           const value = JSON.parse(body.toString());
-          if (!['completed', 'incomplete', 'refusal', 'unknown', 'slow'].includes(value.scenario)) throw new Error('Unknown fixture.');
-          scenario = value.scenario;
+          if (value.scenario !== undefined) {
+            if (!['completed', 'incomplete', 'refusal', 'unknown', 'slow'].includes(value.scenario)) throw new Error('Unknown fixture.');
+            scenario = value.scenario;
+          }
+          if (value.randomScenario !== undefined) {
+            if (!['completed', 'failed', 'unknown', 'slow'].includes(value.randomScenario)) throw new Error('Unknown random fixture.');
+            randomScenario = value.randomScenario;
+          }
         }
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify({ fixture: true, scenario, calls, attempts: attempts.size, records: records.size })); return;
+        res.end(JSON.stringify({ fixture: true, scenario, calls, randomScenario, randomCalls, attempts: attempts.size, records: records.size })); return;
       }
-      const handler = url.pathname === '/api/interpretations' ? interpret : url.pathname === '/api/records' ? record : null;
+      const handler = url.pathname === '/api/interpretations' ? interpret : url.pathname === '/api/records' ? record : url.pathname === '/api/random' ? random : null;
       if (!handler) { res.writeHead(404); res.end(); return; }
       const headers = new Headers({ 'cf-access-jwt-assertion': await syntheticToken() });
       if (req.method !== 'GET') { headers.set('origin', appOrigin); headers.set('content-type', req.headers['content-type'] || ''); }
@@ -108,6 +130,6 @@ const server = http.createServer(async (req, res) => {
     vite.middlewares(req, res);
   } catch { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { code: 'LOCAL_FIXTURE_ERROR', message: '本地模拟服务发生错误，没有发起外部调用。' } })); }
 });
-server.listen(port, '127.0.0.1', () => console.log(`LOCAL SYNTHETIC PREVIEW ${localOrigin} — no OpenAI/Neon connections.`));
+server.listen(port, '127.0.0.1', () => console.log(`LOCAL SYNTHETIC PREVIEW ${localOrigin} — no ANU/OpenAI/Neon connections.`));
 async function stop() { server.close(); await vite.close(); process.exit(0); }
 process.once('SIGINT', stop); process.once('SIGTERM', stop);
