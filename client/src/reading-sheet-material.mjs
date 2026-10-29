@@ -56,6 +56,7 @@ export function createSheetMaterial(document, { storage } = {}) {
   panels.forEach(panel => observer.observe(panel));
   return {
     prepare(panel) { FluidGlass.update(panel); },
+    prepareHelp(host) { FluidGlass.scan(host); },
     dispose() {
       observer.disconnect(); cancelAnimationFrame(frame); cancelAnimationFrame(transparencyFrame);
       slider.removeEventListener('input', adjust);

@@ -227,3 +227,50 @@
   .random-choice-switch.fg-glass { flex-direction: column; border-radius: 22px; }
   .random-choice-switch label > span { justify-content: flex-start; min-height: 34px; }
 }
+
+/* Small help surfaces use the same lens, with a denser reading haze. The
+   transparency slider still applies, while this minimum protects fine text. */
+.view-home.fg-glass {
+  background: transparent; border-color: transparent;
+  color: var(--fgs-ink); --fg-veil-boost: 0;
+}
+.view-home.fg-glass > svg, .view-home.fg-glass > span:not([aria-hidden]) { position: relative; z-index: 1; }
+.view-home.fg-glass:disabled { opacity: 1; color: var(--fgs-ink-muted); --fgs-opacity-disabled: .8; cursor: default; }
+.view-home.fg-glass:hover { --fg-veil-boost: 0; }
+.help-tooltip.fg-glass, .help-detail.fg-glass {
+  --fg-veil-min: .56; --fg-veil-0: .64; --fg-veil-1: .78; --fg-veil-2: .96;
+  --fg-veil-boost: 0; --fg-blur: 20px;
+  position: fixed; z-index: 1000; box-sizing: border-box; border-radius: 17px;
+  color: var(--fgs-ink); background: transparent;
+  font: 12px/1.8 var(--fgs-font-ui); overflow-wrap: anywhere;
+  user-select: text; -webkit-user-select: text; pointer-events: auto;
+}
+[data-theme="dark"] .help-tooltip.fg-glass, [data-theme="dark"] .help-detail.fg-glass {
+  --fg-veil: #3b3633; --fg-veil-min: .60; --fg-veil-0: .67; --fg-veil-1: .82; --fg-veil-2: .96;
+}
+.help-tooltip.fg-glass:hover, .help-detail.fg-glass:hover { --fg-k-sh: 1; --fg-veil-boost: 0; }
+.help-tooltip.fg-glass { padding: 14px 16px; }
+.help-tooltip-content, .help-detail-content { position: relative; z-index: 1; }
+.help-after { display: block; margin-top: 7px; color: var(--fgs-ink-muted); }
+.help-more { display: inline-flex; align-items: center; min-height: 28px; margin: -3px 0 -3px 5px; padding: 2px 3px; font: inherit; color: inherit; border: 0; border-radius: 5px; background: transparent; cursor: pointer; text-decoration: underline; text-decoration-color: var(--fgs-line); text-underline-offset: 4px; }
+.help-more:hover { text-decoration-color: currentColor; }
+.help-detail.fg-glass { padding: 22px 24px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgb(from var(--fgs-ink) r g b / .22) transparent; }
+.help-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.help-detail-heading h2 { margin: 0; font: 400 21px/1.4 var(--fgs-font-serif); letter-spacing: .05em; }
+.help-detail-heading h2:focus { outline: none; }
+.help-detail-close { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 28px; height: 28px; border: 0; border-radius: 50%; padding: 0; background: rgb(from var(--fgs-ink) r g b / .06); color: inherit; font: 22px/1 var(--fgs-font-ui); cursor: pointer; }
+.help-detail-close:hover { background: rgb(from var(--fgs-ink) r g b / .12); }
+.help-detail-section + .help-detail-section { margin-top: 22px; }
+.help-detail-section h3 { margin: 0 0 7px; font: 500 13px/1.6 var(--fgs-font-ui); letter-spacing: .05em; }
+.help-detail-section p { margin: 0 0 9px; }
+.help-detail-sources { position: static; inset: auto; width: auto; pointer-events: auto; text-shadow: none; justify-content: flex-start; display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--fgs-line); }
+.help-detail-sources a { margin: 0; color: var(--fgs-ink-muted); font-size: 11px; text-decoration: none; }
+.help-detail-sources a:hover { color: var(--fgs-ink); text-decoration: underline; }
+.help-more:focus-visible, .help-detail button:focus-visible, .help-detail a:focus-visible { outline: 2px solid var(--fgs-focus); outline-offset: 3px; }
+/* Pull the complete glass card out beside its origin; no opacity fade that
+   would flatten the backdrop. Final coordinates refresh when motion settles. */
+.help-detail:not([hidden]) { animation: help-draw-out 220ms cubic-bezier(.2,.7,.2,1); }
+.help-detail[data-side="left"] { --help-draw-x: 12px; }
+.help-detail[data-side="right"] { --help-draw-x: -12px; }
+@keyframes help-draw-out { from { transform: translate(var(--help-draw-x,0px),8px); } to { transform: translate(0,0); } }
+@media (prefers-reduced-motion: reduce) { .help-detail:not([hidden]) { animation: none; } }

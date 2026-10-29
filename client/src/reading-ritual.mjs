@@ -88,6 +88,29 @@ export function createReadingRitual(renderer) {
     }
   }
 
+  // A broken, shallow orbit sits between the side marks and the source fan.
+  // Its uneven gaps keep the engraving airy when cards occupy this area.
+  ctx.globalAlpha = .30; ctx.lineWidth = .011;
+  ctx.beginPath();
+  ctx.ellipse(0, .32, 5.50, .38, -.025, rad(12), rad(76));
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(0, .32, 5.50, .38, -.025, rad(105), rad(167));
+  ctx.stroke();
+  ctx.globalAlpha = .21;
+  ctx.beginPath();
+  ctx.ellipse(0, .32, 5.50, .38, -.025, rad(194), rad(248));
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(0, .32, 5.50, .38, -.025, rad(289), rad(347));
+  ctx.stroke();
+  star(-3.86, .69, .075, .44);
+  dot(-2.17, .72, .019, .36);
+  dot(2.33, -.08, .020, .40);
+  star(4.53, .01, .062, .40);
+  line(-4.66, .70, -4.63, .81, .28, .010);
+  line(3.32, .49, 3.35, .60, .28, .010);
+
   // Two short, unconnected near-edge echoes keep the view balanced when orbited.
   arc(6.72, 4.70, 29, 47, .30, .011);
   arc(6.72, 4.70, 132, 151, .30, .011);

@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-10-30 — glass help and source explanation
+
+Give 回正 and question tips the shared fluid-glass material, retaining denser haze for reading. Add “更多 ↗” to both random-source definitions and an adjacent sourced explanation, with keyboard return, layered Escape and narrow-screen scrolling. Extend the user-marked middle glass band with faint broken orbital engraving. Preserve gameplay, inventories and all provider/gate boundaries. Local stage2.5.10 refinement; visual acceptance remains pending.
+
 ## 2026-10-30 — side random choice and visitor foundation
 
 Expose next-shuffle system/quantum choices beside the table, move acquisition mechanics to Shared Remaining help and use the headline “抽取 感受 感知”. Add a bounded local visitor rehearsal with system shuffling and visible quantum/email requirements; actual accounts, public access and verification remain deferred. Keep current-round provenance, provider safeguards and member storage intact.

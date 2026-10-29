@@ -15,6 +15,7 @@ import { createReadingRecords } from './reading-records.mjs';
 import { createReadingAI } from './reading-ai.mjs';
 import { createReadingRandom } from './reading-random.mjs';
 import { initializeInlineHelp, disposeHelpTips } from './reading-help.mjs';
+import { randomSourceExplanation } from './reading-random-explainer.mjs';
 import { DEFAULT_VIEW, dragView, isDefaultView, clampView, wheelZoom, ZOOM_LIMITS } from './reading-view.mjs';
 import { createReadingProjection } from './reading-projection.mjs';
 import { createScreenGlass } from './reading-screen-glass.mjs';
@@ -545,8 +546,11 @@ $('reveal').addEventListener('click', event => {
   reveal(reading.selectedId);
 });
 $('meaning').addEventListener('click', () => { $('reader-details').open = !$('reader-details').open; });
-initializeInlineHelp(document);
 const sheetMaterial = createSheetMaterial(document, { storage: appearanceStorage });
+initializeInlineHelp(document, {
+  prepareSurface: host => sheetMaterial.prepareHelp(host),
+  explanations: { 'random-sources': randomSourceExplanation },
+});
 disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches, prepareSurface: panel => sheetMaterial.prepare(panel) });
 recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, disclosures });
 aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });

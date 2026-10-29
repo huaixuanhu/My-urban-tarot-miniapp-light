@@ -37,6 +37,8 @@ Vite development/preview intentionally returns a clear unconfigured response at 
 
 `pnpm test:records` runs the synthetic contract/client checks. The optional real-database harness is `pnpm exec tsx scripts/check-records-neon.mjs --confirm-dedicated-validation-database`, with server-only `AUGURWELL_RECORDS_TEST_DATABASE_URL` and exact `AUGURWELL_RECORDS_TEST_EXPECTED_HOST`. It requires an existing empty dedicated table, uses synthetic identities/data, cleans only its exact fixtures and verifies the empty baseline. It is deliberately excluded from `check:all`.
 
+Contextual tips and 回正 share the pinned fluid-glass material. `reading-help.mjs` owns the reusable tip/detail surfaces and focus/dismissal behavior; `reading-random-explainer.mjs` owns the static source explanation linked from both source tips. Opening it dispatches no provider request. Detail material has a minimum reading haze; narrow windows stack it under its summary.
+
 The table-side “下次洗牌” native radio group selects system or quantum randomness; the applied-round badge remains independent. Source help and shared-inventory mechanism help are separate. `createRandomSession({ quantumAccess: false })` is a local capability foundation only: system shuffling works, quantum reads/actions are denied, and member preference/recovery storage is untouched. It grants no hosted access. For the credential-free visitor rehearsal use `pnpm exec tsx scripts/preview-ai.mjs 5176 --visitor`; the fixture injects a local-only body marker and returns401 for protected APIs without a synthetic login. Actual public audience, account/email verification and server capability wiring are deferred to a separate conversation under STATE.md stage2.5.9.
 
 ## Development tools

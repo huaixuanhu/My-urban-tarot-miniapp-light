@@ -119,7 +119,7 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     if (expanded) closeAll();
   });
   listen(document, 'pointerdown', event => {
-    if (event.target.closest?.('.help-tooltip')) return;
+    if (event.target.closest?.('.reading-help-layer')) return;
     if ([...sheets.values()].some(entry => entry.panel.contains(event.target) || entry.trigger?.contains(event.target))) return;
     closeAll();
   }, true);

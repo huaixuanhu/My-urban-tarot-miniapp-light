@@ -1,6 +1,12 @@
 # Urban Tarot design owner
 
-Current local candidate: revision30, stage2.5.9.2 side random choice and visitor foundation, following revision29 soft night light/engraving and accepted revision28. The user delegates these bounded refinements and local batch commits; visitor accounts/gate design belongs to a later separate conversation. Current authority: governance/STATE.md.
+Current local candidate: revision31, stage2.5.10 glass help and middle engraving, continuing revisions29–30 under the user's delegated local refinement. Current authority: governance/STATE.md; visual review remains pending.
+
+## stage2.5.10 — candidate revision31: glass reading help
+
+Parent: STATE.md stage2.5.10. Extend the pinned lens material to 回正 and all contextual help; keep short tips denser than operating panels for steady text contrast. Day haze softly picks up the room, night haze uses a warmer gray tint. Keep an optical edge and a minimum haze at maximum transparency; retain the disabled button's material while reducing label emphasis.
+
+The two source tips end their source definition with “更多 ↗”. An adjacent glass card expands into three compact sections: system generation, ANU measurement/batch use, and shared deck mapping. Place right/left when space permits and vertically on narrow screens, with internal scrolling. Translation-only pull-out motion, reduced-motion support, keyboard entry/return, per-layer Escape and selectable prose are required. Long explanation is static and sourced; no request or randomness state changes on open. Add only sparse broken orbital strokes in the user-marked middle band, within the existing static engraving texture. Evidence: docs/design/stage2.5.10/README.md.
 
 ## stage2.5.9.2 — candidate revision30: visible source choice
 
