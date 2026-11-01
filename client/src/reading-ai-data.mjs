@@ -1,4 +1,4 @@
-import { aiReadingSignature } from '../../shared/ai-options.mjs';
+import { aiReadingSignature, AI_DETAILS, AI_FOCUSES } from '../../shared/ai-options.mjs';
 
 const DEFINITE_REJECTIONS = new Set([400, 401, 403, 404, 405, 409, 413, 415]);
 const STATUSES = new Set(['pending', 'completed', 'incomplete', 'failed', 'unknown']);
@@ -43,6 +43,8 @@ function validateReceipt(receipt, payload) {
       value.id !== payload.id || !STATUSES.has(value.status) ||
       value.model !== payload.model || value.effort !== payload.effort ||
       value.maxOutputTokens !== payload.maxOutputTokens ||
+      (payload.detail !== undefined && value.detail !== payload.detail) ||
+      (payload.focus !== undefined && value.focus !== payload.focus) ||
       aiReadingSignature(value.reading) !== aiReadingSignature(payload.reading)) {
     throw new Error('返回的解读与这次请求不一致。请查询状态，暂不再次生成。');
   }
@@ -105,6 +107,8 @@ export function createAIRequestState({ client = createInterpretationsClient(), o
       if (unresolved()) throw new Error('请先确认原来的解读结果，再发起新的解读。');
       if (!payload || typeof payload.id !== 'string' || !payload.id || typeof payload.model !== 'string' ||
           typeof payload.effort !== 'string' || !Number.isInteger(payload.maxOutputTokens)) throw new TypeError('解读请求格式不正确。');
+      if ((payload.detail !== undefined && !AI_DETAILS.some(item => item.id === payload.detail)) ||
+          (payload.focus !== undefined && !AI_FOCUSES.some(item => item.id === payload.focus))) throw new TypeError('解读选项不正确。');
       aiReadingSignature(payload.reading); // Reject malformed local input before network activity.
       if (payload.id === state.payload?.id) throw new Error('这个请求编号已经使用，请为新的解读准备新编号。');
       state = { status: 'idle', payload: copy(payload), interpretation: null, message: '' };

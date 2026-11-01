@@ -13,11 +13,17 @@ const json = (body, status = 200, extra = {}) => Response.json(body, { status, h
 const problem = (code, message, status, extra) => json({ error: { code, message } }, status, extra);
 const fingerprint = input => createHash('sha256').update(JSON.stringify(input)).digest('hex');
 
+// A deployed older client may replay its pre-preset request after this release.
+// It can retrieve the original result, never rerun it or relabel its settings.
+function matchesRequest(attempt, hash, legacyHash) {
+  return attempt.requestHash === hash || (legacyHash && attempt.detail === undefined && attempt.focus === undefined && attempt.requestHash === legacyHash);
+}
+
 /** Explicit allowlist prevents accidentally publishing private provider/identity metadata. */
 export function publicInterpretation(attempt, now = new Date()) {
   const { id, reading, model, effort, maxOutputTokens, createdAt, promptVersion } = attempt;
   const result = { id, status: attempt.status, reading, model, effort, maxOutputTokens, createdAt, promptVersion };
-  for (const key of ['completedAt', 'answer', 'usage', 'message', 'inputTokens', 'returnedModel']) if (attempt[key] !== undefined) result[key] = attempt[key];
+  for (const key of ['detail', 'focus', 'completedAt', 'answer', 'usage', 'message', 'inputTokens', 'returnedModel']) if (attempt[key] !== undefined) result[key] = attempt[key];
   // A crashed invocation never becomes permission to run it again. A late
   // terminal write may still be discovered by a later read of the same ID.
   if (result.status === 'pending' && now.valueOf() - new Date(createdAt).valueOf() > PENDING_EXPIRY_MS) {
@@ -106,11 +112,13 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
       if (request.headers.get('origin') !== url.origin) return problem('ORIGIN_MISMATCH', '请在应用内发起解读。', 403);
       if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return problem('CONTENT_TYPE_REQUIRED', '请使用应用内的解读操作。', 415);
       if ([...url.searchParams].length) throw new AIValidationError('解读地址不正确。');
-      const input = normalizeAIInput(await parseBody(request)), hash = fingerprint(input);
+      const raw = await parseBody(request), input = normalizeAIInput(raw), hash = fingerprint(input);
+      const { detail: _detail, focus: _focus, ...legacyInput } = input;
+      const legacyHash = raw.detail === undefined && raw.focus === undefined ? fingerprint(legacyInput) : null;
       const store = await getStore();
       const existing = await store.get(input.id);
       if (existing) {
-        if (existing.requestHash !== hash) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
+        if (!matchesRequest(existing, hash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
         const view = publicInterpretation(existing, now()); return json({ interpretation: view }, view.status === 'pending' ? 202 : 200);
       }
       const provider = await getProvider();
@@ -118,10 +126,10 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
       const attempt = {
         id: input.id, status: 'pending', createdAt, createdBy: subject, promptVersion: AI_PROMPT_VERSION, requestHash: hash,
         reading: buildStoredRecord(input.reading, { savedAt: createdAt, createdBy: subject }),
-        model: input.model, effort: input.effort, maxOutputTokens: input.maxOutputTokens,
+        model: input.model, effort: input.effort, maxOutputTokens: input.maxOutputTokens, detail: input.detail, focus: input.focus,
       };
       const claimed = await store.claim(attempt, hash);
-      if (claimed.hash !== hash) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
+      if (claimed.hash !== claimed.attempt.requestHash || !matchesRequest(claimed.attempt, hash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
       if (!claimed.inserted) {
         const view = publicInterpretation(claimed.attempt, now()); return json({ interpretation: view }, view.status === 'pending' ? 202 : 200);
       }

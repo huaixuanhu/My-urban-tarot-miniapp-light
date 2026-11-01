@@ -1,7 +1,7 @@
-import { AI_MODELS, AI_EFFORTS, AI_TOKEN_PRESETS, AI_MAX_OUTPUT_TOKENS, AI_DEFAULTS, aiCostHint, aiReadingSignature } from '../../shared/ai-options.mjs';
+import { AI_MODELS, AI_EFFORTS, AI_DETAILS, AI_FOCUSES, AI_TOKEN_PRESETS, AI_MAX_OUTPUT_TOKENS, AI_DEFAULTS, aiCostHint, aiReadingSignature } from '../../shared/ai-options.mjs';
 import { readingCard } from './reading-content.mjs';
 import { createInterpretationsClient, createAIRequestState } from './reading-ai-data.mjs';
-import { renderAIInterpretation } from './reading-ai-render.mjs';
+import { renderAIInterpretation, formatAISettings } from './reading-ai-render.mjs';
 import { createHelpTip } from './reading-help.mjs';
 
 /** Optional interpretation: opening, typing and changing settings never call AI. */
@@ -20,24 +20,30 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const preview = el('ol', '', 'ai-spread-preview'); preview.setAttribute('aria-label', '本次解读的牌');
   const previewHint = el('p', '', 'record-intro');
   const settings = el('div', '', 'ai-settings');
-  function selectField(labelText, id, options, help) {
+  const advanced = el('details', '', 'ai-advanced'); advanced.id = 'ai-advanced';
+  advanced.append(el('summary', '高级'));
+  const advancedSettings = el('div', '', 'ai-settings ai-advanced-settings'); advanced.append(advancedSettings);
+  function selectField(labelText, id, options, help, container = settings) {
     const label = el('label', '', 'ai-setting'), select = el('select'); select.id = id; label.htmlFor = id;
     const caption = el('span', labelText, 'field-caption'); label.append(caption);
     select.setAttribute('aria-label', labelText);
     if (help) caption.append(createHelpTip(doc, { label: labelText, text: help, id: `${id}-help` }));
     for (const item of options) { const option = el('option', item.label); option.value = item.id; select.append(option); }
-    label.append(select); settings.append(label); return select;
+    label.append(select); container.append(label); return select;
   }
+  const detail = selectField('解读详细度', 'ai-detail', AI_DETAILS, '简读抓住重点，标准展开主要联系，细读进一步讨论有依据的替代理解。篇幅与计算强度分别设置。'); detail.value = AI_DEFAULTS.detail;
+  const focus = selectField('解读侧重', 'ai-focus', AI_FOCUSES, '先跟随你的问题。侧重只调整关注角度，其他类型的问题也可以正常解读；需要特别关注什么，直接写进问题即可。'); focus.value = AI_DEFAULTS.focus;
   const model = selectField('模型', 'ai-model', AI_MODELS); model.value = AI_DEFAULTS.model;
-  const effort = selectField('分析强度', 'ai-effort', AI_EFFORTS, '调节模型的分析投入。强度与生成预算分别设置；提高强度不保证更准确。'); effort.value = AI_DEFAULTS.effort;
-  const budget = selectField('生成预算', 'ai-budget', [...AI_TOKEN_PRESETS.map(value => ({ id: String(value), label: `${value.toLocaleString('en-US')} tokens` })), { id: 'custom', label: '自定义' }], 'Token 是模型处理文字的计量单位。这里限制推理与回答的合计用量，输入另计；预算不必用满，用尽时回答可能未完成。'); budget.value = String(AI_DEFAULTS.maxOutputTokens);
+  const effort = selectField('计算强度', 'ai-effort', AI_EFFORTS, '调节模型的分析投入；解读详细度决定回答如何展开。生成预算另设，较高强度可能需要更多预算。', advancedSettings); effort.value = AI_DEFAULTS.effort;
+  const budget = selectField('生成预算', 'ai-budget', [...AI_TOKEN_PRESETS.map(value => ({ id: String(value), label: `${value.toLocaleString('en-US')} tokens` })), { id: 'custom', label: '自定义' }], 'Token 是模型处理文字的计量单位。这里限制推理与回答的合计用量，输入另计；预算不必用满，用尽时回答可能未完成。', advancedSettings); budget.value = String(AI_DEFAULTS.maxOutputTokens);
   const customLabel = el('label', '自定义上限', 'ai-setting ai-custom-budget');
-  const custom = el('input'); custom.type = 'number'; custom.id = 'ai-custom-tokens'; custom.step = '1'; custom.max = String(AI_MAX_OUTPUT_TOKENS); custom.value = String(AI_DEFAULTS.maxOutputTokens); customLabel.append(custom); settings.append(customLabel);
+  const custom = el('input'); custom.type = 'number'; custom.id = 'ai-custom-tokens'; custom.step = '1'; custom.max = String(AI_MAX_OUTPUT_TOKENS); custom.value = String(AI_DEFAULTS.maxOutputTokens); customLabel.append(custom); advancedSettings.append(customLabel);
   const costRow = el('div', '', 'ai-cost-row');
   const cost = el('span', '', 'ai-cost-hint'); cost.id = 'ai-cost-hint';
   costRow.append(cost, createHelpTip(doc, { label: '费用', text: '宽泛参考范围，按 OpenAI 实际用量计费。问题、牌义、推理和回答都会影响费用；不会自动再次生成。', id: 'ai-cost-help' }));
   const settingError = el('p', '', 'ai-setting-error'); settingError.id = 'ai-setting-error';
   custom.setAttribute('aria-describedby', settingError.id); budget.setAttribute('aria-describedby', settingError.id);
+  advanced.append(settingError);
   const generate = el('button', '开始解读', 'record-primary'); generate.id = 'ai-generate'; generate.type = 'submit';
   const readiness = el('p', '', 'record-save-hint');
   const status = el('p', '', 'record-status ai-status'); status.id = 'ai-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
@@ -54,7 +60,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const resultSelect = el('select'); resultSelect.id = 'ai-result-picker'; resultSelectLabel.append(resultSelect); resultSelectLabel.hidden = true;
   const resultBody = el('div', '', 'ai-result-body');
   const saveLink = button('保存这次占卜与解读', () => records.openCurrent(), 'ai-save-link'); saveLink.id = 'ai-save-record'; saveLink.hidden = true;
-  form.append(questionLabel, previewHint, preview, settings, costRow, settingError, generate, readiness);
+  form.append(questionLabel, previewHint, preview, settings, advanced, costRow, generate, readiness);
   root.append(form, status, submitted, recover, continueUnknown, previous, stale, resultSelectLabel, resultBody, saveLink);
   let disposed = false, results = [], displayedId = '', lastPreviewKey = '', lastResultKey = '', lastStatusKey = '', previousKey = '', submittedId = '';
   const previousRequests = [];
@@ -97,10 +103,11 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     }
   }
 
-  const settingsValue = () => ({ model: model.value, effort: effort.value, maxOutputTokens: Number(budget.value === 'custom' ? custom.value : budget.value) });
+  const settingsValue = () => ({ model: model.value, detail: detail.value, focus: focus.value, effort: effort.value, maxOutputTokens: Number(budget.value === 'custom' ? custom.value : budget.value) });
   function settingsProblem() {
     const value = settingsValue(), strength = AI_EFFORTS.find(item => item.id === value.effort);
-    if (!strength || !AI_MODELS.some(item => item.id === value.model)) return '请选择模型与分析强度。';
+    if (!strength || !AI_MODELS.some(item => item.id === value.model)) return '请选择模型与计算强度。';
+    if (!AI_DETAILS.some(item => item.id === value.detail) || !AI_FOCUSES.some(item => item.id === value.focus)) return '请选择解读详细度与侧重。';
     if (!Number.isSafeInteger(value.maxOutputTokens) || value.maxOutputTokens < strength.minimumTokens || value.maxOutputTokens > AI_MAX_OUTPUT_TOKENS) return `这个强度请选择 ${strength.minimumTokens.toLocaleString('en-US')}–${AI_MAX_OUTPUT_TOKENS.toLocaleString('en-US')} 之间的整数预算。`;
     return '';
   }
@@ -136,15 +143,15 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     if ((state.payload?.id || '') !== submittedId) {
       submittedId = state.payload?.id || ''; submitted.replaceChildren(); submitted.hidden = !state.payload;
       if (state.payload) {
-        submitted.append(el('summary', '本次提交'), el('p', state.payload.reading.question, 'ai-answer-question'));
+        submitted.append(el('summary', '本次提交'), el('p', state.payload.reading.question, 'ai-answer-question'), el('p', `${formatAISettings(state.payload)} · ${state.payload.maxOutputTokens.toLocaleString('en-US')} tokens`, 'ai-answer-meta'));
         const list = el('ol');
         for (const card of state.payload.reading.cards) list.append(el('li', `${readingCard(card.physicalId).name} · ${card.reversed ? '逆位' : '正位'}${card.positionLabel ? ` · ${card.positionLabel}` : ''}`));
         submitted.append(list);
       }
     }
     custom.min = String(strength?.minimumTokens || 1000); customLabel.hidden = budget.value !== 'custom'; custom.required = budget.value === 'custom';
-    for (const input of [model, effort, budget, custom]) input.disabled = request.inFlight;
-    settingError.textContent = invalid; settingError.hidden = !invalid; custom.setAttribute('aria-invalid', String(!!invalid));
+    for (const input of [model, detail, focus, effort, budget, custom]) input.disabled = request.unresolved || processing() || records.locked;
+    settingError.textContent = invalid; settingError.hidden = !invalid; if (invalid) advanced.open = true; custom.setAttribute('aria-invalid', String(!!invalid));
     cost.textContent = aiCostHint(model.value, effort.value);
     generate.disabled = !ready || !question.value.trim() || !!invalid || request.unresolved || processing() || records.locked || results.length >= 10;
     generate.textContent = request.inFlight ? '正在解读…' : state.payload || previousRequests.length ? '再次解读' : '开始解读';
@@ -173,7 +180,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     if (resultSelect.options.length !== results.length) {
       resultSelect.replaceChildren();
       for (const [i, item] of results.entries()) {
-        const option = el('option', `${i + 1} · ${AI_MODELS.find(model => model.id === item.model)?.label || item.model} · ${AI_EFFORTS.find(e => e.id === item.effort)?.label || item.effort}`); option.value = item.id; resultSelect.append(option);
+        const option = el('option', `${i + 1} · ${formatAISettings(item)}`); option.value = item.id; resultSelect.append(option);
       }
     }
     resultSelectLabel.hidden = results.length < 2;
@@ -188,7 +195,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   }
   question.addEventListener('input', () => records.setQuestion(question.value));
   effort.addEventListener('change', () => { const target = AI_EFFORTS.find(item => item.id === effort.value)?.suggestedTokens; if (target) { budget.value = String(target); custom.value = String(target); } update(); });
-  for (const input of [model, budget, custom]) input.addEventListener(input === custom ? 'input' : 'change', update);
+  for (const input of [model, detail, focus, budget, custom]) input.addEventListener(input === custom ? 'input' : 'change', update);
   resultSelect.addEventListener('change', () => { displayedId = resultSelect.value; update(); });
   form.addEventListener('submit', event => {
     event.preventDefault(); update(); if (generate.disabled) return;

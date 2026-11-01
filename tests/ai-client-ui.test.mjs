@@ -207,3 +207,48 @@ test('source basis markers render understandable Chinese and never leak internal
   }
   f.dispose();
 });
+
+test('detail and focus are visible defaults; advanced computing controls remain optional and presets do not dispatch', async () => {
+  const f = fixture();
+  assert.equal(f.find('ai-detail').value, 'standard'); assert.equal(f.find('ai-focus').value, 'general');
+  assert.ok(!f.find('ai-advanced').open);
+  assert.equal(f.find('ai-advanced').querySelector('#ai-detail'), null);
+  assert.equal(f.find('ai-advanced').querySelector('#ai-model'), null);
+  assert.equal(f.find('ai-advanced').querySelector('#ai-effort'), f.find('ai-effort'));
+  assert.equal(f.find('ai-advanced').querySelector('#ai-budget'), f.find('ai-budget'));
+  f.input('ai-question', '我想怎样理解最近反复想到的一种颜色？');
+  f.input('ai-detail', 'deep', 'change'); f.input('ai-focus', 'general', 'change');
+  assert.equal(f.requests.length, 0); assert.equal(f.find('ai-effort').value, 'low'); assert.equal(f.find('ai-budget').value, '3000');
+  f.submit(); await settle();
+  assert.equal(f.requests[0].detail, 'deep'); assert.equal(f.requests[0].focus, 'general');
+  assert.match(f.root.querySelector('.ai-result-body').textContent, /细读 · 跟随问题/);
+  assert.match(f.recordRoot.querySelector('.record-ai-choices').textContent, /细读 · 跟随问题/);
+  f.input('ai-detail', 'brief', 'change'); f.input('ai-focus', 'self', 'change');
+  assert.equal(f.requests.length, 1); assert.match(f.root.querySelector('.ai-result-body').textContent, /细读 · 跟随问题/);
+  assert.doesNotMatch(f.root.querySelector('.ai-result-body').textContent, /简读 · 自我理解/);
+  assert.equal(f.root.querySelector('.ai-stale').hidden, true);
+  f.dispose();
+});
+
+test('pending presets stay locked and the submission snapshot keeps its original settings', async () => {
+  let body, finish;
+  const f = fixture({ aiClient: { generate: input => { body = input; return new Promise(resolve => { finish = resolve; }); }, get: async () => completed(body) } });
+  f.input('ai-question', '比较两个方向'); f.input('ai-detail', 'brief', 'change'); f.input('ai-focus', 'comparison', 'change'); f.submit();
+  assert.equal(body.detail, 'brief'); assert.equal(body.focus, 'comparison');
+  for (const id of ['ai-detail', 'ai-focus', 'ai-model', 'ai-effort', 'ai-budget']) assert.equal(f.find(id).disabled, true);
+  finish({ interpretation: { ...body, status: 'pending', createdAt: '2026-11-01T00:00:00Z' } }); await settle();
+  assert.equal(f.find('ai-detail').disabled, true); assert.equal(f.find('ai-focus').disabled, true);
+  assert.match(f.root.querySelector('.ai-request-snapshot').textContent, /简读 · 选择比较/);
+  f.find('ai-recover').click(); await settle();
+  assert.equal(f.find('ai-detail').disabled, false); assert.equal(f.find('ai-focus').disabled, false);
+  f.dispose();
+});
+
+test('legacy results render without inventing a detail or focus selection', () => {
+  const f = fixture(); f.records.setQuestion('以前的问题');
+  const body = { id: crypto.randomUUID(), reading: f.records.getAIReading(), model: 'gpt-6.1-terra', effort: 'low', maxOutputTokens: 3000 };
+  const node = renderAIInterpretation(f.document, completed(body).interpretation);
+  assert.match(node.querySelector('.ai-answer-meta').textContent, /6.1 Terra · 计算·轻量/);
+  assert.doesNotMatch(node.querySelector('.ai-answer-meta').textContent, /跟随问题|简读|细读|标准/);
+  f.dispose();
+});

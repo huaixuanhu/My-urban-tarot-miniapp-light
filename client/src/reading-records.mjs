@@ -2,8 +2,8 @@ import { randomSourceLabel } from '../../shared/random-provenance.mjs';
 import { readingCard } from './reading-content.mjs';
 import { readingCardImage } from './reading-art.mjs';
 import { captureRecord, createSaveAttempt, createRecordsClient } from './reading-record-data.mjs';
-import { aiReadingSignature, AI_MODELS } from '../../shared/ai-options.mjs';
-import { renderAIInterpretation } from './reading-ai-render.mjs';
+import { aiReadingSignature } from '../../shared/ai-options.mjs';
+import { renderAIInterpretation, formatAISettings } from './reading-ai-render.mjs';
 
 export function createReadingRecords({ root, getReading, getBusy, disclosures, client = createRecordsClient() }) {
   const doc = root.ownerDocument;
@@ -98,7 +98,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
       for (const result of available) {
         const label = el('label'), input = el('input'); input.type = 'checkbox'; input.checked = includedAI.has(result.id);
         input.addEventListener('change', () => { input.checked ? includedAI.add(result.id) : includedAI.delete(result.id); noteChanged = true; update(); });
-        label.append(input, el('span', `${AI_MODELS.find(item => item.id === result.model)?.label || result.model} · ${date(result.completedAt || result.createdAt)}`)); aiChoices.append(label);
+        label.append(input, el('span', `${formatAISettings(result)} · ${date(result.completedAt || result.createdAt)}`)); aiChoices.append(label);
       }
     }
     for (const input of aiChoices.querySelectorAll('input')) input.disabled = saving || attempt.pending;

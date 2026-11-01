@@ -3,6 +3,17 @@ export const AI_MODELS = Object.freeze([
   { id: 'gpt-6.1-terra', label: '6.1 Terra' },
   { id: 'gpt-6.1-sol', label: '6.1 Sol' },
 ]);
+export const AI_DETAILS = Object.freeze([
+  { id: 'brief', label: '简读' },
+  { id: 'standard', label: '标准' },
+  { id: 'deep', label: '细读' },
+]);
+export const AI_FOCUSES = Object.freeze([
+  { id: 'general', label: '跟随问题' },
+  { id: 'self', label: '自我理解' },
+  { id: 'action', label: '行动与阻碍' },
+  { id: 'comparison', label: '选择比较' },
+]);
 export const AI_EFFORTS = Object.freeze([
   { id: 'low', label: '轻量', minimumTokens: 1000, suggestedTokens: 3000 },
   { id: 'medium', label: '标准', minimumTokens: 3000, suggestedTokens: 6000 },
@@ -11,7 +22,7 @@ export const AI_EFFORTS = Object.freeze([
 export const AI_TOKEN_PRESETS = Object.freeze([3000, 6000, 12000]);
 export const AI_MAX_OUTPUT_TOKENS = 12000;
 export const AI_MAX_INPUT_TOKENS = 10000;
-export const AI_DEFAULTS = Object.freeze({ model: 'gpt-6.1-terra', effort: 'low', maxOutputTokens: 3000 });
+export const AI_DEFAULTS = Object.freeze({ model: 'gpt-6.1-terra', detail: 'standard', focus: 'general', effort: 'low', maxOutputTokens: 3000 });
 
 // Intentionally broad guidance for this bounded text-only feature, not a quote.
 // Input, actual generation length, reasoning and model all affect the bill.

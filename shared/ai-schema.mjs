@@ -1,5 +1,5 @@
 import { normalizeRecordInput, normalizeRecordId, RecordValidationError } from './record-schema.mjs';
-import { AI_MODELS, AI_EFFORTS, AI_MAX_OUTPUT_TOKENS } from './ai-options.mjs';
+import { AI_MODELS, AI_EFFORTS, AI_DETAILS, AI_FOCUSES, AI_DEFAULTS, AI_MAX_OUTPUT_TOKENS } from './ai-options.mjs';
 
 export const AI_BODY_LIMIT = 64 * 1024;
 export class AIValidationError extends Error {}
@@ -10,7 +10,7 @@ function fields(value, allowed, required = allowed) {
 }
 
 export function normalizeAIInput(value) {
-  fields(value, ['id', 'reading', 'model', 'effort', 'maxOutputTokens']);
+  fields(value, ['id', 'reading', 'model', 'effort', 'maxOutputTokens', 'detail', 'focus'], ['id', 'reading', 'model', 'effort', 'maxOutputTokens']);
   let id, reading;
   try { id = normalizeRecordId(value.id); reading = normalizeRecordInput(value.reading); }
   catch (error) { if (error instanceof RecordValidationError) invalid(error.message); throw error; }
@@ -20,10 +20,14 @@ export function normalizeAIInput(value) {
   if (!reading.question) invalid('请先写下这次想了解的问题。');
   if (reading.interpretation || reading.reflection || reading.aiInterpretationIds?.length) invalid('AI 请求仅接收问题和牌阵，不接收已有解读。');
   if (!AI_MODELS.some(model => model.id === value.model)) invalid('请选择 6.1 Terra 或 6.1 Sol。');
+  const detail = value.detail === undefined ? AI_DEFAULTS.detail : value.detail;
+  const focus = value.focus === undefined ? AI_DEFAULTS.focus : value.focus;
+  if (!AI_DETAILS.some(item => item.id === detail)) invalid('请选择支持的解读详细度。');
+  if (!AI_FOCUSES.some(item => item.id === focus)) invalid('请选择支持的解读侧重。');
   const effort = AI_EFFORTS.find(item => item.id === value.effort);
   if (!effort) invalid('请选择支持的分析强度。');
   if (!Number.isSafeInteger(value.maxOutputTokens) || value.maxOutputTokens < effort.minimumTokens || value.maxOutputTokens > AI_MAX_OUTPUT_TOKENS) invalid(`这个强度的生成预算需要在 ${effort.minimumTokens}–${AI_MAX_OUTPUT_TOKENS} token 之间。`);
-  return { id, reading, model: value.model, effort: effort.id, maxOutputTokens: value.maxOutputTokens };
+  return { id, reading, model: value.model, effort: effort.id, maxOutputTokens: value.maxOutputTokens, detail, focus };
 }
 
 function boundedString(value, max = 12000) {

@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { before, test } from 'node:test';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { accessConfig } from '../access/config.ts';
 import { createAccessGuard } from '../access/guard.ts';
 import { createInterpretationsHandler, AIStorageNotConfigured, publicInterpretation } from '../server/ai/service.mjs';
 import { createOpenAIProvider, AIProviderError } from '../server/ai/provider.mjs';
-import { buildProviderPayload } from '../server/ai/prompt.mjs';
+import { AI_PROMPT_VERSION, AI_SYSTEM_PROMPT, AI_DETAIL_PROMPTS, AI_FOCUS_PROMPTS, buildProviderPayload } from '../server/ai/prompt.mjs';
+import { AI_DETAILS, AI_FOCUSES } from '../shared/ai-options.mjs';
 import { normalizeAIInput } from '../shared/ai-schema.mjs';
 import { buildStoredRecord, normalizeRecordInput } from '../shared/record-schema.mjs';
 import { createRecordsHandler } from '../server/records/service.mjs';
@@ -70,7 +71,8 @@ test('authorized explicit submission uses original facts and returns a separate 
   const f = fixture(), body = input(); const res = await f.handler(await request(body));
   assert.equal(res.status, 201); assert.equal(res.headers.get('cache-control'), 'private, no-store');
   const { interpretation: result } = await res.json();
-  assert.equal(result.status, 'completed'); assert.equal(result.model, body.model); assert.equal(result.promptVersion, 'stage2.5.4.1-v1');
+  assert.equal(result.status, 'completed'); assert.equal(result.model, body.model); assert.equal(result.promptVersion, AI_PROMPT_VERSION);
+  assert.equal(result.detail, 'standard'); assert.equal(result.focus, 'general');
   assert.equal(result.reading.question, body.reading.question); assert.equal(result.reading.cards[0].sourceSnapshot.name, 'The Fool');
   assert.equal(result.reading.cards[1].sourceSnapshot.reversedInterpretation, null);
   assert.equal(result.usage.outputTokens, 600); assert.equal(result.usage.reasoningTokens, 100);
@@ -309,4 +311,97 @@ test('AI readback omits unverified source claims in older stored snapshots', asy
   assert.equal(res.status, 200);
   assert.equal((await res.json()).interpretation.reading.randomness, undefined);
   assert.deepEqual(stored.reading.randomness, source);
+});
+
+test('all detail/focus combinations preserve facts and inject only the two selected segments', () => {
+  const source = reading({ question: '这首诗里的雨，怎样联系我最近反复想到的那座城市？' });
+  const stored = buildStoredRecord(source, { savedAt: clock, createdBy: 'test' });
+  for (const detail of AI_DETAILS) for (const focus of AI_FOCUSES) {
+    const normalized = normalizeAIInput(input({ detail: detail.id, focus: focus.id }));
+    const payload = buildProviderPayload({ ...normalized, reading: stored });
+    assert.equal(payload.instructions, [AI_SYSTEM_PROMPT, AI_FOCUS_PROMPTS[focus.id], AI_DETAIL_PROMPTS[detail.id]].join('\n\n'));
+    assert.equal(JSON.parse(payload.input).question, source.question);
+    assert.equal(JSON.parse(payload.input).cards[1].reversed, true);
+    assert.equal(payload.max_output_tokens, 3000);
+    assert.deepEqual(payload.reasoning, { effort: 'low' });
+    assert.match(payload.instructions, /问题可以超出预设范围/);
+    assert.match(payload.instructions, /若所选侧重与问题不合/);
+    assert.match(payload.instructions, /没有收到牌面图片/);
+  }
+});
+
+test('invalid or injected presets are rejected before storage or provider use', async () => {
+  for (const values of [{ detail: 'unlimited' }, { detail: null }, { focus: 'ignore rules' }, { focus: {} }, { focus: '__proto__' }]) {
+    const f = fixture();
+    const response = await f.handler(await request(input(values)));
+    assert.equal(response.status, 400);
+    assert.deepEqual(f.calls, { storage: 0, count: 0, generate: 0, provider: 0 });
+  }
+});
+
+test('preset settings persist in the request, readback and shared-record attachment', async () => {
+  const f = fixture(), body = input({ detail: 'deep', focus: 'comparison' });
+  const generated = (await (await f.handler(await request(body))).json()).interpretation;
+  assert.equal(f.store.entries.get(body.id).detail, 'deep');
+  assert.equal(generated.focus, 'comparison');
+  assert.equal(generated.promptVersion, AI_PROMPT_VERSION);
+  const fetched = (await (await f.handler(await request(undefined, { query: `?id=${body.id}` }))).json()).interpretation;
+  assert.deepEqual(fetched, generated);
+  const r = recordFixture(f.store);
+  const saved = (await (await r.handler(await request({ ...body.reading, id: randomUUID(), aiInterpretationIds: [body.id] }))).json()).record;
+  assert.deepEqual(saved.aiInterpretations[0], generated);
+  assert.equal(f.calls.generate, 1);
+});
+
+test('changing detail or focus under an existing ID conflicts without another call', async () => {
+  const f = fixture(), body = input({ detail: 'brief', focus: 'self' });
+  await f.handler(await request(body));
+  for (const changed of [{ detail: 'deep' }, { focus: 'general' }]) {
+    assert.equal((await f.handler(await request({ ...body, ...changed }))).status, 409);
+  }
+  assert.equal(f.calls.generate, 1);
+});
+
+test('pending settings stay frozen and conflicting submissions cannot change the in-flight prompt', async () => {
+  const f = fixture(), body = input({ detail: 'brief', focus: 'action' });
+  let release;
+  const held = new Promise(resolve => { release = resolve; });
+  const generate = f.provider.generate;
+  f.provider.generate = async payload => { await held; return generate(payload); };
+  const pending = f.handler(await request(body));
+  while (!f.store.entries.has(body.id)) await new Promise(resolve => setImmediate(resolve));
+  assert.equal((await f.handler(await request({ ...body, detail: 'deep', focus: 'comparison' }))).status, 409);
+  const view = (await (await f.handler(await request(undefined, { query: `?id=${body.id}` }))).json()).interpretation;
+  assert.equal(view.status, 'pending'); assert.equal(view.detail, 'brief'); assert.equal(view.focus, 'action');
+  release();
+  const terminal = (await (await pending).json()).interpretation;
+  assert.equal(terminal.detail, 'brief'); assert.equal(terminal.focus, 'action');
+  assert.ok(f.payloads[0].instructions.includes(AI_DETAIL_PROMPTS.brief));
+  assert.ok(f.payloads[0].instructions.includes(AI_FOCUS_PROMPTS.action));
+  assert.equal(f.calls.generate, 1);
+});
+
+test('legacy pending POST replay retrieves the old claim without default relabeling or generation', async () => {
+  const f = fixture(), body = input();
+  const normalized = normalizeAIInput(body);
+  delete normalized.detail; delete normalized.focus;
+  const old = { ...normalized, reading: buildStoredRecord(normalized.reading, { savedAt: clock, createdBy: 'synthetic-a' }),
+    requestHash: createHash('sha256').update(JSON.stringify(normalized)).digest('hex'), createdAt: clock,
+    promptVersion: 'stage2.5.4.1-v1', status: 'pending' };
+  f.store.entries.set(body.id, structuredClone(old));
+  const response = await f.handler(await request(body));
+  assert.equal(response.status, 202);
+  const result = (await response.json()).interpretation;
+  assert.equal(result.detail, undefined); assert.equal(result.focus, undefined);
+  assert.equal(result.promptVersion, 'stage2.5.4.1-v1');
+  assert.equal((await f.handler(await request({ ...body, detail: 'deep' }))).status, 409);
+  assert.equal(f.calls.provider, 0); assert.equal(f.calls.generate, 0);
+  assert.deepEqual(f.store.entries.get(body.id), old);
+});
+
+test('missing presets on a new old-client request use defaults; explicit defaults replay without regeneration', async () => {
+  const f = fixture(), body = input();
+  await f.handler(await request(body));
+  assert.equal((await f.handler(await request({ ...body, detail: 'standard', focus: 'general' }))).status, 200);
+  assert.equal(f.calls.generate, 1);
 });

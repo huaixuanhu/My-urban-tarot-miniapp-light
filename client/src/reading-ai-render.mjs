@@ -1,4 +1,14 @@
-import { AI_MODELS, AI_EFFORTS } from '../../shared/ai-options.mjs';
+import { AI_MODELS, AI_EFFORTS, AI_DETAILS, AI_FOCUSES } from '../../shared/ai-options.mjs';
+
+/** Keep older results honest: missing presets were not selected at generation. */
+export function formatAISettings(result) {
+  return [
+    AI_MODELS.find(item => item.id === result.model)?.label || result.model,
+    AI_DETAILS.find(item => item.id === result.detail)?.label,
+    AI_FOCUSES.find(item => item.id === result.focus)?.label,
+    result.effort ? `计算·${AI_EFFORTS.find(item => item.id === result.effort)?.label || result.effort}` : null,
+  ].filter(Boolean).join(' · ');
+}
 
 /** Model text is always text content, never HTML or executable Markdown. */
 export function renderAIInterpretation(document, result, { heading = 'AI解读' } = {}) {
@@ -6,9 +16,7 @@ export function renderAIInterpretation(document, result, { heading = 'AI解读' 
     const node = document.createElement(tag); node.textContent = text; if (className) node.className = className; return node;
   };
   const section = el('section', '', 'ai-answer');
-  const model = AI_MODELS.find(item => item.id === result.model)?.label || result.model;
-  const effort = AI_EFFORTS.find(item => item.id === result.effort)?.label || result.effort;
-  section.append(el('h3', heading), el('p', `${model} · ${effort} · ${new Date(result.completedAt || result.createdAt).toLocaleString('zh-CN', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, 'ai-answer-meta'));
+  section.append(el('h3', heading), el('p', `${formatAISettings(result)} · ${new Date(result.completedAt || result.createdAt).toLocaleString('zh-CN', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, 'ai-answer-meta'));
   section.append(el('p', result.reading?.question || '', 'ai-answer-question'));
   if (result.status !== 'completed' || !result.answer) {
     section.append(el('p', result.message || '本次解读未完成。', 'record-status'));

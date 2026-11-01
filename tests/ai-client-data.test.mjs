@@ -170,3 +170,24 @@ test('disposing ignores late results and callbacks without pretending network ca
   assert.equal(changes.length, 1); assert.equal(state.snapshot().status, 'submitting');
   await assert.rejects(state.generate(payload(nextId)), /页面已关闭/);
 });
+
+test('explicit presets are frozen and receipt mismatch remains uncertain without retry', async () => {
+  for (const change of [value => { value.detail = 'deep'; }, value => { value.focus = 'action'; }, value => { delete value.detail; }]) {
+    const input = { ...payload(), detail: 'brief', focus: 'general' }, original = structuredClone(input);
+    let release, calls = 0;
+    const state = createAIRequestState({ client: { generate: async () => { calls++; return new Promise(resolve => { release = resolve; }); } } });
+    const task = state.generate(input); input.detail = 'deep'; input.focus = 'comparison';
+    assert.equal(state.snapshot().payload.detail, 'brief'); assert.equal(state.snapshot().payload.focus, 'general');
+    const response = receipt(original); change(response.interpretation); release(response); await task;
+    assert.equal(state.snapshot().status, 'unknown'); assert.equal(state.unresolved, true); assert.equal(calls, 1);
+  }
+});
+
+test('invalid local presets reject before network; omitted legacy presets remain compatible', async () => {
+  let calls = 0;
+  const state = createAIRequestState({ client: { generate: async input => { calls++; return receipt(input); } } });
+  for (const options of [{ detail: 'unbounded' }, { focus: 'career' }, { detail: null }, { focus: {} }]) {
+    await assert.rejects(state.generate({ ...payload(), ...options }), /选项不正确/);
+  }
+  assert.equal(calls, 0); await state.generate(payload()); assert.equal(state.snapshot().status, 'completed'); assert.equal(calls, 1);
+});
