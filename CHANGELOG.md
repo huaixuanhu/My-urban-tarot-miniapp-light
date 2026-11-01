@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-01 — question-led interpretation presets
+
+Add three detail levels and optional focus lenses with question-led fallback; move effort/token limits into Advanced. Preserve preset/version metadata through deduplicated requests and shared record attachment, including older results. Verified locally with338 tests and12 actual Terra/Sol samples; no cloud activation or release. Evidence: docs/ai/stage2.5.11/README.md.
+
 ## 2026-10-30 — glass help and source explanation
 
 Give 回正 and question tips the shared fluid-glass material, retaining denser haze for reading. Add “更多 ↗” to both random-source definitions and an adjacent sourced explanation, with keyboard return, layered Escape and narrow-screen scrolling. Extend the user-marked middle glass band with faint broken orbital engraving. Preserve gameplay, inventories and all provider/gate boundaries. Local stage2.5.10 refinement; visual acceptance remains pending.

@@ -1,6 +1,12 @@
 # Urban Tarot design owner
 
-Current local candidate: revision31, stage2.5.10 glass help and middle engraving, continuing revisions29–30 under the user's delegated local refinement. Current authority: governance/STATE.md; visual review remains pending.
+Current local candidate: revision32, stage2.5.11 question-led interpretation presets, under the user's2026-11-01 implementation authorization. Current authority: governance/STATE.md; prior material revision31 is retained. Local verification is complete; user experiential review remains pending.
+
+## stage2.5.11 — candidate revision32: interpretation choices
+
+Parent: STATE.md stage2.5.11, implementing accepted stage2.5.7. Reuse the continuous glass sheet and contextual help. The main settings row contains detail (简读/标准/细读), optional focus (跟随问题/自我理解/行动与阻碍/选择比较), and model. Default 标准/跟随问题 follows actual questions beyond the listed lenses. Keep effort and output-token ceiling in a native collapsed 高级 disclosure; cost remains outside and visible. Narrow screens stack fields, with internal sheet scrolling. Invalid advanced settings reveal their explanation.
+
+Lock settings while a request remains unresolved; the submitted snapshot and saved result show their original settings. Changing later controls never relabels prior results. Old results retain original metadata without fabricated preset labels. Text stays plain, not executed Markdown. Day/night,390px, keyboard-accessible controls, slow double-click and save/readback were observed locally; details/screenshots in docs/ai/stage2.5.11/README.md. This stage changes no scene, artwork, camera or visitor gate.
 
 ## stage2.5.10 — candidate revision31: glass reading help
 

@@ -1,0 +1,1410 @@
+{
+  "scope": "Synthetic paired evaluation of current presets, not a general model ranking",
+  "date": "2026-11-01",
+  "results": [
+    {
+      "caseId": "creation-brief",
+      "model": "gpt-6.1-terra",
+      "returnedModel": "gpt-6.1-terra",
+      "detail": "brief",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 8.4,
+      "usage": {
+        "inputTokens": 1213,
+        "outputTokens": 388,
+        "totalTokens": 1601,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1210
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组牌呈现出一种张力：你有探索未知的兴致，也有将观察变成作品的创造意愿，但从准备转向行动时，意愿可能变成了压力。直觉与留白能帮助你接收城市经验，却不必等同于无限期等待；可以试着辨认，哪些准备是在滋养创作，哪些是在推迟选择。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 站在建筑边缘的形象呼应了出发的未知：小册子的动力可能来自带着好奇心尝试，而非先确保一切可行。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 逆位可延伸理解为创造意志受阻或用力过度：画面中音乐人与四元素的联系，提示你或许正在犹豫如何选择并运用已有素材。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调凭直觉接收与理解，其不费力的行动可提醒你倾听哪些城市观察自然地想被整理出来，而不只靠意志推进。"
+          }
+        ],
+        "reflectionQuestions": [
+          "哪些准备正在帮助你看清想表达的内容，哪些准备可能是在替开工设门槛？"
+        ],
+        "limitations": [
+          "The Mage 的逆位解读是基于所给正位牌义的延伸，并非原资料中的独立逆位牌义；牌面不能证明你的实际心理状态。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.0034555
+    },
+    {
+      "caseId": "creation-brief",
+      "model": "gpt-6.1-sol",
+      "returnedModel": "gpt-6.1-sol",
+      "detail": "brief",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 12.9,
+      "usage": {
+        "inputTokens": 1213,
+        "outputTokens": 565,
+        "totalTokens": 1778,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1210
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组牌呈现出“愿意出发，却难以把可能性变成选择”的张力：对城市的好奇与创作冲动可以是真实的，但若希望开工前就确定小册子的完整形态，准备也可能成为停留之处。The High Priestess 提供另一种节奏：不必强推，也不必无限等待灵感，可以从已有画作中辨认最吸引你的线索，让一个小规模的编排尝试帮助你理解作品。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 所描绘的楼沿人物与欣然迈向未知的主题，呼应你把城市观察做成小册子的动力：开始未必需要先知道成品全貌，但愿意尝试也不等于实际制作毫无难度。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 以音乐家和四元素器物表达创造潜能与行动意志；作为逆位延伸解释，它可能提示潜能尚未汇成具体选择，或你正期待先把工具、形式和信心准备齐全，才允许自己开工。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 的接收、直觉与不费力的行动，为用力推进提供补充：可以留意哪些城市片段自然形成呼应，以此寻找编排方向，但不必把“顺其自然”变成继续等待的条件。"
+          }
+        ],
+        "reflectionQuestions": [
+          "如果暂时不要求它成为一本完整的小册子，你最想先放在一起的几幅画是什么，而你觉得还必须准备好的东西，真的会影响这次尝试吗？"
+        ],
+        "limitations": [
+          "The Mage 的逆位没有独立牌义资料，上述阻滞与失衡角度属于延伸解释；本次仅依据提供的牌义与画面文字作象征性观察，不能据此确定你犹豫的实际原因。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.008681
+    },
+    {
+      "caseId": "creation-standard",
+      "model": "gpt-6.1-sol",
+      "returnedModel": "gpt-6.1-sol",
+      "detail": "standard",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 16.3,
+      "usage": {
+        "inputTokens": 1206,
+        "outputTokens": 795,
+        "totalTokens": 2001,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1203
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组牌呈现的不是简单的“想做却不够自律”，而是三种创作力量之间的张力：愿意走向未知的冲动、把可能性转成具体选择的意志，以及需要留白才能浮现的理解。The Mage 逆位让“决定怎样做”成为值得关注的阻力：准备可能正在帮助你，也可能让你暂时不必舍弃其他版本。两张正位牌则保留了不同的入口——允许自己尚未完全想清楚就尝试，也允许作品的线索从已有的城市观察中慢慢显现。你未必需要在“继续酝酿”和“正式开工”之间一次选定；可以先整理一份不代表最终成品的小样，看看实际编排会带出什么，而不是要求自己先在脑中完成整本小册子。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 对应愿意带着好奇进入未知的那部分动力。文字描述中站在建筑边缘的人物，呼应了你处在准备与开工门槛上的感受：开始意味着暂时没有完整地图。它提供的视角不是忽略实际限制，而是不必先证明小册子一定成立，才允许自己探索。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 原有牌义强调看见世界、作出选择并以意志创造；音乐家与四种元素器物的描述，也呼应将不同资源组织起来。作为逆位的延伸解释，这股力量可能卡在“怎样才算准备充分”，或被过多可能性分散。对小册子而言，可以留意：你是在补足确实缺少的条件，还是难以接受选定一种编排就意味着暂时放下其他做法？"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、理解与不强求的行动，与 The Mage 的主动创造形成互补。它提示你，城市观察未必需要先被套进一个完整主题；回看画作时，哪些细节反复吸引你、哪些作品自然产生联系，可能就是小册子的组织线索。这种酝酿有其价值，但不必等到所有线索都清楚才开始试排。"
+          }
+        ],
+        "reflectionQuestions": [
+          "目前的准备中，哪些确实改变了作品，哪些主要是在缓解“还不能开始”的不安？",
+          "如果这份小册子只需承载你最想保留的一种城市观看方式，你会先选哪些画，它们之间有什么联系？"
+        ],
+        "limitations": [
+          "The Mage 未提供独立逆位牌义，其逆位解读是基于原有主题作出的延伸解释，并非原书内容。",
+          "以上仅依据提供的牌义与画面文字作象征性观察，不能据此确定你的心理原因；未命名的自由摆牌位置不被赋予时间或因果含义。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.0109635
+    },
+    {
+      "caseId": "creation-standard",
+      "model": "gpt-6.1-terra",
+      "returnedModel": "gpt-6.1-terra",
+      "detail": "standard",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 9.9,
+      "usage": {
+        "inputTokens": 1206,
+        "outputTokens": 620,
+        "totalTokens": 1826,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1203
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这个阶段的动力可能来自对未知城市经验的好奇，以及把观察变成作品的愿望；阻力则可能出现在拥有许多可能性、却迟迟难以选择一种做法的时候。牌之间的张力不是“准备”与“行动”必须二选一：接收和理解素材也是创作的一部分，但如果等待与构想始终没有转化为选择，小册子便可能停留在可能性里。可以试着区分哪些准备正在帮助你理解素材，哪些准备是在推迟面对不确定的开始。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 指向愿意带着轻快心情走入未知的初心。文字画面中的人站在建筑边缘，呼应开始时既有跃跃欲试，也有面对未知的不安；它提醒你，创作的动力未必要等到所有可能性都弄清楚才出现。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 的牌义强调选择行动、通过信念与连接创造；画面中音乐家身边代表四元素的器物，也呼应可调动的资源。逆位的延伸解释是：潜力可能因难以取舍而受阻，例如一直考虑如何组织已有素材，却难以选定一个起点。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 与 The Mage 形成呼应，强调以直觉接收、理解，以及不费力的行动。对城市观察而言，暂时留意哪些画面自然地彼此呼应，也许是有效的整理；但这种倾听不必等同于无限等待。"
+          }
+        ],
+        "reflectionQuestions": [
+          "整理这些城市观察时，哪一部分准备真的让你更了解素材，哪一部分可能是在回避选择？",
+          "如果先凭直觉选出几张彼此呼应的画，它们会让你想到怎样的小册子？"
+        ],
+        "limitations": [
+          "The Mage 的逆位解读是基于正位牌义的延伸，并非原始资料提供的独立逆位牌义。",
+          "牌面提供的是象征性观察，不能确定你实际犹豫的原因或作品的结果。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.00460675
+    },
+    {
+      "caseId": "creation-deep",
+      "model": "gpt-6.1-terra",
+      "returnedModel": "gpt-6.1-terra",
+      "detail": "deep",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 13.3,
+      "usage": {
+        "inputTokens": 1230,
+        "outputTokens": 813,
+        "totalTokens": 2043,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1227
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组牌呈现的动力，不只是“完成一本小册子”，还有带着好奇心进入未知、让城市观察形成自己作品的愿望。阻力则可能出现在观察与动手之间：创作的可能性很多，选择如何整理、从哪里开始反而让意愿难以落地。The High Priestess 提醒你，暂时接收和理解素材也可能是创作的一部分；但如果等待一种完全自然、确定的感觉才开始，也可能让选择一直悬而未决。可以留意：准备是否仍在带来新的理解，还是已经变成回避取舍。若有帮助，不妨选几幅已有作品试排一个粗略的小册子版本，把它当作观察的一次延伸，而不是对最终成品的承诺。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 的主题是旅程的开始：那个愿意纵身一跃、欣然走向未知的孩童般部分，呼应你想把城市观察整理成小册子的冲动。文字描述中，人物站在建筑边缘，T 恤上的符号指向 The Zero Movement；这个起点意象可以帮助理解，你的动力未必要先来自成熟方案，也可能来自对“试试看会出现什么”的好奇。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 原本强调看见世界后选择行动，以信念、连接和意志创造；画面文字里的音乐人与代表四元素的杯、盘、剑、杖，也呼应多种创作资源。逆位作为延伸解释，可能指这些潜力尚未聚焦成一个选择：你也许有许多整理方式，却难以决定先采用哪一种。另一种可能是，你并非缺少意愿，而是在等待更多素材或更清晰的结构。区分两者，可以看看你每次准备后是否更接近一个具体版本，还是选项只变得更多。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、理解、直觉与无为的行动，资料将她描述为 The Mage 的女性对应面。对你的计划来说，慢慢观察城市、感受哪些画作彼此呼应，并不一定是拖延；这些也能滋养小册子的方向。不过，无为不必被理解成完全不做选择：可以让直觉参与筛选，再用一个初步编排检验它。"
+          }
+        ],
+        "reflectionQuestions": [
+          "想到这本小册子时，最让你有兴趣的是记录城市、整理画作，还是与别人分享？",
+          "最近一次准备之后，你获得了新的理解，还是只是增加了需要做的决定？",
+          "如果先用少量已有画作试排，你最想从中发现什么？"
+        ],
+        "limitations": [
+          "The Mage 的逆位解读是基于所给正位牌义的延伸探索，原始资料未提供独立逆位牌义。",
+          "这些牌提供象征性视角，不能确定你的实际处境或作品的未来结果。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.00560175
+    },
+    {
+      "caseId": "creation-deep",
+      "model": "gpt-6.1-sol",
+      "returnedModel": "gpt-6.1-sol",
+      "detail": "deep",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 30.2,
+      "usage": {
+        "inputTokens": 1230,
+        "outputTokens": 1241,
+        "totalTokens": 2471,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1227
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组三张牌呈现的张力，不只是“想做却不够自律”，而是三种创作状态尚未协调：The Fool 愿意向未知迈步，逆位的 The Mage 让“看见可能性”与“决定做成什么”之间出现卡顿，The High Priestess 则提醒你，接收、观察和理解本来就是创作的一部分。对城市观察小册子来说，阻力可能发生在身份与尺度的转换上：自由地画城市，与选择、编排并让作品成为一本小册子，需要不同的判断。你未必缺少创作动力，也可能是尚未找到一个既能承载观察、又不会把探索过早定型的形式。\n\n值得区分的是：准备正在帮助你发现作品的内在线索，还是让你暂时避开取舍？如果每次整理都会产生更清楚的主题、画面关系或编排依据，等待可能是在酝酿；如果只是不断增加工具、参考和标准，却没有让任何选择更容易，准备就可能成了行动意愿受阻的表现。一个可尝试的中间形态，是把少量现有画作排成不必公开的粗样：不是要求自己立即完成出版，而是让直觉有一个具体对象可以回应。它既保留 The Fool 的试探，也让逆位 The Mage 所指向的行动困难变得可辨认。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 的主题是旅程的开始，提供的牌义强调带着孩童般的意愿，欣然走向尚不了解的领域。文字描述中，人物站在建筑边缘，这与“准备和开工之间”的门槛感很贴合：吸引你的可能不只是完成一本册子，也包括看看自己的城市观察汇集起来后，会出现什么。这里的动力是好奇与试探，不必先证明计划一定成熟。与此同时，牌义里的天真也提示一个限制：愿意起步，并不等于已经解决选图、结构和制作问题。可以保留探索的轻盈，而不要求最初的兴奋承担全部执行工作。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 的原始牌义把看见世界、选择行动、通过信念与连接创造联系起来；提供的画面描述是一位音乐家，以及代表四元素的杯、圆盘、剑和杖。逆位在这里作延伸解释：潜能未必缺席，但把素材与能力组织成明确选择的过程，可能受阻或用力失衡。对你而言，值得核对的不是“我有没有足够才华”，而是“我是否把太多决定捆成了一个开工条件”：例如是否必须先想清整本结构，才允许自己排出一页。另一种可能是你已经很清楚想做什么，却确实缺少某项制作知识或资源；若能说出具体卡点，这就更接近现实条件不足，而非笼统的犹豫。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 的主题是接收与理解，牌义强调直觉、内在源泉和“不强求的行动”；画面文字也将其描述为 The Mage 的女性对应与不费力的作为。这让你的准备阶段不必被一概视为拖延：城市观察可能需要先被反复观看，才能辨认哪些画作在共同讲述某种经验。它与逆位 The Mage 的呼应在于，更多控制或更多计划未必能解决全部卡顿，有时需要先听清自己对素材的真实反应。不过，这张牌也不能替无限等待背书。可以留意：安静整理之后，你是否更知道想保留什么、舍弃什么？这种辨别力，比“我有没有立刻开工”更能说明酝酿是否正在发挥作用。"
+          }
+        ],
+        "reflectionQuestions": [
+          "想象小册子真的被翻开时，你最希望它保留的是哪一种城市经验？现有画作中，哪些已经承载了它？",
+          "你目前说的“还没准备好”，具体指一个可补足的条件，还是对选定形式、舍弃其他可能性的犹豫？",
+          "如果粗样不必公开、也不代表最终版本，你会愿意先放进哪些画？剩下的顾虑又是什么？"
+        ],
+        "limitations": [
+          "这些是基于所提供牌义与画面文字的象征性观察，不能据此确定你犹豫的真实原因；具体制作条件与整理过程可以帮助核对。",
+          "The Mage 没有提供独立逆位牌义，其逆位解读是围绕阻滞与失衡作出的延伸解释，并非原书内容。",
+          "各牌的 positionLabel 均为空，因此未赋予坐标或抽牌顺序以时间、因果或固定牌位含义。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.0154835
+    },
+    {
+      "caseId": "creation-action",
+      "model": "gpt-6.1-sol",
+      "returnedModel": "gpt-6.1-sol",
+      "detail": "standard",
+      "focus": "action",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 15.1,
+      "usage": {
+        "inputTokens": 1210,
+        "outputTokens": 777,
+        "totalTokens": 1987,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1207
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组牌呈现的未必是动力不足，而是几种创作方式之间的拉扯：你愿意探索，也需要慢慢接收城市经验，但把这些观察转成具体作品时，选择与执行可能成了瓶颈。The Mage 的逆位让“潜能如何落地”成为重点：准备可能有时在帮助作品成形，有时也可能让你暂时不必面对取舍。The High Priestess 则提醒，不必把所有酝酿都视为拖延。值得区分的是：你还在发现自己真正想表达什么，还是已经有所感受，却迟迟不愿选定一种不完美的呈现？可以考虑从一组已有呼应的画开始试排，让小册子的方向在制作中显现，而不是等全部想清楚才开工。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 对应愿意跃入未知的起点。文字描述中站在建筑边缘的人物，呼应了从私人绘画走向一本实际小册子的门槛：吸引力在于探索，阻力也可能来自不知道迈出去后会怎样。它提供的动力不是预先保证成果，而是允许自己尚未掌握全貌，就开始尝试。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 原本强调看见世界、作出选择并以意志创造；画面描述中的音乐人与四种元素象征，也把潜能与调动资源联系起来。逆位在这里作延伸解释：创作意愿可能卡在资源整合或选择上，例如想让内容、形式与完成度都先到位。可探索的阻碍不是“我有没有能力”，而是“我是否要求一次开工就兑现全部潜能”。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、理解、直觉与不勉强的行动，补充了 The Mage 主动创造的一面。对城市观察小册子而言，整理不一定先从完整目录开始，也可以先留意哪些画反复触动你、哪些观察自然形成呼应。这里的酝酿有价值，但它更适合帮助你辨认内容，而不是成为永远不作选择的理由。"
+          }
+        ],
+        "reflectionQuestions": [
+          "你目前的准备，哪些确实改变了小册子的内容，哪些只是让你暂时不用决定舍弃什么？",
+          "如果不要求第一版代表你的全部水平，你最想先放在一起的几幅城市观察是什么？"
+        ],
+        "limitations": [
+          "The Mage 的原始资料未提供独立逆位牌义；此处逆位解读是基于所给正位含义的延伸探索。",
+          "这些牌提供象征性视角，不能确定你的实际心理原因或作品结果；空白牌位与空间坐标未被赋予时间或因果含义。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.0107935
+    },
+    {
+      "caseId": "creation-action",
+      "model": "gpt-6.1-terra",
+      "returnedModel": "gpt-6.1-terra",
+      "detail": "standard",
+      "focus": "action",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 9.6,
+      "usage": {
+        "inputTokens": 1210,
+        "outputTokens": 676,
+        "totalTokens": 1886,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1207
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我有一个业余创作计划，想把自己画的城市观察整理成小册子，但总在准备和开工之间犹豫。怎样理解这个阶段的动力和阻力？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组牌把你的犹豫呈现为两种创作节奏之间的张力：一方面，你有走入未知、尝试把城市观察做成小册子的冲动；另一方面，从观察到选择、组织和动手，需要一种更明确的创作意志，而这一步可能暂时不够顺畅。The High Priestess 提醒你，接收与酝酿也有价值，但它不必无限延长，直到所有准备都完成。你可以试着区分：哪些观察还需要安静地消化，哪些已经足够成为一页初稿。这里的重点不是证明你一定会完成，而是找到倾听直觉与做出选择之间可行的平衡。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 指向旅程的开始：愿意带着好奇跨进未知，不必先认定一切是否可行。画面中站在建筑边缘的人呼应了开工前的跃跃欲试；对你而言，动力可能正来自把已有的城市观察带进一种尚未完全确定的形式。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 的正位牌义强调从看见世界走向选择与创造，画面中的音乐家及四元素象征也呈现了多种创作可能。逆位作为延伸解释，可以提示选择或动手的力量受阻：可能是可能性太多，迟迟难以决定如何组织，而不一定是缺少素材或能力。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、理解与直觉，也以无为回应 The Mage 的主动创造。它为你的观察和酝酿提供了价值：不急于把每个印象变成成果。但结合逆位的 The Mage，也值得留意接收是否正在代替必要的取舍。"
+          }
+        ],
+        "reflectionQuestions": [
+          "你的哪些城市观察已经让你想把它们放在一起？如果只选一组作为初稿，会舍不得放下什么？",
+          "此刻继续准备是在帮助你理解素材，还是在推迟一个其实可以先试着做出的选择？"
+        ],
+        "limitations": [
+          "The Mage 的逆位没有独立的原始牌义，以上阻滞角度是基于所提供正位资料的延伸解释。",
+          "牌面提供的是象征性视角，不能证明你的实际阻力或预测计划的结果。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.00489175
+    },
+    {
+      "caseId": "missing-options",
+      "model": "gpt-6.1-terra",
+      "returnedModel": "gpt-6.1-terra",
+      "detail": "standard",
+      "focus": "comparison",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 8.8,
+      "usage": {
+        "inputTokens": 1213,
+        "outputTokens": 613,
+        "totalTokens": 1826,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1210
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我觉得自己站在人生的岔路口，但还说不清具体有哪些选择。我想借这几张牌看看，怎样才更容易看清眼前的问题？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "你还没有明确列出选项，因此此刻不必急着比较哪条路更好。牌面提供的一个观察角度是：既保留探索未知的开放性，也留意自己是否急于用意志把模糊的问题变成一个行动方案。The Mage 的逆位延伸与 The High Priestess 的接收、理解形成张力：看清问题可能需要暂时少一点“我要做什么”的压力，多一点对内在感受的留意。你可以先辨认眼前究竟有什么让你感到处在岔路口，再慢慢梳理实际存在的选择。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 指向愿意踏入未知的童真部分。文字描述中，人物站在建筑边缘；这可以提醒你，面对尚不清楚的局面，开放探索有价值，但也值得留意自己是否忽略了现实限制。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 的牌义涉及选择、行动，以及通过信念和连接创造。逆位延伸可以提示：想要立刻弄清并采取行动的意愿，可能暂时受到阻滞，也可能用力过度。文字中的音乐人与代表四元素的器物，也让你有机会思考：自己已有的资源和连接是什么，哪些还需要厘清？"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、理解与直觉，并以无为回应行动意志。对你的问题而言，它提供的视角是：不必马上逼出答案，可以先留意那些反复出现、却尚未说清的感受。"
+          }
+        ],
+        "reflectionQuestions": [
+          "是什么具体的处境或感受，让你觉得自己站在岔路口？",
+          "如果先不要求自己决定，你目前能辨认出哪些可能需要比较的选择或取舍？"
+        ],
+        "limitations": [
+          "The Mage 没有提供独立的逆位牌义；其逆位解读是基于正位资料的延伸，而非原书内容。",
+          "这些牌提供象征性观察，不能证明未来事件或替你确定选择。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.0045805
+    },
+    {
+      "caseId": "missing-options",
+      "model": "gpt-6.1-sol",
+      "returnedModel": "gpt-6.1-sol",
+      "detail": "standard",
+      "focus": "comparison",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 19.6,
+      "usage": {
+        "inputTokens": 1213,
+        "outputTokens": 846,
+        "totalTokens": 2059,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1210
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我觉得自己站在人生的岔路口，但还说不清具体有哪些选择。我想借这几张牌看看，怎样才更容易看清眼前的问题？",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "目前还没有清晰的选项，因此这组牌更适合帮助你辨认“问题是什么”，而不是替你比较哪条路更好。The Fool 对未知的开放，与逆位 The Mage 所提示的行动意愿受阻形成张力：值得探索的是，你是否把“想开始改变”与“必须马上知道怎样改变”绑在了一起。The High Priestess 则提供另一种看清问题的方式——暂缓制造答案，先接收自己的感受与反应。你可以留意：哪些方向只是让你觉得应该去做，哪些事即使还没有把握，也持续吸引你的注意。容许未知存在，同时把模糊的向往、顾虑和现实限制分别说清楚，可能比急着选路更有帮助。",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 指向愿意踏入未知、尚未被“不可能”束缚的部分。文字描述中的人物站在建筑边缘，呼应了你所说的岔路口感，但不意味着应该冒险一跃。它更适合提醒你：先允许尚未成形的愿望出现，不必立刻判断它是否可行；想探索什么，与最终承诺什么，可以分开。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 的原始牌义强调通过信念、连接与意志作出选择并行动，画面文字以音乐家和四元素器物呈现这种创造潜能。逆位在这里作延伸解释：也许不是完全没有可能性，而是还难以把愿望、可用资源与具体行动连接起来；也可能越想靠意志逼出答案，越难分清真正的问题。可以先辨认自己缺的是信息、资源，还是对某个方向的认同，而不急着将其归为“我没有行动力”。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、理解、直觉与不强求的行动，是 The Mage 主动创造的互补面。面对尚未说清的选择，它邀请你听见还没被整理成理由的反应：什么让你感到好奇，什么让你收缩，什么只是外界的期待。先把这些反应当作有待理解的线索，而不是必须服从的结论，可能更容易让问题浮现。"
+          }
+        ],
+        "reflectionQuestions": [
+          "如果暂时不要求自己作出正确决定，你最想离开的状态、最想靠近的状态分别是什么？它们能否帮助你说出两个初步的选择？",
+          "眼前最让你看不清的，是缺少事实信息、担心选择的代价，还是难以分辨自己的愿望与他人的期待？"
+        ],
+        "limitations": [
+          "这些解读是基于所提供牌义与画面描述的象征性观察，不能确认你尚未提供的生活事实或预测选择结果；空白牌位与空间坐标未被赋予时间或因果含义。",
+          "The Mage 没有独立的原始逆位牌义，其逆位解读是围绕阻滞或失衡所作的延伸，并非原书内容。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.011491
+    },
+    {
+      "caseId": "unusual-question",
+      "model": "gpt-6.1-sol",
+      "returnedModel": "gpt-6.1-sol",
+      "detail": "standard",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 15,
+      "usage": {
+        "inputTokens": 1207,
+        "outputTokens": 696,
+        "totalTokens": 1903,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1204
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我想给一组雨后城市街角的照片写一句有余味的展览题记。请借这三张牌的意象，帮助我找到这句话的情绪和视角。",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组三张牌适合把题记的情绪落在“微微悬着的好奇”上：雨停了，街角尚未被解释，一次出发也不必立刻成为故事。The Fool 的轻盈与临界感，遇上 The Mage 逆位对创作意志的收束，再由 The High Priestess 的接收与无为留出空白。视角可以不是替城市发言，而是站在街角，听它尚未说完的话；不必把雨后写成希望或重生。题记可试：**“雨停在这里，城市的下一句话还没有说。”**",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 的文字画面是一位站在建筑边缘的人，牌义强调怀着欣然之心走向未知。用于照片题记，这份“边缘感”可以转化为街角将转未转的瞬间：带一点轻盈与冒险，却不说明前方是什么。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 以音乐家及代表四元素的器物呈现创造潜能，强调通过意志与连接采取行动。逆位在此作延伸解释：留意是否太急于调度意象、制造一句漂亮的话。可以收住解释与修辞，让雨后街角不必承担一个完整寓意，也为题记留下未完成的节奏。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、直觉与不强求的行动，与 The Mage 的主动创造形成对照。它提示一种倾听式视角：题记无需揭开照片的秘密，只需给观看者一个入口，让街角的安静仍然保有不被说尽的部分。"
+          }
+        ],
+        "reflectionQuestions": [
+          "这组照片更让你想走进转角，还是留在原处听一会儿？题记可以从这个观看姿态出发。",
+          "你希望题记点明雨后的哪种感受，又愿意把哪一部分留给观众自己发现？"
+        ],
+        "limitations": [
+          "以上依据提供的牌义与画面描述展开，未看到牌面图片或实际摄影作品；题记是否贴合，仍需对照照片的光线、构图与气氛。",
+          "The Mage 未提供独立逆位牌义，其逆位解读是围绕创作意志的阻滞或过度使用所作的延伸，并非原书逆位释义。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.009976
+    },
+    {
+      "caseId": "unusual-question",
+      "model": "gpt-6.1-terra",
+      "returnedModel": "gpt-6.1-terra",
+      "detail": "standard",
+      "focus": "general",
+      "effort": "low",
+      "maxOutputTokens": 6000,
+      "httpStatus": 201,
+      "status": "completed",
+      "elapsedSeconds": 8.3,
+      "usage": {
+        "inputTokens": 1207,
+        "outputTokens": 474,
+        "totalTokens": 1681,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0,
+        "cacheWriteTokens": 1204
+      },
+      "promptVersion": "stage2.5.11-v1",
+      "input": {
+        "deck": "Urban Tarot",
+        "question": "我想给一组雨后城市街角的照片写一句有余味的展览题记。请借这三张牌的意象，帮助我找到这句话的情绪和视角。",
+        "spread": {
+          "type": "free",
+          "name": "自由摆牌"
+        },
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "name": "The Fool",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 1,
+            "positionLabel": "",
+            "placement": {
+              "x": -2,
+              "z": -0.5
+            },
+            "theme": "Beginning of the journey",
+            "suppliedMeaning": "The childlike part willing to make a leap, too naive to recognize the impossible, sets out with a glad heart into the unknown.",
+            "urbanImagery": "Person standing on building ledge, symbol on T-shirt references The Zero Movement",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-01",
+            "name": "The Mage",
+            "faceUp": true,
+            "reversed": true,
+            "drawOrder": 2,
+            "positionLabel": "",
+            "placement": {
+              "x": 0,
+              "z": -0.5
+            },
+            "theme": "Infinite potential and promise",
+            "suppliedMeaning": "Sees the world and makes a choice to act, creates magic through beliefs and connections, the will to create and succeed.",
+            "urbanImagery": "Musician with cup, disk, sword, wand representing four elements",
+            "sourceReversedMeaning": null
+          },
+          {
+            "sourceCardId": "major-02",
+            "name": "The High Priestess",
+            "faceUp": true,
+            "reversed": false,
+            "drawOrder": 3,
+            "positionLabel": "",
+            "placement": {
+              "x": 2,
+              "z": -0.5
+            },
+            "theme": "Receiving and understanding",
+            "suppliedMeaning": "Yin to Mage's Yang, creating magic through intuition, drinking from inner font of unconscious. Wu wei - action without action.",
+            "urbanImagery": "Feminine counterpart to the Mage, effortless doing",
+            "sourceReversedMeaning": null
+          }
+        ]
+      },
+      "answer": {
+        "summary": "这组三张牌可以把题记的情绪引向一种安静的开放：雨后的街角不必被写成崭新的起点，也不急于赋予它宏大的意义，而是让观看者带着一点好奇，等待城市自己显出余韵。The Mage 逆位的延伸视角提醒你，创作的意志也许可以稍稍退后，让 The High Priestess 的直觉与不费力的感受留出空间。\n\n题记尝试：「雨停以后，街角还在轻轻说着什么。」",
+        "cards": [
+          {
+            "sourceCardId": "major-00",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The Fool 站在楼宇边缘的文字意象，带来面向未知的轻盈感。用于照片时，它可以是一种初次经过街角般的好奇，而不必把街景写成明确的出发宣言。"
+          },
+          {
+            "sourceCardId": "major-01",
+            "reversed": true,
+            "positionLabel": "",
+            "basis": "generated_reversal_extension",
+            "interpretation": "The Mage 的音乐家与四元素道具关联创造和行动。逆位的延伸解释可视为创作意志暂时受阻或用力过度：题记不妨少一些刻意安排，让照片保有自己的节奏。"
+          },
+          {
+            "sourceCardId": "major-02",
+            "reversed": false,
+            "positionLabel": "",
+            "basis": "provided_meaning",
+            "interpretation": "The High Priestess 强调接收、直觉与无为。它为题记提供一个倾听而非解释的视角：让雨后街角的意味若隐若现，而不是说尽。"
+          }
+        ],
+        "reflectionQuestions": [
+          "你希望观众感受到的是雨停后的轻盈，还是某种尚未散去的静默？",
+          "题记更想替街角发声，还是为观众留下各自倾听的余地？"
+        ],
+        "limitations": [
+          "The Mage 的逆位没有独立牌义，此处是基于正位资料的延伸解释；画面意象仅依据提供的文字。"
+        ]
+      },
+      "replayNoDispatch": true,
+      "estimatedUSD": 0.003878
+    }
+  ],
+  "summary": [
+    {
+      "model": "gpt-6.1-terra",
+      "calls": 6,
+      "estimatedUSD": 0.02701425,
+      "meanSeconds": 9.72,
+      "detailOutputTokens": {
+        "brief": 388,
+        "standard": 620,
+        "deep": 813
+      }
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "calls": 6,
+      "estimatedUSD": 0.0673885,
+      "meanSeconds": 18.18,
+      "detailOutputTokens": {
+        "brief": 565,
+        "standard": 795,
+        "deep": 1241
+      }
+    }
+  ],
+  "estimatedTotalUSD": 0.09440275,
+  "costBasis": "2026-11-01 official Standard prices, ordinary input + 30m cache-write rate + cached input + output; usage-based estimate, not reconciled invoice."
+}
