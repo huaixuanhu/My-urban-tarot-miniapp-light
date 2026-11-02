@@ -1,5 +1,11 @@
 # Agent continuity log
 
+## 2026-11-02 — stage2.5.11.1 natural prose and paired comparison
+
+Executor: Codex desktop (exact host model ID not exposed). Rechecked governance/design and official OpenAI price/prompt documentation. Existing561649ae/d56bcf46 already covered the requested checkpoint; no redundant commit or inherited-file staging. One subagent extended only the bounded evaluation runner; one independently reviewed prompt/content without blind-review claims. Root integrated prompt v2 and continuity.338 aggregate tests pass; no new interface code, so existing browser evidence is retained within its previous scope.
+
+The two explicitly requested actual-model creation-deep samples completed on exact Terra/Sol models; frozen controls were reused. Only instructions differs in complete provider payloads; same question, cards, schema and settings. GET/replay dispatch counts unchanged. EstimateUSD0.02040525, not reconciled bill. Both reduce generic/meta caveats; some reassurance and repetition remain. Complete answers retained with no reruns. Evidence: docs/ai/stage2.5.11/style-comparison/. No production AI, cloud write, ANU, push or deployment; preserve65 inherited generated files. Continue from STATE with user review.
+
 ## 2026-11-01 — stage2.5.11 question-led presets
 
 Executing host: Codex desktop, host-selected model (exact host model ID not exposed). Implemented accepted detail/focus design with user clarification that topics remain open. Three bounded Codex subagents handled backend, frontend and an offline evaluation runner; integration owner reconciled STATE/design and read-only review. All338 aggregate tests pass. Browser day/night/390px settings, delayed double-click (one call), save/readback and empty console pass. Request guards/legacy results preserved; JSONB needs no migration. Design revision32 is locally verified, user review pending.

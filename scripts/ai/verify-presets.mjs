@@ -1,12 +1,15 @@
 /** Derived from governance/STATE.md stage2.5.11 and docs/ai/stage2.5.7/README.md.
  * Manual evaluation only. Default prints an offline plan; --run <fresh .local
  * directory> makes at most 12 generations, reserves <= US$1, and never retries.
+ * stage2.5.11.1 follow-up: --case creation-deep selects only its two models,
+ * caps the batch at US$0.20 and checks inputs against the frozen v1 evidence.
  * Uses the real interpretation service with synthetic identity/data and an
  * in-memory store. No Neon, ANU or production-state connection. Credentials
  * enter through OPENAI_API_KEY in process memory, never through CLI arguments.
  */
 import { randomUUID } from 'node:crypto';
-import { mkdir, realpath, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
+import { isDeepStrictEqual } from 'node:util';
 import path from 'node:path';
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { accessConfig } from '../../access/config.ts';
@@ -29,20 +32,42 @@ const cases = [
   { caseId: 'unusual-question', questionId: 'unusual', detail: 'standard', focus: 'general' },
 ];
 const models = ['gpt-6.1-terra', 'gpt-6.1-sol'];
+const args = process.argv.slice(2);
+let destination, selectedCase;
+while (args.length) {
+  const flag = args.shift();
+  if (flag === '--run' && destination === undefined) destination = args.shift();
+  else if (flag === '--case' && selectedCase === undefined) selectedCase = args.shift();
+  else throw new Error('Use [--case creation-deep] [--run <fresh .local directory>].');
+  if (!destination && flag === '--run' || !selectedCase && flag === '--case') throw new Error(`Missing value for ${flag}.`);
+}
+if (selectedCase !== undefined && selectedCase !== 'creation-deep') throw new Error('The bounded follow-up supports only creation-deep.');
+const baselinePath = new URL('../../docs/ai/stage2.5.11/results.json', import.meta.url);
+const baselines = selectedCase ? JSON.parse(await readFile(baselinePath, 'utf8')).results.filter(item => item.caseId === selectedCase) : [];
+if (selectedCase && (baselines.length !== models.length || !models.every(model => baselines.some(item => item.model === model && item.status === 'completed')))) {
+  throw new Error('Frozen creation-deep evidence must contain both completed model results.');
+}
 // Alternate which model goes first per case; this is a small paired sample,
 // not a statistical model ranking or an attempt to remove service variability.
 const plan = cases.flatMap((item, index) => (index % 2 ? [...models].reverse() : models).map(model => ({
   ...item, model, effort: 'low', maxOutputTokens: 6000, reserveUSD: model.endsWith('terra') ? 0.05 : 0.09,
-})));
-const generationLimit = 12, budgetUSD = 1;
-const [flag, destination, ...extra] = process.argv.slice(2);
-if (flag !== '--run') {
-  console.log(JSON.stringify({ syntheticOnly: true, generationLimit, budgetUSD, reservedTotalUSD: 0.84,
+}))).filter(item => !selectedCase || item.caseId === selectedCase);
+const generationLimit = plan.length, budgetUSD = selectedCase ? 0.20 : 1;
+const reservedTotalUSD = Math.round(plan.reduce((sum, item) => sum + item.reserveUSD, 0) * 100) / 100;
+for (const job of selectedCase ? plan : []) {
+  const baseline = baselines.find(item => item.model === job.model);
+  if (['detail', 'focus', 'effort', 'maxOutputTokens'].some(key => job[key] !== baseline[key]) || questions[job.questionId] !== baseline.input.question) {
+    throw new Error('Follow-up settings or question differ from the frozen baseline.');
+  }
+}
+if (!destination) {
+  console.log(JSON.stringify({ syntheticOnly: true, generationLimit, budgetUSD, reservedTotalUSD,
+    baseline: selectedCase ? 'docs/ai/stage2.5.11/results.json' : null,
     maximumInputTokens: 10000, promptVersion: AI_PROMPT_VERSION, questions, plan }, null, 2));
   process.exit(0);
 }
 const apiKey = process.env.OPENAI_API_KEY?.trim();
-if (!destination || extra.length || !apiKey) throw new Error('Provide a fresh .local result directory and an in-memory OPENAI_API_KEY.');
+if (!apiKey) throw new Error('Provide a fresh .local result directory and an in-memory OPENAI_API_KEY.');
 const root = await realpath(process.cwd()), local = await realpath(path.join(root, '.local'));
 if (!local.startsWith(root + path.sep)) throw new Error('The local evidence root must stay inside this checkout.');
 const directory = path.resolve(destination);
@@ -53,7 +78,8 @@ const save = (name, value) => writeFile(path.join(directory, name),
   (JSON.stringify(value, null, 2) + '\n').replaceAll(apiKey, '[REDACTED]'), { mode: 0o600 });
 const ledger = { promptVersion: AI_PROMPT_VERSION, startedAt: new Date().toISOString(), budgetUSD, generationLimit,
   reservedUSD: 0, generations: 0, counts: 0, results: [], stopped: null };
-await save('plan.json', { questions, plan, maximumInputTokens: 10000 });
+await save('plan.json', { questions, plan, maximumInputTokens: 10000, selectedCase: selectedCase ?? null,
+  baseline: selectedCase ? 'docs/ai/stage2.5.11/results.json' : null });
 await save('ledger.json', ledger);
 const entries = new Map();
 const store = {
@@ -76,7 +102,15 @@ let current, currentFile, returnedModel;
 const provider = createOpenAIProvider(apiKey, { fetcher: async (url, init) => {
   const generation = url === 'https://api.openai.com/v1/responses';
   if (!generation && url !== 'https://api.openai.com/v1/responses/input_tokens') throw new Error('Unexpected provider endpoint.');
-  await save(`${currentFile}-${generation ? 'request' : 'count-request'}.json`, JSON.parse(init.body));
+  const payload = JSON.parse(init.body);
+  if (selectedCase) {
+    const baseline = baselines.find(item => item.model === current.model);
+    if (payload.model !== baseline.model || !isDeepStrictEqual(JSON.parse(payload.input), baseline.input) ||
+      payload.reasoning?.effort !== baseline.effort || generation && payload.max_output_tokens !== baseline.maxOutputTokens) {
+      throw new Error('Follow-up payload differs from the frozen baseline; provider dispatch blocked.');
+    }
+  }
+  await save(`${currentFile}-${generation ? 'request' : 'count-request'}.json`, payload);
   if (generation) {
     if (ledger.generations >= generationLimit || ledger.reservedUSD + current.reserveUSD > budgetUSD) throw new Error('Evaluation budget exhausted.');
     ledger.generations++;

@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-02 — natural interpretation prose
+
+Version the AI prompt as stage2.5.11-v2: direct question-led prose, fewer invented counterarguments and routine caveats, one reversal-source note and quieter internal-rule handling. Preserve evidence boundaries and all request behavior. Two creation-deep actual-model comparisons show improved flow with some residual reassurance/repetition;338 checks pass. Evidence: docs/ai/stage2.5.11/style-comparison/README.md. Local only.
+
 ## 2026-11-01 — question-led interpretation presets
 
 Add three detail levels and optional focus lenses with question-led fallback; move effort/token limits into Advanced. Preserve preset/version metadata through deduplicated requests and shared record attachment, including older results. Verified locally with338 tests and12 actual Terra/Sol samples; no cloud activation or release. Evidence: docs/ai/stage2.5.11/README.md.
