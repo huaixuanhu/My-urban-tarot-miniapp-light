@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-03 — whole-spread interpretation guidance
+
+Prompt stage2.5.11-v3 asks summary to explain meaningful card relationships and their combined implication, while retaining deep single-card explanations. Scale by card count and preserve uncertain or weak relations. Current schema, UI, natural prose and request safeguards remain.338 checks pass; actual-model effects not yet tested, no new paid call or release. Evidence: docs/ai/stage2.5.11/SYNTHESIS.md.
+
 ## 2026-11-02 — natural interpretation prose
 
 Version the AI prompt as stage2.5.11-v2: direct question-led prose, fewer invented counterarguments and routine caveats, one reversal-source note and quieter internal-rule handling. Preserve evidence boundaries and all request behavior. Two creation-deep actual-model comparisons show improved flow with some residual reassurance/repetition;338 checks pass. Evidence: docs/ai/stage2.5.11/style-comparison/README.md. Local only.

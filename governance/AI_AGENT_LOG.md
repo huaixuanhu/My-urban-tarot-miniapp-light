@@ -1,5 +1,11 @@
 # Agent continuity log
 
+## 2026-11-03 — stage2.5.11.2 whole-spread synthesis
+
+Executor: Codex desktop (exact host model ID not exposed), with one independent read-only prompt/content reviewer. Rechecked current owners, accepted v2 checkpoint601e22ee and preserved inherited files. Actual frozen v2 summaries tend to compress the single-card paragraphs; the existing summary field was present. Promptv3 now assigns relation-driven added understanding to summary, retains deep individual-card treatment and scales across card counts without forced relationships or invented roles. Schema, controls, model/effort/token limits, request/record behavior and v2 source/tone rules remain.
+
+All338 aggregate tests/types/runtime/build checks pass; independent review found no blocking conflict. Existing65 generated files and frozen v1/v2 samples are byte-identical. No new model calls; actual v3 content effects remain unverified. No UI change, provider acquisition, cloud write, AI activation, push or deployment. Evidence/continuation: STATE.md stage2.5.11.2 and docs/ai/stage2.5.11/SYNTHESIS.md.
+
 ## 2026-11-02 — stage2.5.11.1 natural prose and paired comparison
 
 Executor: Codex desktop (exact host model ID not exposed). Rechecked governance/design and official OpenAI price/prompt documentation. Existing561649ae/d56bcf46 already covered the requested checkpoint; no redundant commit or inherited-file staging. One subagent extended only the bounded evaluation runner; one independently reviewed prompt/content without blind-review claims. Root integrated prompt v2 and continuity.338 aggregate tests pass; no new interface code, so existing browser evidence is retained within its previous scope.
