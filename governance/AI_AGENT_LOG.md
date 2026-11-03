@@ -1,5 +1,11 @@
 # Agent continuity log
 
+## 2026-11-03 — stage2.5.11.2.1 simplified actual-model comparison
+
+Executor: Codex desktop (exact host model ID not exposed), with a fresh nonblind read-only content reviewer. Two explicitly authorized creation-deep generations on exact6.1Terra/Sol completed; v2 controls reused, original inputs/settings unchanged and complete request payload differs only in instructions. Two counts/two generations, no retry/fallback, GET/replay adds zero dispatch. EstimateUSD0.02422525, not reconciled bill; disclosed rangeUSD0.02–0.06, budgetUSD0.20/reserveUSD0.14.
+
+Result is mixed: Sol develops three-card interaction while retaining substantial card explanations, with remaining repetition; Terra summary narrows and loses a practical alternative from the Mage paragraph. Both add beginning/zero symbolism to the supplied The Zero Movement reference without supplied definition; record as source-fidelity concern. One sample/model/version, no quality score or general ranking. Root reviewed all results, reviewer independently agreed; no additional generation or prompt edits. Reuse946dca3c338-test evidence because product code is unchanged. Preserve65 inherited files, all frozen data and current access. No cloud write, ANU, productionAI, push or deployment. Evidence/current review owner: STATE.md and docs/ai/stage2.5.11/synthesis-comparison/.
+
 ## 2026-11-03 — stage2.5.11.2 whole-spread synthesis
 
 Executor: Codex desktop (exact host model ID not exposed), with one independent read-only prompt/content reviewer. Rechecked current owners, accepted v2 checkpoint601e22ee and preserved inherited files. Actual frozen v2 summaries tend to compress the single-card paragraphs; the existing summary field was present. Promptv3 now assigns relation-driven added understanding to summary, retains deep individual-card treatment and scales across card counts without forced relationships or invented roles. Schema, controls, model/effort/token limits, request/record behavior and v2 source/tone rules remain.
