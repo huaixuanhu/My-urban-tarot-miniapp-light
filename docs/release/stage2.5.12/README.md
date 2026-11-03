@@ -24,7 +24,17 @@ Verify draw/reveal, selected detail/focus, in-flight lock, real response, one at
 
 ## Release and review receipts
 
-Pending. Record commit/deployment/configuration identities, observed hosted results, reviewer scope/model, findings and any remaining evidence limits here. Codex is the sole tracked-source writer; Claude Code reviews read-only and may write only an ignored review report.
+Release preparation commit7bffad12527586cfd9e3ee60690219dad5874ac7 was pushed normally; remote main matches. Vercel reports READY Production deploymentdpl_2gSwHTaEFKZZ3k2ZsEGZ7JzJ2biD for that exact SHA, unique hostmy-urban-tarot-miniapp-light-iq4ghzq7d-anorias-projects.vercel.app. The accepted product source remains unchanged from5dc36324; only release documentation was added.
+
+Anonymous canonical page and AI API return302 to existing Cloudflare Access; primary direct Vercel page and AI API return403; unique deployment returns302 to Vercel login. Private receipt:.local/release-2026-11-04-access.json. Existing authenticated browser session has expired; user login requested for the remaining genuine generation/save/readback checks. No production generation or record write has yet occurred. Do not equate READY and key configuration with a successful genuine response.
+
+Claude Code completed the requested same-chat review using Opus5.5 Max (selector visually confirmed; report identifies claude-opus-5-5/max). The full report is ignored.local/release-2026-11-04-claude-review.md, SHA25692b8b726fcb54426a55948cf4aa2ee7ad45519e4c002aba91ece59a3cc31f727. Codex read the complete report. It reviews all40 application files in the13-commit range, independently passes338 aggregate tests/build and4 offline compatibility groups (including25 exact old-hash samples, old-client/new-server behavior, settings-conflict409, same-ID replay and old pending-claim preservation). Its independent anonymous probes also confirm Cloudflare/direct-origin/Vercel protection. No blocking or medium finding. It could not access Vercel metadata through its own connector, so deployment/configuration/database facts remain Codex evidence, not independent hosted qualification.
+
+Retained non-blockers: saved records still label system randomness as ordinary/local; required reversed-source notes rely on prompt plus post-response validation rather than a conditional minimum in the response schema; Safari/iOS and physical-device rendering remain unobserved. These do not alter accepted source in this closeout. Existing privacy, unsaved-query recovery and future visitor spending/access concerns remain below. No new feature fix or scope expansion was performed.
+
+At2026-11-03T13:39:40.821Z a read-only postdeployment database check still shows0records,0AIrows,3random operations and poolversion2/cursor155/total1024/remaining869. Private receipt:.local/release-2026-11-04-postdeploy.json. No genuine generation was made, so this release verification incurred0OpenAI generation cost; the two-call allowance is unused.
+
+Remaining gate: authenticated browser→OpenAI→Neon save/refresh verification is NOT complete. The original app session expired and the owner was asked to log in; the Mac subsequently locked, preventing further UI verification. Do not claim successful hosted AI use or complete end-to-end acceptance. On continuation, unlock/login, verify the deployed identity/configuration has not changed, then use at most the two disclosed synthetic calls; preserve unknown request IDs and never retry generation automatically. The final documentation-only closeout commit retains identical application source; its deployment identity is recorded in the local final receipt and user-facing delivery.
 
 ## Next conversation boundary
 

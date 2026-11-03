@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-04 — private application publication
+
+Published the accepted glass panels, randomness controls and interpretation presets/promptv3 from7bffad12 to the existing private Production site. Production-only OpenAI configuration added under explicit owner authority; no schema/audience change. Codex and Claude Code Opus5.5 Max each pass338 tests; independent review finds no blocker. Authenticated real generation/save/readback still awaits owner login; no new model call or inventory consumption. Evidence and exact remaining step:docs/release/stage2.5.12/README.md.
+
 ## 2026-11-03 — whole-spread interpretation guidance
 
 Prompt stage2.5.11-v3 asks summary to explain meaningful card relationships and their combined implication, while retaining deep single-card explanations. Scale by card count and preserve uncertain or weak relations. Current schema, UI, natural prose and request safeguards remain.338 checks pass; actual-model effects not yet tested, no new paid call or release. Evidence: docs/ai/stage2.5.11/SYNTHESIS.md.
