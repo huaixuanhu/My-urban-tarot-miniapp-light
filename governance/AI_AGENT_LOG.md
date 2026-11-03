@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-11-03 — stage2.5.11.2.1 current-version acceptance
+
+Executor: Codex desktop (exact host model ID not exposed). The user accepted the current version and requested a local commit. Adopt prompt stage2.5.11-v3 at946dca3c with evaluationfff81259; preserve the mixed content findings and frozen answers. Updated current-state, entry and prose-baseline acceptance only. Reuse the unchanged implementation's338-test evidence; governance and diff checks cover this documentation-only checkpoint. No new generation, product change, cloud write, ANU acquisition, production activation, push or deployment. Preserve all65 inherited generated files. No further work is scheduled; await the user's next direction.
+
 ## 2026-11-03 — stage2.5.11.2.1 simplified actual-model comparison
 
 Executor: Codex desktop (exact host model ID not exposed), with a fresh nonblind read-only content reviewer. Two explicitly authorized creation-deep generations on exact6.1Terra/Sol completed; v2 controls reused, original inputs/settings unchanged and complete request payload differs only in instructions. Two counts/two generations, no retry/fallback, GET/replay adds zero dispatch. EstimateUSD0.02422525, not reconciled bill; disclosed rangeUSD0.02–0.06, budgetUSD0.20/reserveUSD0.14.
