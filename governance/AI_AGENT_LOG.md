@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-11-04 — stage2.5.12 release preparation
+
+Executor: Codex desktop (exact host model ID not exposed), with a read-only release-source reviewer. User authorized full push/launch and subsequent same-chat Claude Code Opus5.5 Max closeout; explicit follow-up also approved official CLI login and Production OpenAI key configuration. Fresh338-test aggregate/build passes; live dedicated schema already contains002/003,0records/0AIrows,869quantum values. No migration or random operation. Official connector lacks environment permissions; approved CLI fallback completed authentication after a sandbox file-write recovery and configured Production-only Secret OPENAI_API_KEY. No key copied or printed. Preserved65 inherited files; source guards/provider unchanged. Preparation commit changes documentation only; next is main push, hosted verification and the requested independent review. Full receipts/limits:docs/release/stage2.5.12/README.md.
+
 ## 2026-11-03 — stage2.5.11.2.1 current-version acceptance
 
 Executor: Codex desktop (exact host model ID not exposed). The user accepted the current version and requested a local commit. Adopt prompt stage2.5.11-v3 at946dca3c with evaluationfff81259; preserve the mixed content findings and frozen answers. Updated current-state, entry and prose-baseline acceptance only. Reuse the unchanged implementation's338-test evidence; governance and diff checks cover this documentation-only checkpoint. No new generation, product change, cloud write, ANU acquisition, production activation, push or deployment. Preserve all65 inherited generated files. No further work is scheduled; await the user's next direction.
