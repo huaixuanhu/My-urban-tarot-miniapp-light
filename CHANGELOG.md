@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-04 — database receipt compatibility repair
+
+The first authenticated Production generation revealed that JSONB object-key reordering made identical spreads fail receipt/record-attachment comparison. Compare explicit spread fields and preserve legacy response ordering so an already-open client can recover its existing paid result. Three new regressions reproduce the failure and pass with the repair;341 aggregate checks pass. Hosted recovery/remaining verification is tracked in STATE.md stage2.5.12.1.
+
 ## 2026-11-04 — private application publication
 
 Published the accepted glass panels, randomness controls and interpretation presets/promptv3 from7bffad12 to the existing private Production site. Production-only OpenAI configuration added under explicit owner authority; no schema/audience change. Codex and Claude Code Opus5.5 Max each pass338 tests; independent review finds no blocker. Authenticated real generation/save/readback still awaits owner login; no new model call or inventory consumption. Evidence and exact remaining step:docs/release/stage2.5.12/README.md.

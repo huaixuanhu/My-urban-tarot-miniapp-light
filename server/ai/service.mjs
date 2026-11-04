@@ -32,6 +32,9 @@ export function publicInterpretation(attempt, now = new Date()) {
   // The source snapshot belongs with the answer, but verified subject is not
   // needed in the interpretation view or its eventual shared-record attachment.
   result.reading = structuredClone(reading); delete result.reading.createdBy; delete result.reading.randomness;
+  // Already-open clients serialized spread keys in this order. Preserve their
+  // GET recovery after JSONB storage without changing the stored request/hash.
+  result.reading.spread = { type: reading.spread.type, name: reading.spread.name };
   return result;
 }
 

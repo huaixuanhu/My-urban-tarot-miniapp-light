@@ -139,6 +139,23 @@ test('second authorized user can read the same interpretation without provider w
   const res = await f.handler(await request(undefined, { query: `?id=${body.id}`, subject: 'synthetic-b' }));
   assert.equal(res.status, 200); assert.equal((await res.json()).interpretation.id, body.id); assert.equal(f.calls.generate, 1);
 });
+test('JSONB readback preserves legacy spread wire order and recovers without provider work', async () => {
+  const f = fixture(), body = input();
+  await f.handler(await request(body));
+  const stored = f.store.entries.get(body.id);
+  stored.reading.spread = { name: stored.reading.spread.name, type: stored.reading.spread.type };
+  const before = structuredClone(stored);
+  const res = await f.handler(await request(undefined, { query: `?id=${body.id}` }));
+  assert.equal(res.status, 200);
+  const { interpretation: view } = await res.json();
+  assert.equal(view.status, 'completed');
+  // Already-open deployed clients stringify this nested object without projection.
+  assert.equal(JSON.stringify(view.reading.spread), JSON.stringify(body.reading.spread));
+  assert.deepEqual(view.answer, stored.answer);
+  assert.deepEqual(stored, before);
+  assert.deepEqual(Object.keys(stored.reading.spread), ['name', 'type']);
+  assert.equal(f.calls.count, 1); assert.equal(f.calls.generate, 1);
+});
 test('too many input tokens fail before a generation and the same ID is never automatically rerun', async () => {
   let generated = 0;
   const f = fixture({ provider: { async count() { return 10001; }, async generate() { generated++; } } }), body = input();
@@ -254,6 +271,27 @@ test('record save attaches only server-owned matching completed AI, separate fro
   assert.equal(record.aiInterpretations[0].createdBy, undefined);
   const fetched = await r.handler(await request(undefined, { query: `?id=${record.id}`, subject: 'synthetic-b' }));
   assert.deepEqual((await fetched.json()).record.aiInterpretations, record.aiInterpretations);
+});
+test('record save and readback attach matching JSONB AI snapshots regardless of spread key order', async () => {
+  const f = fixture(), body = input({ detail: 'standard', focus: 'general' });
+  await f.handler(await request(body));
+  const stored = f.store.entries.get(body.id);
+  stored.reading.spread = { name: stored.reading.spread.name, type: stored.reading.spread.type };
+  const r = recordFixture(f.store), snapshot = { ...body.reading, id: randomUUID(), aiInterpretationIds: [body.id] };
+  const res = await r.handler(await request(snapshot));
+  assert.equal(res.status, 201);
+  const { record } = await res.json();
+  assert.equal(record.aiInterpretations.length, 1);
+  assert.equal(record.aiInterpretations[0].id, body.id);
+  assert.deepEqual(record.aiInterpretations[0].answer, stored.answer);
+  assert.equal(record.aiInterpretations[0].detail, 'standard');
+  assert.equal(record.aiInterpretations[0].focus, 'general');
+  const fetched = await r.handler(await request(undefined, { query: `?id=${record.id}` }));
+  assert.deepEqual((await fetched.json()).record, record);
+  const changed = { ...snapshot, id: randomUUID(), spread: { type: 'free', name: '不同牌阵' } };
+  assert.equal((await r.handler(await request(changed))).status, 400);
+  assert.equal(r.records.size, 1);
+  assert.equal(f.calls.count, 1); assert.equal(f.calls.generate, 1);
 });
 test('changed question, orientation, position or labels cannot attach an earlier result', async () => {
   const f = fixture(), body = input(); await f.handler(await request(body)); const r = recordFixture(f.store);

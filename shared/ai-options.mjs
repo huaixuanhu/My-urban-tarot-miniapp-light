@@ -35,7 +35,8 @@ export function aiCostHint(model, effort) {
 /** Ignore session IDs, human notes and selection-only stacking changes. */
 export function aiReadingSignature(reading) {
   return JSON.stringify({
-    question: reading.question.trim(), spread: reading.spread,
+    // JSONB may reorder object keys; compare spread values in a stable order.
+    question: reading.question.trim(), spread: { type: reading.spread.type, name: reading.spread.name },
     cards: [...reading.cards].sort((a, b) => a.drawOrder - b.drawOrder).map(card => ({
       sourceCardId: card.sourceCardId, reversed: card.reversed, faceUp: card.faceUp,
       drawOrder: card.drawOrder, x: card.x, z: card.z, positionLabel: (card.positionLabel || '').trim(),

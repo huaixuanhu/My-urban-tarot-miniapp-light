@@ -11,7 +11,7 @@ The accepted glass-table reading experience is the sole application. Its current
 - `pnpm build`: application output in `dist/public`, plus the existing Express fallback in `dist/index.js`.
 - `pnpm preview`: preview that built application locally. `pnpm start` runs the Express fallback.
 - For previous local bookmarks, `pnpm exec vite --config prototypes/shuffle-study/reading.vite.config.mjs` serves the same client at port5174. Hosted `/reading.html` redirects to `/`.
-- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,77 AI tests,70 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
+- `python3 -m venv .venv` once; then `pnpm check:all` runs governance structure, TypeScript, compiled access/records/AI/random runtimes,15 authorization tests,132 application/motion tests,44 record tests,80 AI tests,70 randomness tests and the production build. Motion tests remain under prototypes/shuffle-study as development-only fixtures and import the canonical client modules.
 
 Local Vite/Express/Electron execution does not run the Vercel-specific identity gate. Do not use these local servers as a protected public host. Electron still points to `dist/public/index.html`; packaged desktop execution has not been qualified by this web replacement.
 

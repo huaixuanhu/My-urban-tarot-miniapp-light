@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-11-04 — stage2.5.12.1 authenticated receipt compatibility
+
+Executor: Codex desktop (exact host model ID not exposed); separate Codex subagent reproduced the defect and authored three targeted regressions. The owner logged in and the original two-call release verification resumed. One real Terra generation completed in Production, but the browser rejected it because JSONB reordered spread fields and the nested signature was insertion-order sensitive. The same comparison also blocks record attachment. Added canonical shared projection plus legacy public-response ordering; no prompt/provider/claim hash/access/schema change. All341 aggregate checks pass, and an offline probe with the actual row plus853829e0 client signature confirms compatibility and unchanged stored data. Retain the open browser and GET-recover original Terra; do not regenerate. One original Sol allowance remains. Opus5.5 Max incremental review is in progress; publication and remaining online checks follow STATE.md stage2.5.12.1. Existing receipts and65 inherited files remain protected.
+
 ## 2026-11-04 — stage2.5.12 publication and independent review
 
 Executor: Codex desktop (exact host model ID not exposed). Independent verifier: Claude Code Opus5.5 Max in the user's existing tarot chat, observed selector and final file report. Pushed7bffad12; matching remote and READY Productiondpl_2gSwHTaEFKZZ3k2ZsEGZ7JzJ2biD/canonical alias verified through Vercel connector and CLI. Anonymous/direct-origin denial passes. Production-only OpenAI Secret configured under explicit authority; no schema or audience change. Claude independently passes338 aggregate tests and4 offline compatibility groups, reviews40 application files and finds no blocking/medium issue; original report SHA25692b8b726fcb54426a55948cf4aa2ee7ad45519e4c002aba91ece59a3cc31f727. Its Vercel connector denied metadata access, which remains Codex evidence.

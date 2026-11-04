@@ -142,6 +142,7 @@ test('receipt must match immutable identity, settings and semantic reading', asy
     value => { value.effort = 'high'; }, value => { value.maxOutputTokens = 12000; },
     value => { value.reading.question = '不同问题'; }, value => { value.reading.cards[0].x = 2; },
     value => { value.reading.cards[0].reversed = false; }, value => { value.reading.cards[0].positionLabel = '不同牌位'; },
+    value => { value.reading.spread.name = '不同牌阵'; }, value => { value.reading.spread.type = 'different'; },
   ];
   for (const change of mutate) {
     const input = payload(), response = receipt(input); change(response.interpretation);
@@ -149,6 +150,24 @@ test('receipt must match immutable identity, settings and semantic reading', asy
     await state.generate(input);
     assert.equal(state.snapshot().status, 'unknown'); assert.equal(state.snapshot().interpretation, null); assert.equal(state.unresolved, true);
   }
+});
+
+test('JSONB spread key order preserves completed receipt identity and GET-only recovery', async () => {
+  const input = payload(), response = receipt(input);
+  // JSONB may return the same values with a different object member order.
+  response.interpretation.reading.spread = { name: input.reading.spread.name, type: input.reading.spread.type };
+  let posts = 0, gets = 0;
+  const state = createAIRequestState({ client: {
+    generate: async () => { posts++; throw new Error('lost initial response'); },
+    get: async id => { gets++; assert.equal(id, input.id); return structuredClone(response); },
+  } });
+  await state.generate(input);
+  assert.equal(state.snapshot().status, 'unknown');
+  await state.recover();
+  assert.equal(state.snapshot().status, 'completed');
+  assert.deepEqual(state.snapshot().interpretation.answer, response.interpretation.answer);
+  assert.equal(state.unresolved, false);
+  assert.equal(posts, 1); assert.equal(gets, 1);
 });
 
 test('receipt ignores selection-only stacking changes but checks completed answer card facts', async () => {
