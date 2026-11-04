@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-04 — authenticated release verification complete
+
+Completed one real Terra and one Sol interpretation, saved both with the same three-card spread, and verified complete shared-record persistence after browser refresh and JSON export. Precisely removed the synthetic test record; retained both AI audit receipts and all869 quantum values. The JSONB repair and341-test Opus5.5 Max review remain the released code baseline. Final documentation-only checkpoint closes stage2.5.12; visitor/security design remains separate.
+
 ## 2026-11-04 — database receipt compatibility repair
 
 The first authenticated Production generation revealed that JSONB object-key reordering made identical spreads fail receipt/record-attachment comparison. Compare explicit spread fields and preserve legacy response ordering so an already-open client can recover its existing paid result. Three new regressions reproduce the failure and pass with the repair;341 aggregate checks pass. Repairb75e24b3 is published after the independent Opus5.5 Max review; the original Terra result was recovered online without a new generation. Remaining Sol/save/refresh verification is tracked in STATE.md stage2.5.12.1.
