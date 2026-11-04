@@ -2,11 +2,11 @@
 
 ## 2026-11-04 — database receipt compatibility repair
 
-The first authenticated Production generation revealed that JSONB object-key reordering made identical spreads fail receipt/record-attachment comparison. Compare explicit spread fields and preserve legacy response ordering so an already-open client can recover its existing paid result. Three new regressions reproduce the failure and pass with the repair;341 aggregate checks pass. Hosted recovery/remaining verification is tracked in STATE.md stage2.5.12.1.
+The first authenticated Production generation revealed that JSONB object-key reordering made identical spreads fail receipt/record-attachment comparison. Compare explicit spread fields and preserve legacy response ordering so an already-open client can recover its existing paid result. Three new regressions reproduce the failure and pass with the repair;341 aggregate checks pass. Repairb75e24b3 is published after the independent Opus5.5 Max review; the original Terra result was recovered online without a new generation. Remaining Sol/save/refresh verification is tracked in STATE.md stage2.5.12.1.
 
 ## 2026-11-04 — private application publication
 
-Published the accepted glass panels, randomness controls and interpretation presets/promptv3 from7bffad12 to the existing private Production site. Production-only OpenAI configuration added under explicit owner authority; no schema/audience change. Codex and Claude Code Opus5.5 Max each pass338 tests; independent review finds no blocker. Authenticated real generation/save/readback still awaits owner login; no new model call or inventory consumption. Evidence and exact remaining step:docs/release/stage2.5.12/README.md.
+Published the accepted glass panels, randomness controls and interpretation presets/promptv3 from7bffad12 to the existing private Production site. Production-only OpenAI configuration added under explicit owner authority; no schema/audience change. Codex and Claude Code Opus5.5 Max each pass338 tests; independent review finds no blocker. At this initial publication snapshot, authenticated real generation/save/readback still awaited owner login; no new model call or inventory consumption had occurred. Evidence and exact remaining step:docs/release/stage2.5.12/README.md.
 
 ## 2026-11-03 — whole-spread interpretation guidance
 

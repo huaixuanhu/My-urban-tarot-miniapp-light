@@ -8,7 +8,7 @@ The user accepted current promptv3 and requested full push/launch, then final ve
 
 Candidate baseline:5dc36324. Previous remote main:b2f7a5f9c3abae515d5eae0d7d84662e7e612f71. Previous READY Production and rollback candidate:dpl_5b4YNZr1a8fz3VzovYL6QUzmJjrZ. Target:my-urban-tarot-miniapp-light, projectprj_zxLDHbvstH5rB2g1u5Gl6DAqwkdE in team_aZlkgVfGEa9rGrdjpshW2KN5; canonicalhttps://augurwell.anoriaquant.dev.
 
-## Preparation
+## Initial preparation — historical snapshot
 
 Fresh pnpm check:all passes338 tests plus governance,TypeScript,compiled runtime probes and build. Existing bundle-size advisory remains. Remote main verified with git ls-remote; source audit found no access/proxy/Vercel/provider/Neon-adapter/migration changes in the12 accumulated commits. Existing local generated files are excluded from the release.
 
@@ -22,7 +22,7 @@ At most2 genuine generations, one exactgpt-6.1-terra and one exactgpt-6.1-sol, l
 
 Verify draw/reveal, selected detail/focus, in-flight lock, real response, one attached shared record, refresh/history readback and unchanged quantum inventory. Retain AI attempt receipts for deduplication; delete only the exact disposable synthetic reading after matching its complete saved content. Existing user records must not be touched. Inspect unknown results without repeating the generation. Check anonymous canonical and direct-origin denial. No ANU acquisition or quantum draw is required.
 
-## Release and review receipts
+## Initial release and review receipts — historical snapshot
 
 Release preparation commit7bffad12527586cfd9e3ee60690219dad5874ac7 was pushed normally; remote main matches. Vercel reports READY Production deploymentdpl_2gSwHTaEFKZZ3k2ZsEGZ7JzJ2biD for that exact SHA, unique hostmy-urban-tarot-miniapp-light-iq4ghzq7d-anorias-projects.vercel.app. The accepted product source remains unchanged from5dc36324; only release documentation was added.
 
@@ -42,7 +42,11 @@ On2026-11-04 the owner completed login. The canonical authenticated page loaded 
 
 Exactly one gpt-6.1-terra request completed with promptv3,standard/general,low,3000 cap,1720input/600output tokens. The browser rejected its receipt because JSONB changed spread object key order while aiReadingSignature directly serialized that nested object. The stored answer is valid and retained; this is a newly observed blocking integration defect, not an AI generation failure. No Sol request or record save has yet occurred. Private evidence:.local/release-2026-11-04-terra-result.json and .local/release-2026-11-04-jsonb-actual-probe.json.
 
-The narrow repair projects spread.type/name explicitly in the shared signature and in the public response. The latter preserves already-open old clients so the existing request can recover by GET without a reload or repeat charge. Stored rows, request hashes, provider payloads, prompt and gates remain untouched. Three added regressions failed on the prior implementation and pass with the repair; full pnpm check:all passes341 tests. An offline probe using the actual stored result and exact853829e0 signature confirms old rejection and repaired GET compatibility with zero external calls. Opus5.5 Max incremental review has been requested in the same chat; report owner:.local/release-2026-11-04-claude-jsonb-review.md. Publish only after review, then recover the existing Terra ID, use at most the one remaining Sol call and complete the originally bounded save/refresh/cleanup checks.
+The narrow repair projects spread.type/name explicitly in the shared signature and in the public response. The latter preserves already-open old clients so the existing request can recover by GET without a reload or repeat charge. Stored rows, request hashes, provider payloads, prompt and gates remain untouched. Three added regressions failed on the prior implementation and pass with the repair; full pnpm check:all passes341 tests. An offline probe using the actual stored result and exact853829e0 signature confirms old rejection and repaired GET compatibility with zero external calls. Claude Code Opus5.5 Max completed the same-chat incremental review on the exact repaired code/test blobs, independently passing341 tests and finding no blocking, medium or low issue. Report:.local/release-2026-11-04-claude-jsonb-review.md; SHA2569921c010d2fe64d7130641e4b4512965d13a67cf926be58c7f5962bb1166ba94. Its actual-row/old-client/request-hash and attachment probes are offline evidence.
+
+After that review, repairb75e24b37f46bd38c1eec77f50394b6daff416f1 was pushed normally and verified READY Production asdpl_HqdRCF4Mns5ki6twVMoNJD9hA2c9, unique hostmy-urban-tarot-miniapp-light-10crb1kau-anorias-projects.vercel.app. The already-open853829e0 browser then recovered and displayed the original Terra answer through GET, without a reload or another generation. Rendered evidence:.local/release-2026-11-04-auth/terra-recovered.txt. This is actual hosted recovery, separate from the independent offline review.
+
+Continuation: Sol is selected for the same synthetic question/cards/settings. Browser confirmation control stalled; repeated read-only database reconciliation still finds only the completed Terra row. No Sol request or record save has occurred at this checkpoint. The local Sol about-to-dispatch marker is intent, not a dispatch receipt. Keep the draft open; reconcile any pending confirm/request before using the remaining one-call allowance. Hosted save/refresh/cleanup remains incomplete. All65 inherited file hashes are unchanged.
 
 ## Next conversation boundary
 
