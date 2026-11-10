@@ -2,7 +2,7 @@
 
 ## 2026-11-11 — accepted interface and glass corner upgrade
 
-The user accepted superellipseK1.5 for the interface and physical glass slab. Sheets, controls and optical edges share the updated contour; slab highlights follow its actual bevel. Original artwork, placement, engraving, shared data and72hour access stay intact. Joint release/closeout is tracked in docs/release/stage2.5.15/README.md.
+The user accepted superellipseK1.5 for the interface and physical glass slab. Sheets, controls and optical edges share the updated contour; slab highlights follow its actual bevel. Original artwork, placement, engraving, shared data and72hour access stay intact. Published asff238815 with378 checks, authenticated desktop/390px day/night display, access gates and identical data digests. Release/closeout: docs/release/stage2.5.15/README.md.
 
 ## 2026-11-11 — local physical-glass corner refinement
 

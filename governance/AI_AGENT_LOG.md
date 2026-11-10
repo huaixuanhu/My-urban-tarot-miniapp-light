@@ -1,8 +1,8 @@
 # Agent continuity log
 
-## 2026-11-11 — stage2.5.15.2 joint release preparation
+## 2026-11-11 — stage2.5.15.2 joint release and closeout
 
-Executor: Codex desktop (exact host model ID unavailable), with independent read-only geometry/release review. The user explicitly acceptsK1.5 and authorizes full release. Reviewer finds no source blocker: production imports include the geometry helper and exclude comparison fixtures; API/access/storage/prompt sources are unchanged and115 protected hashes match. Fresh aggregate and hosted publication verification follow the existing private Git-linked path; evidence owner: docs/release/stage2.5.15/README.md.
+Executor: Codex desktop (exact host model ID unavailable), with independent read-only geometry/release review. The user explicitly acceptsK1.5 and authorizes full release. Reviewer finds no source blocker: production imports include the geometry helper and exclude comparison fixtures; API/access/storage/prompt sources are unchanged and115 protected hashes match. Fresh378-test aggregate passes. Commitff238815 published READY with exact SHA/canonical alias; the owner renewed login and authenticated production desktop/390px day/night checks passed with matching built asset and no application-origin page errors. Six gates, before/after/final database digests and115 protected hashes pass;714 quantum values remain. Deployment-scoped30minute error/fatal scan returned no groups. No provider dispatch or application-data write. Documentation-only push/final receipt closes synchronization; evidence owner: docs/release/stage2.5.15/README.md.
 
 ## 2026-11-11 — stage2.5.15.1 physical glass contour
 
