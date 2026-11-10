@@ -2,7 +2,7 @@ import { AI_MODELS, AI_EFFORTS, AI_DETAILS, AI_FOCUSES, AI_TOKEN_PRESETS, AI_MAX
 import { readingCard } from './reading-content.mjs';
 import { createInterpretationsClient, createAIRequestState } from './reading-ai-data.mjs';
 import { renderAIInterpretation, formatAISettings } from './reading-ai-render.mjs';
-import { createHelpTip } from './reading-help.mjs';
+import { createHelpTip, disposeHelpTipsWithin } from './reading-help.mjs';
 
 /** Optional interpretation: opening, typing and changing settings never call AI. */
 export function createReadingAI({ root, getReading, getBusy, records, disclosures, client = createInterpretationsClient() }) {
@@ -34,6 +34,11 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const detail = selectField('解读详细度', 'ai-detail', AI_DETAILS, '简读抓住重点，标准展开主要联系，细读进一步讨论有依据的替代理解。篇幅与计算强度分别设置。'); detail.value = AI_DEFAULTS.detail;
   const focus = selectField('解读侧重', 'ai-focus', AI_FOCUSES, '先跟随你的问题。侧重只调整关注角度，其他类型的问题也可以正常解读；需要特别关注什么，直接写进问题即可。'); focus.value = AI_DEFAULTS.focus;
   const model = selectField('模型', 'ai-model', AI_MODELS); model.value = AI_DEFAULTS.model;
+  const liveRow = el('div', '', 'ai-live-row');
+  const liveLabel = el('label', '', 'ai-live-label'), liveCheck = el('input');
+  liveCheck.type = 'checkbox'; liveCheck.id = 'ai-live-check'; liveCheck.checked = AI_DEFAULTS.liveCheck;
+  liveLabel.append(liveCheck, el('span', '实时联网核查'));
+  liveRow.append(liveLabel, createHelpTip(doc, { label: '实时联网核查', text: '勾选后，本次解读会搜索公开信息，并保留来源与核查时间。只提交必要的公开查询词。每次搜索 US$0.01，检索内容另按模型用量计费；等待时间可能增加。搜索结果可能仍有信息缺口。', id: 'ai-live-help' }));
   const effort = selectField('计算强度', 'ai-effort', AI_EFFORTS, '调节模型的分析投入；解读详细度决定回答如何展开。生成预算另设，较高强度可能需要更多预算。', advancedSettings); effort.value = AI_DEFAULTS.effort;
   const budget = selectField('生成预算', 'ai-budget', [...AI_TOKEN_PRESETS.map(value => ({ id: String(value), label: `${value.toLocaleString('en-US')} tokens` })), { id: 'custom', label: '自定义' }], 'Token 是模型处理文字的计量单位。这里限制推理与回答的合计用量，输入另计；预算不必用满，用尽时回答可能未完成。', advancedSettings); budget.value = String(AI_DEFAULTS.maxOutputTokens);
   const customLabel = el('label', '自定义上限', 'ai-setting ai-custom-budget');
@@ -48,7 +53,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const readiness = el('p', '', 'record-save-hint');
   const status = el('p', '', 'record-status ai-status'); status.id = 'ai-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
   const submitted = el('details', '', 'ai-request-snapshot'); submitted.hidden = true;
-  const recover = button('查询本次结果（不会再次生成）', () => { request.recover().catch(() => {}); }, 'ai-recover'); recover.id = 'ai-recover'; recover.hidden = true;
+  const recover = button('查询本次结果', () => { request.recover().catch(() => {}); }, 'ai-recover'); recover.id = 'ai-recover'; recover.hidden = true;
   const continueUnknown = button('保留待确认结果并继续', () => {
     if (request.snapshot().status !== 'unknown' || request.inFlight) return;
     if (!view.confirm('这次请求可能已经产生费用。待确认的结果会留在本页，可继续查询；刷新或离开会丢失这个查询入口。仍要继续吗？')) return;
@@ -60,7 +65,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const resultSelect = el('select'); resultSelect.id = 'ai-result-picker'; resultSelectLabel.append(resultSelect); resultSelectLabel.hidden = true;
   const resultBody = el('div', '', 'ai-result-body');
   const saveLink = button('保存这次占卜与解读', () => records.openCurrent(), 'ai-save-link'); saveLink.id = 'ai-save-record'; saveLink.hidden = true;
-  form.append(questionLabel, previewHint, preview, settings, advanced, costRow, generate, readiness);
+  form.append(questionLabel, previewHint, preview, settings, liveRow, advanced, costRow, generate, readiness);
   root.append(form, status, submitted, recover, continueUnknown, previous, stale, resultSelectLabel, resultBody, saveLink);
   let disposed = false, results = [], displayedId = '', lastPreviewKey = '', lastResultKey = '', lastStatusKey = '', previousKey = '', submittedId = '';
   const previousRequests = [];
@@ -97,13 +102,14 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
         displayedId = state.interpretation.id; update();
       }));
       if (item.unresolved) {
-        const lookup = button(item.inFlight ? '正在查询…' : '查询这个结果（不生成）', () => item.recover().catch(() => {})); lookup.disabled = item.inFlight; row.append(lookup);
+        const lookup = button(item.inFlight ? '正在查询…' : '查询这个结果', () => item.recover().catch(() => {})); lookup.disabled = item.inFlight; row.append(lookup);
       }
       previous.append(row);
     }
   }
 
-  const settingsValue = () => ({ model: model.value, detail: detail.value, focus: focus.value, effort: effort.value, maxOutputTokens: Number(budget.value === 'custom' ? custom.value : budget.value) });
+  const settingsValue = () => ({ model: model.value, detail: detail.value, focus: focus.value, effort: effort.value, maxOutputTokens: Number(budget.value === 'custom' ? custom.value : budget.value), liveCheck: liveCheck.checked,
+    ...(liveCheck.checked ? { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC' } : {}) });
   function settingsProblem() {
     const value = settingsValue(), strength = AI_EFFORTS.find(item => item.id === value.effort);
     if (!strength || !AI_MODELS.some(item => item.id === value.model)) return '请选择模型与计算强度。';
@@ -150,9 +156,9 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
       }
     }
     custom.min = String(strength?.minimumTokens || 1000); customLabel.hidden = budget.value !== 'custom'; custom.required = budget.value === 'custom';
-    for (const input of [model, detail, focus, effort, budget, custom]) input.disabled = request.unresolved || processing() || records.locked;
+    for (const input of [model, detail, focus, liveCheck, effort, budget, custom]) input.disabled = request.unresolved || processing() || records.locked;
     settingError.textContent = invalid; settingError.hidden = !invalid; if (invalid) advanced.open = true; custom.setAttribute('aria-invalid', String(!!invalid));
-    cost.textContent = aiCostHint(model.value, effort.value);
+    cost.textContent = aiCostHint(model.value, effort.value, liveCheck.checked);
     generate.disabled = !ready || !question.value.trim() || !!invalid || request.unresolved || processing() || records.locked || results.length >= 10;
     generate.textContent = request.inFlight ? '正在解读…' : state.payload || previousRequests.length ? '再次解读' : '开始解读';
     readiness.textContent = request.unresolved ? '' : results.length >= 10 ? '已有10份解读，请保存后开始新的占卜。' : !cards.length ? '先抽牌并翻开。' : !allShown ? '翻开所有牌后可解读。' : getBusy() ? '等待翻牌完成。' : !question.value.trim() ? '写下问题后可解读。' : '';
@@ -161,8 +167,8 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     if (statusKey !== lastStatusKey) {
       lastStatusKey = statusKey;
       const messages = {
-        idle: '', submitting: '正在解读这次的问题与牌阵。可以收起面板，稍后回来查看。',
-        pending: '本次解读仍在处理中。查询只读取状态，不会再次生成。',
+        idle: '', submitting: '正在解读…',
+        pending: '解读处理中，可查询进度。',
         completed: '解读已完成。可与你自己的想法一起保存。',
         incomplete: '生成预算用尽或回答未完成。本次没有完整解读；再次尝试会产生新的费用。',
         failed: '这次未能完成解读。你的问题与牌阵仍保留。',
@@ -173,7 +179,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
       status.classList.toggle('sr-only', state.status === 'completed');
     }
     root.setAttribute('aria-busy', String(request.inFlight)); recover.hidden = !request.unresolved; recover.disabled = request.inFlight;
-    recover.textContent = request.inFlight ? '正在处理，请稍候…' : '查询本次结果（不会再次生成）';
+    recover.textContent = request.inFlight ? '正在查询…' : '查询本次结果';
     continueUnknown.hidden = state.status !== 'unknown' || request.inFlight;
     updatePrevious();
     const displayed = results.find(item => item.id === displayedId) || results.at(-1);
@@ -186,16 +192,16 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     resultSelectLabel.hidden = results.length < 2;
     if (displayed) resultSelect.value = displayed.id;
     const resultKey = displayed?.id || '';
-    if (resultKey !== lastResultKey) { lastResultKey = resultKey; resultBody.replaceChildren(); if (displayed) resultBody.append(renderAIInterpretation(doc, displayed)); }
+    if (resultKey !== lastResultKey) { lastResultKey = resultKey; disposeHelpTipsWithin(resultBody); resultBody.replaceChildren(); if (displayed) resultBody.append(renderAIInterpretation(doc, displayed)); }
     const isStale = !!displayed && aiReadingSignature(displayed.reading) !== currentSignature();
     stale.hidden = !isStale;
-    stale.textContent = '问题、牌或摆放已改变。下面保留的是提交时的解读，不会自动重新生成。';
+    stale.textContent = '牌阵或问题已更新，下方为先前的解读。';
     saveLink.hidden = !displayed || isStale;
     saveLink.disabled = records.locked || request.inFlight;
   }
   question.addEventListener('input', () => records.setQuestion(question.value));
   effort.addEventListener('change', () => { const target = AI_EFFORTS.find(item => item.id === effort.value)?.suggestedTokens; if (target) { budget.value = String(target); custom.value = String(target); } update(); });
-  for (const input of [model, detail, focus, budget, custom]) input.addEventListener(input === custom ? 'input' : 'change', update);
+  for (const input of [model, detail, focus, liveCheck, budget, custom]) input.addEventListener(input === custom ? 'input' : 'change', update);
   resultSelect.addEventListener('change', () => { displayedId = resultSelect.value; update(); });
   form.addEventListener('submit', event => {
     event.preventDefault(); update(); if (generate.disabled) return;
@@ -220,8 +226,8 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     },
     reset() {
       if (request.unresolved || processing()) return;
-      request.reset(); results = []; displayedId = ''; lastResultKey = ''; lastPreviewKey = ''; lastStatusKey = ''; resultBody.replaceChildren(); resultSelect.replaceChildren(); update();
+      request.reset(); results = []; displayedId = ''; lastResultKey = ''; lastPreviewKey = ''; lastStatusKey = ''; disposeHelpTipsWithin(resultBody); resultBody.replaceChildren(); resultSelect.replaceChildren(); update();
     },
-    dispose() { disposed = true; unsubscribe(); request.dispose(); previousRequests.forEach(item => item.dispose()); doc.removeEventListener('reading:disclosurechange', onOpen); view.removeEventListener('beforeunload', beforeUnload); },
+    dispose() { disposed = true; unsubscribe(); request.dispose(); previousRequests.forEach(item => item.dispose()); disposeHelpTipsWithin(root); doc.removeEventListener('reading:disclosurechange', onOpen); view.removeEventListener('beforeunload', beforeUnload); },
   };
 }

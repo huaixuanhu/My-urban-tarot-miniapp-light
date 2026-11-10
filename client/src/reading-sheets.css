@@ -1,5 +1,28 @@
 @import './vendor/fluid-glass/material.css';
 
+/* Saved-reading browsing reuses the continuous sheet and native controls. */
+.glass-sheet #records-body .record-navigation { justify-content: space-between; gap: 8px; }
+.glass-sheet .record-day-group + .record-day-group { margin-top: 26px; }
+.glass-sheet .record-day-heading { margin: 0; padding: 0 4px 8px; color: var(--muted); font: 12px/1.6 var(--fgs-font-ui); }
+.glass-sheet #records-body .record-history-row { display: grid; grid-template-columns: 48px minmax(0,1fr) 12px; align-items: center; gap: 14px; min-height: 76px; padding: 16px 4px; }
+.glass-sheet #records-body .record-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font: 400 18px/1.65 var(--fgs-font-serif); }
+.glass-sheet .record-row-arrow { color: var(--muted); font-size: 22px; }
+.glass-sheet .record-meta-with-help { display: flex; align-items: center; gap: 4px; }
+.glass-sheet .record-detail .record-detail-title { margin: 12px 0 20px; overflow-wrap: anywhere; font: 400 19px/1.75 var(--fgs-font-serif); }
+.glass-sheet .record-detail .record-full-question { margin: 0 0 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.glass-sheet .record-ai-picker { display: grid; gap: 8px; margin: 24px 0 12px; color: var(--muted); font-size: 12px; }
+.glass-sheet .record-ai-picker select { display: block; width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: rgb(from var(--fgs-veil) r g b / .20); color: var(--ink); font: 13px/1.7 var(--fgs-font-ui); text-overflow: ellipsis; }
+.glass-sheet .record-ai-picker option { background: var(--fgs-paper); }
+.glass-sheet .record-ai-picker select:focus-visible, .glass-sheet .record-source-details > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.glass-sheet .record-source-details { margin: 28px 0 20px; border-top: 1px solid var(--line); }
+.glass-sheet .record-source-details > summary { padding: 14px 2px; cursor: pointer; color: var(--muted); font-size: 13px; }
+.glass-sheet .record-source-details .record-saved-cards { margin-bottom: 0; }
+@media (max-width: 480px) {
+  .glass-sheet #records-body .record-navigation button { padding: 8px 12px; }
+  .glass-sheet #records-body .record-history-row { grid-template-columns: 42px minmax(0,1fr) 10px; gap: 10px; }
+  .glass-sheet #records-body .record-title { font-size: 17px; }
+}
+
 /* Scoped adoption: the world, optical dock and original artwork retain their
    established palette. These tokens belong only to the floating sheets. */
 .glass-sheet.fg-glass {

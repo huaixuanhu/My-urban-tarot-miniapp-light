@@ -220,6 +220,7 @@ function managerFor(doc) {
       };
       entries.add(entry); return entry;
     },
+    disposeWithin(root) { for (const entry of [...entries]) if (root.contains(entry.button)) entry.dispose(); },
     dispose() { for (const entry of [...entries]) entry.dispose(); cleanups.forEach(cleanup => cleanup()); host?.remove(); managers.delete(doc); },
   };
   managers.set(doc, manager); return manager;
@@ -241,3 +242,6 @@ export function initializeInlineHelp(doc, options = {}) {
 }
 
 export function disposeHelpTips(doc) { managers.get(doc)?.dispose(); }
+
+/** Release dynamic triggers before replacing their subtree; keep other help usable. */
+export function disposeHelpTipsWithin(root) { managers.get(root.ownerDocument)?.disposeWithin(root); }

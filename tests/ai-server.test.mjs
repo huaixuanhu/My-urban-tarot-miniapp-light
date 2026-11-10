@@ -9,6 +9,7 @@ import { createOpenAIProvider, AIProviderError } from '../server/ai/provider.mjs
 import { AI_PROMPT_VERSION, AI_SYSTEM_PROMPT, AI_DETAIL_PROMPTS, AI_FOCUS_PROMPTS, buildProviderPayload } from '../server/ai/prompt.mjs';
 import { AI_DETAILS, AI_FOCUSES } from '../shared/ai-options.mjs';
 import { normalizeAIInput } from '../shared/ai-schema.mjs';
+import { AI_MAX_WEB_TOOL_CALLS, normalizeAITimeZone, normalizeSourceUrl } from '../shared/ai-web.mjs';
 import { buildStoredRecord, normalizeRecordInput } from '../shared/record-schema.mjs';
 import { createRecordsHandler } from '../server/records/service.mjs';
 
@@ -422,7 +423,7 @@ test('pending settings stay frozen and conflicting submissions cannot change the
 test('legacy pending POST replay retrieves the old claim without default relabeling or generation', async () => {
   const f = fixture(), body = input();
   const normalized = normalizeAIInput(body);
-  delete normalized.detail; delete normalized.focus;
+  delete normalized.detail; delete normalized.focus; delete normalized.liveCheck;
   const old = { ...normalized, reading: buildStoredRecord(normalized.reading, { savedAt: clock, createdBy: 'synthetic-a' }),
     requestHash: createHash('sha256').update(JSON.stringify(normalized)).digest('hex'), createdAt: clock,
     promptVersion: 'stage2.5.4.1-v1', status: 'pending' };
@@ -442,4 +443,185 @@ test('missing presets on a new old-client request use defaults; explicit default
   await f.handler(await request(body));
   assert.equal((await f.handler(await request({ ...body, detail: 'standard', focus: 'general' }))).status, 200);
   assert.equal(f.calls.generate, 1);
+});
+
+const webSource = { url: 'https://example.test/public-policy', title: 'Synthetic public policy' };
+function liveResponseFor(payload) {
+  const response = responseFor(payload), answer = answerFor(payload);
+  answer.factChecks = [{ claim: '公开规则的适用日期', finding: '示例资料列明适用日期，具体使用时可核对当地条件。', status: 'supported', sourceUrls: [webSource.url] }];
+  response.output[0].content[0].text = JSON.stringify(answer);
+  response.output[0].content[0].annotations = [{ type: 'url_citation', ...webSource, start_index: 0, end_index: 10 }];
+  response.output.unshift({ id: 'ws_synthetic', type: 'web_search_call', status: 'completed', action: { type: 'search', queries: ['public policy effective date'], sources: [{ type: 'url', ...webSource }] } });
+  return response;
+}
+function liveFixture(transform = value => value) {
+  const f = fixture();
+  f.provider.generate = async payload => { f.calls.generate++; f.payloads.push(payload); return transform(liveResponseFor(payload), payload); };
+  return f;
+}
+
+test('live search is explicit, forced and bounded; local source text and server time remain authoritative input', async () => {
+  const f = liveFixture(), body = input({ liveCheck: true, timeZone: 'Australia/Melbourne' });
+  const result = (await (await f.handler(await request(body))).json()).interpretation, payload = f.payloads[0];
+  assert.equal(result.status, 'completed'); assert.equal(result.liveCheck, true); assert.equal(result.timeZone, body.timeZone);
+  assert.deepEqual(payload.tools, [{ type: 'web_search', external_web_access: true }]);
+  assert.equal(payload.tool_choice, 'required'); assert.equal(payload.max_tool_calls, AI_MAX_WEB_TOOL_CALLS);
+  assert.deepEqual(payload.include, ['web_search_call.action.sources']);
+  const sourceInput = JSON.parse(payload.input);
+  assert.equal(sourceInput.currentTime, clock); assert.equal(sourceInput.timeZone, body.timeZone);
+  assert.equal(sourceInput.cards[0].suppliedMeaning, result.reading.cards[0].sourceSnapshot.interpretation);
+  assert.deepEqual(result.webCheck, { status: 'searched', checkedAt: clock, searchCalls: 1, sources: [webSource] });
+  assert.equal(result.usage.searchCalls, 1); assert.equal(result.answer.factChecks[0].sourceUrls[0], webSource.url);
+  assert.equal(payload.text.format.schema.required.includes('factChecks'), true);
+  assert.equal(f.calls.count, 1); assert.equal(f.calls.generate, 1);
+});
+
+test('live selection and time zone reject malformed input before storage or provider work', async () => {
+  for (const value of [{ liveCheck: 'true' }, { liveCheck: 1 }, { liveCheck: null }, { liveCheck: true, timeZone: 'not/a-zone' }, { liveCheck: true, timeZone: '+10:00' }, { liveCheck: true, timeZone: null }, { liveCheck: false, timeZone: 'UTC' }]) {
+    const f = fixture(); assert.equal((await f.handler(await request(input(value)))).status, 400);
+    assert.deepEqual(f.calls, { storage: 0, count: 0, generate: 0, provider: 0 });
+  }
+  assert.equal(normalizeAIInput(input({ liveCheck: true })).timeZone, 'UTC');
+  assert.equal(normalizeAIInput(input()).liveCheck, false);
+  assert.equal(normalizeAITimeZone('Etc/GMT+10'), 'Etc/GMT+10');
+});
+
+test('affirmative instructions retain adverse findings and source limits without changing offline schema', () => {
+  const normalized = normalizeAIInput(input()), attempt = { ...normalized, createdAt: clock, reading: buildStoredRecord(normalized.reading, { savedAt: clock, createdBy: 'test' }) };
+  const payload = buildProviderPayload(attempt);
+  assert.match(payload.instructions, /表达肯定含义时使用肯定句/);
+  assert.match(payload.instructions, /保留问题中的困难、冲突和不利线索/);
+  assert.match(payload.instructions, /The Zero Movement/);
+  assert.deepEqual(payload.text.format.schema.required, ['summary', 'cards', 'reflectionQuestions', 'limitations']);
+  assert.equal(payload.tools, undefined); assert.equal(JSON.parse(payload.input).currentTime, undefined);
+});
+
+test('completed prose, citations, opening a page or a failed tool cannot impersonate completed search', async () => {
+  const mutations = [
+    response => { response.output.shift(); },
+    response => { response.output[0].status = 'failed'; },
+    response => { response.output[0].action.type = 'open_page'; },
+    response => { response.output[0].status = 'in_progress'; },
+  ];
+  for (const mutate of mutations) {
+    const f = liveFixture(response => { mutate(response); return response; }), body = input({ liveCheck: true });
+    const result = (await (await f.handler(await request(body))).json()).interpretation;
+    assert.equal(result.status, 'incomplete'); assert.equal(result.answer, undefined);
+    assert.equal(result.webCheck.status, 'incomplete'); assert.equal(result.webCheck.checkedAt, clock); assert.deepEqual(result.webCheck.sources, []);
+    await f.handler(await request(body)); await f.handler(await request(undefined, { query: `?id=${body.id}` }));
+    assert.equal(f.calls.generate, 1);
+  }
+});
+
+test('claim links require actual safe provider sources; uncertainty can retain an empty result', async () => {
+  for (const change of [
+    fact => { fact.sourceUrls = ['https://invented.example.test/fact']; },
+    fact => { fact.sourceUrls = ['javascript:alert(1)']; },
+    fact => { fact.sourceUrls = ['https://user:password@example.test/fact']; },
+    fact => { fact.sourceUrls = []; },
+    fact => { fact.status = 'proven'; },
+  ]) {
+    const f = liveFixture(response => { const part = response.output[1].content[0], answer = JSON.parse(part.text); change(answer.factChecks[0]); part.text = JSON.stringify(answer); return response; });
+    const result = (await (await f.handler(await request(input({ liveCheck: true })))).json()).interpretation;
+    assert.equal(result.status, 'failed'); assert.equal(result.answer, undefined);
+    assert.equal(result.webCheck.status, 'searched'); assert.equal(result.usage.searchCalls, 1);
+  }
+  const f = liveFixture(response => {
+    response.output[0].action.sources = []; const part = response.output[1].content[0]; part.annotations = [];
+    const answer = JSON.parse(part.text); answer.factChecks[0] = { ...answer.factChecks[0], status: 'uncertain', finding: '本次公开检索没有找到足够具体的资料。', sourceUrls: [] }; part.text = JSON.stringify(answer); return response;
+  });
+  const result = (await (await f.handler(await request(input({ liveCheck: true })))).json()).interpretation;
+  assert.equal(result.status, 'completed'); assert.equal(result.webCheck.status, 'searched'); assert.deepEqual(result.webCheck.sources, []);
+  assert.equal(result.answer.factChecks[0].status, 'uncertain');
+});
+
+test('canonical source matching handles annotation-only provenance and counts search actions separately from page opens', async () => {
+  const f = liveFixture(response => {
+    response.output[0].action.sources = [];
+    response.output.splice(1, 0, { id: 'ws_open', type: 'web_search_call', status: 'completed', action: { type: 'open_page', url: webSource.url } });
+    const part = response.output[2].content[0]; part.annotations[0].url = 'https://EXAMPLE.test:443/public-policy';
+    return response;
+  });
+  const result = (await (await f.handler(await request(input({ liveCheck: true })))).json()).interpretation;
+  assert.equal(result.status, 'completed'); assert.deepEqual(result.webCheck.sources, [webSource]); assert.equal(result.usage.searchCalls, 1);
+  assert.equal(normalizeSourceUrl('https://EXAMPLE.test:443/public-policy'), webSource.url);
+  assert.equal(normalizeSourceUrl('https://example.test/\nunsafe'), null);
+});
+
+test('tool budget violations and unsolicited offline web output are rejected with no retry', async () => {
+  for (const liveCheck of [true, false]) {
+    const f = liveFixture(response => {
+      if (liveCheck) for (let i = 1; i < 4; i++) response.output.unshift({ ...response.output[0], id: `ws_extra${i}` });
+      return response;
+    }), body = input({ liveCheck });
+    const result = (await (await f.handler(await request(body))).json()).interpretation;
+    assert.equal(result.status, 'failed'); assert.equal(result.answer, undefined);
+    if (liveCheck) assert.equal(result.webCheck.searchCalls, 4);
+    await f.handler(await request(body)); assert.equal(f.calls.generate, 1);
+  }
+});
+
+test('retrieved context can exceed the submission cap and usage remains accounted', async () => {
+  const f = liveFixture(response => { response.usage.input_tokens = 16000; response.usage.total_tokens = 16600; return response; });
+  const result = (await (await f.handler(await request(input({ liveCheck: true })))).json()).interpretation;
+  assert.equal(result.status, 'completed'); assert.equal(result.inputTokens, 900); assert.equal(result.usage.inputTokens, 16000);
+  const tooLarge = liveFixture(); tooLarge.provider.count = async () => 10001;
+  const stopped = (await (await tooLarge.handler(await request(input({ liveCheck: true })))).json()).interpretation;
+  assert.equal(stopped.status, 'failed'); assert.equal(stopped.webCheck.status, 'incomplete'); assert.equal(stopped.webCheck.searchCalls, 0);
+  assert.equal(tooLarge.calls.generate, 0);
+});
+
+test('search evidence survives incomplete output, malformed answers and network uncertainty without accepting an answer', async () => {
+  for (const change of [response => { response.status = 'incomplete'; }, response => { response.output[1].content[0].text = '{bad'; }]) {
+    const f = liveFixture(response => { change(response); return response; });
+    const result = (await (await f.handler(await request(input({ liveCheck: true })))).json()).interpretation;
+    assert.notEqual(result.status, 'completed'); assert.equal(result.answer, undefined); assert.equal(result.webCheck.status, 'searched');
+    assert.equal(result.webCheck.checkedAt, clock); assert.equal(result.usage.searchCalls, 1);
+  }
+  const f = liveFixture(); f.provider.generate = async () => { f.calls.generate++; throw new AIProviderError('unknown'); };
+  const body = input({ liveCheck: true }), result = (await (await f.handler(await request(body))).json()).interpretation;
+  assert.equal(result.status, 'unknown'); assert.equal(result.webCheck.status, 'incomplete'); assert.equal(result.liveCheck, true);
+  await f.handler(await request(body)); assert.equal(f.calls.generate, 1);
+});
+
+test('live settings freeze in flight and checked results survive readback and record attachment', async () => {
+  const f = liveFixture(), body = input({ liveCheck: true, timeZone: 'Australia/Melbourne' });
+  let release; const held = new Promise(resolve => { release = resolve; }), generate = f.provider.generate;
+  f.provider.generate = async payload => { await held; return generate(payload); };
+  const pending = f.handler(await request(body));
+  while (!f.store.entries.has(body.id)) await new Promise(resolve => setImmediate(resolve));
+  const view = (await (await f.handler(await request(undefined, { query: `?id=${body.id}` }))).json()).interpretation;
+  assert.equal(view.liveCheck, true); assert.equal(view.timeZone, body.timeZone); assert.equal(view.status, 'pending');
+  for (const changed of [{ ...body, liveCheck: false, timeZone: undefined }, { ...body, timeZone: 'UTC' }]) assert.equal((await f.handler(await request(changed))).status, 409);
+  release(); const completed = (await (await pending).json()).interpretation;
+  const records = recordFixture(f.store);
+  const saved = (await (await records.handler(await request({ ...body.reading, id: randomUUID(), aiInterpretationIds: [body.id] }))).json()).record;
+  assert.deepEqual(saved.aiInterpretations[0], completed);
+  const fetched = (await (await f.handler(await request(undefined, { query: `?id=${body.id}` }))).json()).interpretation;
+  assert.deepEqual(fetched, completed); assert.equal(f.calls.generate, 1);
+});
+
+test('pre-web current and pre-preset hashes recover only offline, preserving stored evidence without generation', async () => {
+  for (const presets of [true, false]) {
+    const f = fixture(), body = input(), normalized = normalizeAIInput(body); delete normalized.liveCheck;
+    if (!presets) { delete normalized.detail; delete normalized.focus; }
+    const old = { ...normalized, reading: buildStoredRecord(normalized.reading, { savedAt: clock, createdBy: 'synthetic-a' }),
+      requestHash: createHash('sha256').update(JSON.stringify(normalized)).digest('hex'), createdAt: clock,
+      promptVersion: presets ? 'stage2.5.11-v3' : 'stage2.5.4.1-v1', status: 'pending' };
+    f.store.entries.set(body.id, structuredClone(old));
+    assert.equal((await f.handler(await request(body))).status, 202);
+    assert.equal((await f.handler(await request({ ...body, liveCheck: false }))).status, 202);
+    assert.equal((await f.handler(await request({ ...body, liveCheck: true }))).status, 409);
+    assert.deepEqual(f.store.entries.get(body.id), old); assert.equal(f.calls.provider, 0);
+  }
+});
+
+test('token counting includes tool definitions without generation-only fields', async () => {
+  let sent;
+  const provider = createOpenAIProvider('synthetic-test-only', { fetcher: async (_url, options) => { sent = JSON.parse(options.body); return Response.json({ input_tokens: 100 }); } });
+  const normalized = normalizeAIInput(input({ liveCheck: true }));
+  const payload = buildProviderPayload({ ...normalized, createdAt: clock, reading: buildStoredRecord(normalized.reading, { savedAt: clock, createdBy: 'synthetic' }) });
+  assert.equal(await provider.count(payload), 100);
+  assert.deepEqual(sent.tools, payload.tools); assert.equal(sent.tool_choice, 'required');
+  assert.equal(sent.max_tool_calls, undefined); assert.equal(sent.max_output_tokens, undefined); assert.equal(sent.include, undefined);
 });

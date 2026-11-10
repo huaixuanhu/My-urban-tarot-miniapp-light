@@ -1,5 +1,5 @@
 /** Local UI/HTTP fixture only. Never imported by the app or deployed API.
- * pnpm exec tsx scripts/preview-ai.mjs [port] [--visitor]
+ * pnpm exec tsx scripts/preview-ai.mjs [port] [--visitor] [--records-demo]
  * Uses synthetic signing keys and in-memory records, NEVER cloud, OpenAI or ANU.
  */
 import http from 'node:http';
@@ -13,14 +13,24 @@ import { createRandomHandler } from '../server/random/service.mjs';
 import { createMemoryRandomStore } from '../server/random/memory-store.mjs';
 import { RandomProviderError } from '../server/random/provider.mjs';
 import { createInterpretationsHandler } from '../server/ai/service.mjs';
+import { previewProviderOutput, previewRecords } from './ai/stage2513-fixtures.mjs';
 
 const visitorPreview = process.argv.includes('--visitor');
-const port = Number(process.argv.slice(2).find(argument => argument !== '--visitor') || 5174), localOrigin = `http://127.0.0.1:${port}`, appOrigin = `https://${accessConfig.hostname}`;
+const recordsDemo = process.argv.includes('--records-demo') && !visitorPreview;
+const port = Number(process.argv.slice(2).find(argument => !argument.startsWith('--')) || 5174), localOrigin = `http://127.0.0.1:${port}`, appOrigin = `https://${accessConfig.hostname}`;
 const attempts = new Map(), records = new Map();
-let scenario = 'completed', calls = 0;
+let scenario = 'completed', calls = 0, searchCalls = 0, seededRecords = 0;
 let randomScenario = 'completed', randomCalls = 0;
 const randomStore = createMemoryRandomStore();
 const clone = value => structuredClone(value);
+function seedRecords() {
+  if (visitorPreview) return;
+  for (const record of previewRecords()) {
+    if (records.has(record.id)) continue;
+    records.set(record.id, { record, hash: `local-demo-${record.id}` }); seededRecords++;
+  }
+}
+if (recordsDemo) seedRecords();
 const aiStore = {
   async claim(attempt, hash) {
     if (attempts.has(attempt.id)) return { attempt: clone(attempts.get(attempt.id).attempt), hash: attempts.get(attempt.id).hash, inserted: false };
@@ -63,20 +73,13 @@ const provider = {
     if (mode === 'unknown') throw new Error('Synthetic transport failure.');
     const reading = typeof payload.input === 'string' ? JSON.parse(payload.input) : null;
     if (!reading?.cards) throw new Error('Fixture requires canonical input.');
+    const live = payload.tools?.some(tool => tool.type === 'web_search') === true;
     const usage = { input_tokens: 1100, output_tokens: 400, total_tokens: 1500, input_tokens_details: { cached_tokens: 0 }, output_tokens_details: { reasoning_tokens: 50 } };
     if (mode === 'incomplete') return { status: 'incomplete', model: payload.model, usage, incomplete_details: { reason: 'max_output_tokens' }, output: [] };
     if (mode === 'refusal') return { status: 'completed', model: payload.model, usage, output: [{ type: 'message', content: [{ type: 'refusal', refusal: 'Synthetic refusal.' }] }] };
-    const answer = {
-      summary: '本地模拟解读：这段文字只用于检查界面与保存流程，没有调用 AI，也没有产生费用。牌之间的关系可以作为观察问题的线索；你的判断仍然属于你。',
-      cards: reading.cards.map(card => ({ sourceCardId: card.sourceCardId, reversed: card.reversed, positionLabel: card.positionLabel,
-        basis: card.reversed ? 'generated_reversal_extension' : 'provided_meaning',
-        interpretation: `模拟内容 · ${card.name}：从已有牌义中寻找与自己问题有关的观察角度。${card.reversed ? '此处逆位仅为延伸解释。' : ''}`,
-      })),
-      reflectionQuestions: ['这里哪一个角度与你自己的感受最接近？'],
-      limitations: ['这是本地合成测试内容。原始资料没有独立逆位牌义。'],
-    };
+    if (live && mode !== 'web-missing') searchCalls++;
     return { id: 'local-fixture-response', status: 'completed', model: payload.model, usage,
-      output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(answer) }] }] };
+      output: previewProviderOutput(reading, { live, mode, variant: payload.instructions.includes('解读详细度：细读') ? 'deep' : 'standard' }) };
   },
 };
 const interpret = createInterpretationsHandler({ accessGuard, getStore: async () => aiStore, getProvider: async () => provider });
@@ -94,7 +97,7 @@ const record = createRecordsHandler({ accessGuard, getStore: async () => recordS
 const vite = await createVite({ server: { middlewareMode: true, hmr: { port: port + 1000 } }, plugins: [{
   name: 'explicit-local-ai-fixture', transformIndexHtml(html) {
     const body = visitorPreview ? '<body data-visitor-preview="true">' : '<body>';
-    const notice = visitorPreview ? '本地访客预览 · 可用系统随机 · 邮箱验证尚未接入 · 无外部调用' : '本地验证 · 合成随机数据、模拟 AI 与记录 · 未调用 ANU，无费用，不写入云端';
+    const notice = visitorPreview ? '本地访客预览 · 模拟数据' : '本地预览 · 模拟数据';
     return html.replace('<body>', `${body}<aside role="note" style="position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;background:#fff3c9;color:#42351e;font:12px/24px system-ui;pointer-events:none">${notice}</aside>`);
   },
 }] });
@@ -110,16 +113,17 @@ const server = http.createServer(async (req, res) => {
         if (req.method === 'POST') {
           const value = JSON.parse(body.toString());
           if (value.scenario !== undefined) {
-            if (!['completed', 'incomplete', 'refusal', 'unknown', 'slow'].includes(value.scenario)) throw new Error('Unknown fixture.');
+            if (!['completed', 'incomplete', 'refusal', 'unknown', 'slow', 'web-missing', 'web-empty', 'web-failed'].includes(value.scenario)) throw new Error('Unknown fixture.');
             scenario = value.scenario;
           }
           if (value.randomScenario !== undefined) {
             if (!['completed', 'failed', 'unknown', 'slow'].includes(value.randomScenario)) throw new Error('Unknown random fixture.');
             randomScenario = value.randomScenario;
           }
+          if (value.seedRecords === true) seedRecords();
         }
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify({ fixture: true, visitorPreview, scenario, calls, randomScenario, randomCalls, attempts: attempts.size, records: records.size })); return;
+        res.end(JSON.stringify({ fixture: true, visitorPreview, scenario, calls, searchCalls, externalCalls: 0, seededRecords, randomScenario, randomCalls, attempts: attempts.size, records: records.size })); return;
       }
       const handler = url.pathname === '/api/interpretations' ? interpret : url.pathname === '/api/records' ? record : url.pathname === '/api/random' ? random : null;
       if (!handler) { res.writeHead(404); res.end(); return; }

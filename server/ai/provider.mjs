@@ -35,7 +35,7 @@ export function createOpenAIProvider(apiKey, { fetcher = fetch, timeoutMs = 1150
   }
   return {
     async count(payload) {
-      const body = Object.fromEntries(['model', 'instructions', 'input', 'text', 'reasoning'].map(key => [key, payload[key]]));
+      const body = Object.fromEntries(['model', 'instructions', 'input', 'text', 'reasoning', 'tools', 'tool_choice'].filter(key => payload[key] !== undefined).map(key => [key, payload[key]]));
       // Leave headroom for generation and the durable terminal write inside the
       // 180-second server invocation. A timeout never triggers a retry.
       const data = await request('/responses/input_tokens', body, Math.min(timeoutMs, 25000));

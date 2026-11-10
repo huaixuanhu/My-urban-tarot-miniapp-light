@@ -3,6 +3,7 @@ import { decodeJwt } from 'jose';
 import { buildStoredRecord, normalizeRecordId, RecordValidationError } from '../../shared/record-schema.mjs';
 import { AI_BODY_LIMIT, AIValidationError, normalizeAIInput, validateAIAnswer } from '../../shared/ai-schema.mjs';
 import { AI_MAX_INPUT_TOKENS } from '../../shared/ai-options.mjs';
+import { AI_MAX_WEB_TOOL_CALLS, webCheckFromResponse } from '../../shared/ai-web.mjs';
 import { AI_PROMPT_VERSION, buildProviderPayload } from './prompt.mjs';
 import { AIProviderError } from './provider.mjs';
 
@@ -15,15 +16,18 @@ const fingerprint = input => createHash('sha256').update(JSON.stringify(input)).
 
 // A deployed older client may replay its pre-preset request after this release.
 // It can retrieve the original result, never rerun it or relabel its settings.
-function matchesRequest(attempt, hash, legacyHash) {
-  return attempt.requestHash === hash || (legacyHash && attempt.detail === undefined && attempt.focus === undefined && attempt.requestHash === legacyHash);
+function matchesRequest(attempt, hash, noWebHash, legacyHash) {
+  return attempt.requestHash === hash || (attempt.liveCheck === undefined && (
+    (noWebHash && attempt.requestHash === noWebHash) ||
+    (legacyHash && attempt.detail === undefined && attempt.focus === undefined && attempt.requestHash === legacyHash)
+  ));
 }
 
 /** Explicit allowlist prevents accidentally publishing private provider/identity metadata. */
 export function publicInterpretation(attempt, now = new Date()) {
   const { id, reading, model, effort, maxOutputTokens, createdAt, promptVersion } = attempt;
   const result = { id, status: attempt.status, reading, model, effort, maxOutputTokens, createdAt, promptVersion };
-  for (const key of ['detail', 'focus', 'completedAt', 'answer', 'usage', 'message', 'inputTokens', 'returnedModel']) if (attempt[key] !== undefined) result[key] = attempt[key];
+  for (const key of ['detail', 'focus', 'liveCheck', 'timeZone', 'webCheck', 'completedAt', 'answer', 'usage', 'message', 'inputTokens', 'returnedModel']) if (attempt[key] !== undefined) result[key] = attempt[key];
   // A crashed invocation never becomes permission to run it again. A late
   // terminal write may still be discovered by a later read of the same ID.
   if (result.status === 'pending' && now.valueOf() - new Date(createdAt).valueOf() > PENDING_EXPIRY_MS) {
@@ -55,9 +59,11 @@ async function parseBody(request) {
   catch { throw new AIValidationError('请求内容格式不正确。'); }
 }
 
-function usageFrom(response, cap) {
+function usageFrom(response, cap, liveCheck = false) {
   const usage = response?.usage;
-  if (!usage || !['input_tokens', 'output_tokens', 'total_tokens'].every(key => Number.isSafeInteger(usage[key]) && usage[key] >= 0) || usage.input_tokens > AI_MAX_INPUT_TOKENS || usage.output_tokens > cap || usage.total_tokens !== usage.input_tokens + usage.output_tokens) throw new AIValidationError('AI 用量信息未通过验证。');
+  // The 10k limit applies before dispatch. Retrieved web context contributes to
+  // billed input after dispatch and must remain visible even above that limit.
+  if (!usage || !['input_tokens', 'output_tokens', 'total_tokens'].every(key => Number.isSafeInteger(usage[key]) && usage[key] >= 0) || (!liveCheck && usage.input_tokens > AI_MAX_INPUT_TOKENS) || usage.output_tokens > cap || usage.total_tokens !== usage.input_tokens + usage.output_tokens) throw new AIValidationError('AI 用量信息未通过验证。');
   const detail = (value, ceiling) => {
     if (value === undefined) return null;
     if (!Number.isSafeInteger(value) || value < 0 || value > ceiling) throw new AIValidationError('AI 用量明细未通过验证。');
@@ -68,16 +74,21 @@ function usageFrom(response, cap) {
     reasoningTokens: detail(usage.output_tokens_details?.reasoning_tokens, usage.output_tokens),
     cachedInputTokens: detail(usage.input_tokens_details?.cached_tokens, usage.input_tokens),
     cacheWriteTokens: detail(usage.input_tokens_details?.cache_write_tokens, usage.input_tokens),
+    ...(liveCheck ? { searchCalls: webCheckFromResponse(response, '').searchCalls } : {}),
   };
 }
 
 function terminalFromResponse(attempt, response, completedAt) {
-  const result = { ...attempt, completedAt };
+  const result = { ...attempt, completedAt,
+    ...(attempt.liveCheck ? { webCheck: webCheckFromResponse(response, completedAt) } : {}) };
   if (!response || (response.model !== attempt.model && !String(response.model || '').startsWith(`${attempt.model}-`))) throw new AIValidationError('返回的模型与选择不一致。');
   result.returnedModel = response.model;
-  if (response.usage) result.usage = usageFrom(response, attempt.maxOutputTokens);
+  if (response.usage) result.usage = usageFrom(response, attempt.maxOutputTokens, attempt.liveCheck);
+  const toolCalls = Array.isArray(response.output) ? response.output.filter(item => item?.type === 'web_search_call').length : 0;
+  if ((!attempt.liveCheck && toolCalls) || toolCalls > AI_MAX_WEB_TOOL_CALLS) throw new AIValidationError('联网工具调用与本次设置不一致。');
   if (response.status === 'incomplete') return { ...result, status: 'incomplete', message: '本次回答未完成，可能已达到生成预算。没有自动续写或再次收费。' };
   if (response.status !== 'completed') return { ...result, status: 'unknown', message: '服务未返回完整结果，请查询这次调用的状态。' };
+  if (attempt.liveCheck && result.webCheck.status !== 'searched') return { ...result, status: 'incomplete', message: '联网核查未完成。再次解读将重新计费。' };
   if (!Array.isArray(response.output)) throw new AIValidationError('AI 返回内容不完整。');
   const parts = response.output.filter(item => item.type === 'message').flatMap(item => Array.isArray(item.content) ? item.content : []);
   if (parts.some(part => part.type === 'refusal')) return { ...result, status: 'failed', message: '模型未提供这次解读。可以调整问题后由你决定是否重新发起。' };
@@ -85,8 +96,8 @@ function terminalFromResponse(attempt, response, completedAt) {
   if (!content.length || content.some(text => typeof text !== 'string')) throw new AIValidationError('AI 返回内容不完整。');
   let answer;
   try { answer = JSON.parse(content.join('')); } catch { throw new AIValidationError('AI 返回格式未通过验证。'); }
-  result.answer = validateAIAnswer(answer, attempt.reading);
-  result.usage = usageFrom(response, attempt.maxOutputTokens);
+  result.answer = validateAIAnswer(answer, attempt.reading, { liveCheck: attempt.liveCheck, webCheck: result.webCheck });
+  result.usage = usageFrom(response, attempt.maxOutputTokens, attempt.liveCheck);
   result.status = 'completed';
   return result;
 }
@@ -116,12 +127,14 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
       if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return problem('CONTENT_TYPE_REQUIRED', '请使用应用内的解读操作。', 415);
       if ([...url.searchParams].length) throw new AIValidationError('解读地址不正确。');
       const raw = await parseBody(request), input = normalizeAIInput(raw), hash = fingerprint(input);
-      const { detail: _detail, focus: _focus, ...legacyInput } = input;
-      const legacyHash = raw.detail === undefined && raw.focus === undefined ? fingerprint(legacyInput) : null;
+      const { liveCheck: _liveCheck, timeZone: _timeZone, ...noWebInput } = input;
+      const { detail: _detail, focus: _focus, ...legacyInput } = noWebInput;
+      const noWebHash = input.liveCheck ? null : fingerprint(noWebInput);
+      const legacyHash = !input.liveCheck && raw.detail === undefined && raw.focus === undefined ? fingerprint(legacyInput) : null;
       const store = await getStore();
       const existing = await store.get(input.id);
       if (existing) {
-        if (!matchesRequest(existing, hash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
+        if (!matchesRequest(existing, hash, noWebHash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
         const view = publicInterpretation(existing, now()); return json({ interpretation: view }, view.status === 'pending' ? 202 : 200);
       }
       const provider = await getProvider();
@@ -130,9 +143,10 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
         id: input.id, status: 'pending', createdAt, createdBy: subject, promptVersion: AI_PROMPT_VERSION, requestHash: hash,
         reading: buildStoredRecord(input.reading, { savedAt: createdAt, createdBy: subject }),
         model: input.model, effort: input.effort, maxOutputTokens: input.maxOutputTokens, detail: input.detail, focus: input.focus,
+        liveCheck: input.liveCheck, ...(input.liveCheck ? { timeZone: input.timeZone } : {}),
       };
       const claimed = await store.claim(attempt, hash);
-      if (claimed.hash !== claimed.attempt.requestHash || !matchesRequest(claimed.attempt, hash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
+      if (claimed.hash !== claimed.attempt.requestHash || !matchesRequest(claimed.attempt, hash, noWebHash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
       if (!claimed.inserted) {
         const view = publicInterpretation(claimed.attempt, now()); return json({ interpretation: view }, view.status === 'pending' ? 202 : 200);
       }
@@ -156,10 +170,11 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
         // A malformed answer may still have verified token usage. Preserve that
         // accounting without publishing or accepting the malformed answer.
         if (providerResponse?.usage) {
-          try { terminal.usage = usageFrom(providerResponse, attempt.maxOutputTokens); } catch { /* Unverifiable usage remains absent. */ }
+          try { terminal.usage = usageFrom(providerResponse, attempt.maxOutputTokens, attempt.liveCheck); } catch { /* Unverifiable usage remains absent. */ }
         }
         onError(!generationStarted ? 'AI_PREFLIGHT_FAILED' : invalidOutput ? 'AI_INVALID_OUTPUT' : confirmedRejection ? 'AI_PROVIDER_REJECTED' : 'AI_PROVIDER_UNKNOWN');
       }
+      if (attempt.liveCheck && !terminal.webCheck) terminal.webCheck = webCheckFromResponse(providerResponse, terminal.completedAt);
       const persisted = await store.finish(input.id, terminal);
       return json({ interpretation: publicInterpretation(persisted, now()) }, persisted.status === 'completed' ? 201 : 200);
     } catch (error) {

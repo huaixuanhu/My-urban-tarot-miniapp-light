@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { getEventListeners } from 'node:events';
 import { registerHooks } from 'node:module';
 import { createReadingAI } from '../client/src/reading-ai.mjs';
 import { renderAIInterpretation } from '../client/src/reading-ai-render.mjs';
@@ -25,7 +26,8 @@ class Element extends EventTarget {
   get options() { return this.children; }
   get classList() { return { add: name => this.classList.toggle(name, true), toggle: (name, force) => { const values = new Set(this.className.split(' ').filter(Boolean)); (force ?? !values.has(name)) ? values.add(name) : values.delete(name); this.className = [...values].join(' '); } }; }
   append(...items) { for (const item of items) { this.children.push(item); if (typeof item !== 'string') item.parent = this; } }
-  replaceChildren(...items) { this._text = ''; this.children = []; this.append(...items); }
+  replaceChildren(...items) { this.children.forEach(child => { if (typeof child !== 'string') child.parent = null; }); this._text = ''; this.children = []; this.append(...items); }
+  contains(node) { return this === node || this.children.some(child => typeof child !== 'string' && child.contains(node)); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
   getAttribute(name) { return this.attributes[name]; }
   querySelectorAll(selector) {
@@ -101,8 +103,24 @@ test('explicit generation freezes snapshot, keeps human notes separate and inval
   f.reading.placed[0].zIndex += 10; f.records.update(); assert.equal(f.root.querySelector('.ai-stale').hidden, true);
   f.reading.placed[0].x += .25; f.records.update(); assert.equal(f.root.querySelector('.ai-stale').hidden, false);
   assert.equal(f.find('record-interpretation').value, '只属于我的文字');
-  assert.match(f.root.textContent, /输入 111 · 生成 222/);
+  assert.match(f.root.querySelectorAll('button').find(button => button.getAttribute('aria-label') === '实际用量说明').getAttribute('data-help'), /输入 111 · 生成 222/);
   f.dispose();
+});
+
+test('replacing, switching and resetting AI answers dispose their help without disabling form help', async () => {
+  const f = fixture(), tips = () => f.root.querySelector('.ai-result-body').querySelectorAll('.help-trigger');
+  const formHelp = f.root.querySelector('form').querySelector('.help-trigger');
+  f.input('ai-question', '检查说明的切换'); f.submit(); await settle();
+  const firstTips = tips(); assert.ok(firstTips.length > 0);
+  f.submit(); await settle();
+  assert.ok(firstTips.every(tip => getEventListeners(tip, 'focus').length === 0));
+  const secondTips = tips();
+  f.input('ai-result-picker', f.requests[0].id, 'change');
+  assert.ok(secondTips.every(tip => getEventListeners(tip, 'focus').length === 0));
+  const selectedTips = tips(); f.ai.reset();
+  assert.ok(selectedTips.every(tip => getEventListeners(tip, 'focus').length === 0));
+  assert.equal(getEventListeners(formHelp, 'focus').length, 1);
+  f.dispose(); assert.equal(getEventListeners(formHelp, 'focus').length, 0);
 });
 
 test('budget errors and incomplete outcomes retain the form without automatic retry', async () => {
@@ -193,7 +211,9 @@ test('model and user markup remain literal text; canonical usage fields render',
   const body = { id: crypto.randomUUID(), reading: f.records.getAIReading(), model: 'gpt-6.1-terra', effort: 'low', maxOutputTokens: 3000 };
   const node = renderAIInterpretation(f.document, completed(body, '<script>evil()</script>').interpretation);
   assert.equal(node.querySelector('script'), null); assert.equal(node.querySelector('img'), null);
-  assert.match(node.textContent, /<script>evil\(\)<\/script>/); assert.match(node.textContent, /输入 111 · 生成 222/);
+  assert.match(node.textContent, /<script>evil\(\)<\/script>/);
+  assert.match(node.querySelectorAll('button').find(button => button.getAttribute('aria-label') === '实际用量说明').getAttribute('data-help'), /输入 111 · 生成 222/);
+  assert.doesNotMatch(node.textContent, /输入 111 · 生成 222/);
   f.dispose();
 });
 
@@ -203,7 +223,9 @@ test('source basis markers render understandable Chinese and never leak internal
   for (const [basis, label] of [['provided_meaning', '依据原始牌义'], ['generated_reversal_extension', '逆位：基于原始牌义的延伸解释'], ['unknown_internal_basis', '结合本次牌面与问题的解释']]) {
     const result = completed(body).interpretation; result.answer.cards[0].basis = basis;
     const node = renderAIInterpretation(f.document, result);
-    assert.ok(node.textContent.includes(label)); assert.ok(!node.textContent.includes(basis));
+    const sourceHelp = node.querySelectorAll('button').find(button => button.getAttribute('aria-label')?.endsWith('解读依据说明'));
+    assert.equal(sourceHelp.getAttribute('data-help'), label);
+    assert.ok(!node.textContent.includes(label)); assert.ok(!node.textContent.includes(basis));
   }
   f.dispose();
 });
@@ -250,5 +272,47 @@ test('legacy results render without inventing a detail or focus selection', () =
   const node = renderAIInterpretation(f.document, completed(body).interpretation);
   assert.match(node.querySelector('.ai-answer-meta').textContent, /6.1 Terra · 计算·轻量/);
   assert.doesNotMatch(node.querySelector('.ai-answer-meta').textContent, /跟随问题|简读|细读|标准/);
+  f.dispose();
+});
+
+test('live option is opt-in, silent until submit and frozen while a request is unresolved', async () => {
+  let submitted, resolve;
+  const f = fixture({ aiClient: { generate: body => { submitted = body; return new Promise(done => { resolve = done; }); } } });
+  const checkbox = f.find('ai-live-check');
+  assert.equal(checkbox.checked, false);
+  checkbox.checked = true; checkbox.dispatchEvent(new Event('change'));
+  assert.equal(submitted, undefined); assert.match(f.find('ai-cost-hint').textContent, /联网另计/);
+  f.input('ai-question', '近期发布信息如何影响我的安排？'); f.submit();
+  assert.equal(submitted.liveCheck, true); assert.equal(typeof submitted.timeZone, 'string');
+  assert.equal(checkbox.disabled, true);
+  const result = completed(submitted);
+  result.interpretation.webCheck = { status: 'searched', searchCalls: 1, checkedAt: '2026-11-09T08:00:00.000Z', sources: [] };
+  result.interpretation.answer.factChecks = [{ claim: '发布时间', finding: '本次模拟保留信息缺口。', status: 'uncertain', sourceUrls: [] }];
+  resolve(result); await settle();
+  assert.equal(checkbox.disabled, false); assert.match(f.root.textContent, /已执行联网搜索/);
+  checkbox.checked = false; checkbox.dispatchEvent(new Event('change'));
+  assert.match(f.root.querySelector('.ai-result-body').textContent, /实时核查/);
+  assert.equal(submitted.liveCheck, true);
+  f.dispose();
+});
+
+test('fact citations render only known safe links and preserve hostile titles as text', () => {
+  const f = fixture(); f.records.setQuestion('模拟事实问题');
+  const body = { id: crypto.randomUUID(), reading: f.records.getAIReading(), model: 'gpt-6.1-sol', effort: 'low', maxOutputTokens: 3000, liveCheck: true };
+  const result = completed(body).interpretation;
+  result.webCheck = { status: 'searched', searchCalls: 1, checkedAt: '2026-11-09T08:00:00.000Z', sources: [
+    { url: 'https://example.org/update', title: '<img onerror=alert(1)>来源' },
+    { url: 'javascript:alert(1)', title: '危险地址' },
+  ] };
+  result.answer.factChecks = [{ claim: '<script>测试</script>', finding: '有资料支持这一模拟事实。', status: 'supported', sourceUrls: ['https://example.org/update', 'javascript:alert(1)', 'https://unknown.example/'] }];
+  const node = renderAIInterpretation(f.document, result);
+  const links = node.querySelectorAll('a');
+  assert.equal(links.length, 1); assert.equal(links[0].href, 'https://example.org/update');
+  assert.equal(links[0].rel, 'noopener noreferrer'); assert.match(links[0].textContent, /<img onerror=/);
+  assert.equal(node.querySelectorAll('script').length, 0); assert.equal(node.querySelectorAll('img').length, 0);
+  assert.match(node.textContent, /来源支持/); assert.doesNotMatch(node.textContent, /危险地址/);
+  delete result.webCheck;
+  const missing = renderAIInterpretation(f.document, result);
+  assert.match(missing.textContent, /联网核查未完成/); assert.equal(missing.querySelectorAll('a').length, 0);
   f.dispose();
 });

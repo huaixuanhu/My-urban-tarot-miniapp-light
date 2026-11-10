@@ -1,5 +1,15 @@
 # Decisions
 
+## 2026-11-10 — accepted stage2.5.13 release
+
+Source: the user's explicit acceptance of the current result and request for full publication/closeout. Accept prompt stage2.5.13-v2 and design revision33, retain documented quality limits, and publish all three verified refinements. This supersedes the preceding local-only boundary for the reviewed commit/push/deployment. Preserve current private/shared access and data; future account/guest activation remains separate. Reuse completed Sol/live and rendered local evidence; no new paid provider request is scheduled. Scope/recovery: STATE.md stage2.5.13.7; release evidence: docs/release/stage2.5.13/README.md.
+
+## 2026-11-09 — direct prose, opt-in live evidence and list-first records
+
+Source: the user's reading-quality feedback, supplied private example, acceptance of the three proposed changes and explicit local-implementation request. Express grounded observations directly while retaining uncertainty and unfavorable findings; preserve the private example outside tracked fixtures. Live checking is a per-generation choice, off by default, and a checked request must obtain actual completed search evidence. Keep claim-linked sources and uncertainty visible, preserve canonical Urban Tarot meanings, and distinguish searched event facts from causal hypotheses. Retain one paid generation with bounded tool use and no automatic retry; actual-model evaluation needs its own budget and authorization.
+
+History should open as saved-date/short-title rows, then focused detail with the full question and selectable AI results. Keep saving the current draft explicit and preserve every saved field/export. Existing users continue sharing records; account isolation and guest mode receive presentation seams only. The user's subsequent request favors minimal explanatory interface text, with supplemental guidance, interpretation basis and usage in adjacent `?` help. This extends the accepted glass design without changing scene/art or access. Local implementation and preview are authorized; final visual acceptance, paid testing, commit and publication remain separate. Scope/status: STATE.md stage2.5.13; design: DESIGN.md; verification: docs/ai/stage2.5.13/README.md.
+
 ## 2026-10-29 — adopt the selected fluid-glass system for sheets
 
 The user explicitly requests the latest systems/fluid-glass from My-design-system-collection for More, records and AI. Pin inspected main adc4f29fc8c471de49bfc7c08ccda8fe7a698868 locally; preserve its separation of regular glass shells, paper reading ground and pearl controls. Keep the live table/dock and all application behavior. Adapt only theme/token names, module packaging, map sizing and the large-panel flat-face seam; document source/fallbacks. Local implementation and synthetic checks are authorized; this does not activate AI, acquire randomness, write cloud data or release the application. Visual acceptance remains with the user.

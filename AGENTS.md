@@ -1,5 +1,7 @@
 # Urban Tarot project entry
 
+Current continuation (2026-11-10): STATE.md stage2.5.13.7 records the user's acceptance and authorization for full release/closeout of direct prose, opt-in live checking and list-first records. Reviewed commits, main push and existing Production deployment are authorized. Preserve current private/shared access, all data/inventories,65 inherited generated files and frozen samples. Account isolation/guest mode remain integration seams. No additional provider call is scheduled. Release evidence: docs/release/stage2.5.13/README.md; implementation/evaluations: docs/ai/stage2.5.13/README.md.
+
 Generated/adapted from human-ai-governance v0.8.4
 
 ## Collaboration

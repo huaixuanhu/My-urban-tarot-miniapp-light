@@ -22,14 +22,14 @@ export const AI_EFFORTS = Object.freeze([
 export const AI_TOKEN_PRESETS = Object.freeze([3000, 6000, 12000]);
 export const AI_MAX_OUTPUT_TOKENS = 12000;
 export const AI_MAX_INPUT_TOKENS = 10000;
-export const AI_DEFAULTS = Object.freeze({ model: 'gpt-6.1-terra', detail: 'standard', focus: 'general', effort: 'low', maxOutputTokens: 3000 });
+export const AI_DEFAULTS = Object.freeze({ model: 'gpt-6.1-terra', detail: 'standard', focus: 'general', effort: 'low', maxOutputTokens: 3000, liveCheck: false });
 
 // Intentionally broad guidance for this bounded text-only feature, not a quote.
 // Input, actual generation length, reasoning and model all affect the bill.
-export function aiCostHint(model, effort) {
+export function aiCostHint(model, effort, liveCheck = false) {
   const sol = model === 'gpt-6.1-sol';
   const upper = effort === 'high' ? (sol ? '0.30' : '0.15') : effort === 'medium' ? (sol ? '0.25' : '0.12') : (sol ? '0.20' : '0.10');
-  return `约 US$0.001–${upper} / 次`;
+  return `约 US$0.001–${upper} / 次${liveCheck ? '，联网另计' : ''}`;
 }
 
 /** Ignore session IDs, human notes and selection-only stacking changes. */

@@ -552,7 +552,8 @@ initializeInlineHelp(document, {
   explanations: { 'random-sources': randomSourceExplanation },
 });
 disclosures = createReadingDisclosures({ document, reducedMotion: () => $('reduce').checked || reducedPreference.matches, prepareSurface: panel => sheetMaterial.prepare(panel) });
-recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, disclosures });
+recordsController = createReadingRecords({ root: $('records-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, disclosures,
+  accessContext: { mode: document.body.dataset.visitorPreview === 'true' ? 'guest' : 'shared' } });
 aiController = createReadingAI({ root: $('ai-body'), getReading: () => reading, getBusy: () => tableBusy() || !readingReady || flips.size > 0 || pendingReveals.size > 0, records: recordsController, disclosures });
 let operationStorage;
 try { operationStorage = window.sessionStorage; } catch { /* In-page operation recovery remains available. */ }

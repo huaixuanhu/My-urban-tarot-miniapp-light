@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createHelpTip, initializeInlineHelp, disposeHelpTips, HELP_HOVER_DELAY_MS } from '../client/src/reading-help.mjs';
+import { createHelpTip, initializeInlineHelp, disposeHelpTips, disposeHelpTipsWithin, HELP_HOVER_DELAY_MS } from '../client/src/reading-help.mjs';
 
 // Deterministic event/clock fixture. Browser checks own actual visual geometry,
 // native focus and the tooltip's interaction with the glass-sheet compositor.
@@ -151,6 +151,26 @@ test('static buttons hydrate once, preserve existing descriptions and dispose cl
   f.fire(button, 'focus'); assert.equal(button.getAttribute('aria-describedby'), `original-description ${f.popup.id}`);
   f.fire(button, 'blur'); assert.equal(button.getAttribute('aria-describedby'), 'original-description');
   f.fire(button, 'pointerenter'); cleanup(); f.tick(1000); assert.equal(f.popup.hidden, true); f.dispose();
+});
+
+test('scoped disposal releases active and pending dynamic tips while other help stays usable', () => {
+  const f = fixture(), staticButton = f.help(), activeButton = f.sourceHelp();
+  const subtree = f.doc.createElement('section'), pendingTip = createHelpTip(f.doc, { label: '下一份解读', text: '待显示的说明' });
+  activeButton.remove(); subtree.append(activeButton); subtree.append(pendingTip); f.doc.body.append(subtree);
+  const pendingButton = pendingTip.children[0];
+  activeButton.focus(); f.fire(f.more, 'click'); f.fire(pendingButton, 'pointerenter');
+  assert.equal(f.detail.hidden, false); assert.ok(f.timers.size > 0);
+  disposeHelpTipsWithin(subtree);
+  assert.equal(f.popup.hidden, true); assert.equal(f.detail.hidden, true); assert.equal(f.timers.size, 0);
+  assert.equal(activeButton.getAttribute('aria-expanded'), 'false'); assert.equal(activeButton.getAttribute('aria-describedby'), null);
+  // Detached entries must leave the manager's set as well as losing listeners.
+  let staleScans = 0;
+  for (const button of [activeButton, pendingButton]) button.contains = () => { staleScans++; return false; };
+  subtree.remove(); f.fire(f.doc, 'pointerdown', { target: staticButton }); assert.equal(staleScans, 0);
+  f.fire(activeButton, 'focus'); f.fire(pendingButton, 'pointerenter'); f.tick(1000);
+  assert.equal(f.popup.hidden, true); assert.equal(f.timers.size, 0);
+  staticButton.focus(); assert.equal(f.popup.hidden, false); assert.equal(f.popup.textContent, '预算是上限。');
+  disposeHelpTipsWithin(subtree); assert.equal(f.popup.hidden, false); f.dispose();
 });
 
 function insideViewport(f, element) {

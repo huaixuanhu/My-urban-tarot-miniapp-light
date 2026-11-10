@@ -1,4 +1,5 @@
 import { aiReadingSignature, AI_DETAILS, AI_FOCUSES } from '../../shared/ai-options.mjs';
+import { normalizeSourceUrl } from '../../shared/ai-web.mjs';
 
 const DEFINITE_REJECTIONS = new Set([400, 401, 403, 404, 405, 409, 413, 415]);
 const STATUSES = new Set(['pending', 'completed', 'incomplete', 'failed', 'unknown']);
@@ -45,6 +46,8 @@ function validateReceipt(receipt, payload) {
       value.maxOutputTokens !== payload.maxOutputTokens ||
       (payload.detail !== undefined && value.detail !== payload.detail) ||
       (payload.focus !== undefined && value.focus !== payload.focus) ||
+      (value.liveCheck === true) !== (payload.liveCheck === true) ||
+      (payload.liveCheck === true && value.timeZone !== (payload.timeZone || 'UTC')) ||
       aiReadingSignature(value.reading) !== aiReadingSignature(payload.reading)) {
     throw new Error('返回的解读与这次请求不一致。请查询状态，暂不再次生成。');
   }
@@ -56,6 +59,19 @@ function validateReceipt(receipt, payload) {
         !Array.isArray(answer.reflectionQuestions) || !answer.reflectionQuestions.every(text => typeof text === 'string') ||
         !Array.isArray(answer.limitations) || !answer.limitations.every(text => typeof text === 'string')) {
       throw new Error('这次返回的解读内容不完整。请查询状态，暂不再次生成。');
+    }
+    if (payload.liveCheck === true) {
+      const check = value.webCheck;
+      const validSources = Array.isArray(check?.sources) && check.sources.every(source => source && typeof source.title === 'string' && normalizeSourceUrl(source.url));
+      const knownUrls = new Set(validSources ? check.sources.map(source => normalizeSourceUrl(source.url)) : []);
+      if (check?.status !== 'searched' || !Number.isSafeInteger(check.searchCalls) || check.searchCalls < 1 ||
+          typeof check.checkedAt !== 'string' || !Number.isFinite(Date.parse(check.checkedAt)) || !validSources ||
+          !Array.isArray(answer.factChecks) || !answer.factChecks.every(fact =>
+            fact && typeof fact.claim === 'string' && fact.claim.trim() && typeof fact.finding === 'string' && fact.finding.trim() &&
+            ['supported', 'disputed', 'uncertain'].includes(fact.status) && Array.isArray(fact.sourceUrls) &&
+            (fact.status === 'uncertain' || fact.sourceUrls.length > 0) && fact.sourceUrls.every(url => normalizeSourceUrl(url) && knownUrls.has(normalizeSourceUrl(url))))) {
+        throw new Error('联网核查结果尚未完整确认。请查询本次结果，暂不再次生成。');
+      }
     }
   }
   return copy(value);
@@ -72,8 +88,8 @@ export function createAIRequestState({ client = createInterpretationsClient(), o
   async function perform(kind) {
     const currentSequence = ++sequence;
     inFlight = true;
-    if (kind === 'generate') state = { ...state, status: 'submitting', message: '正在读取这次的问题与牌阵…' };
-    else state = { ...state, message: '正在查询原来的解读请求，不会再次生成。' };
+    if (kind === 'generate') state = { ...state, status: 'submitting', message: '正在解读…' };
+    else state = { ...state, message: '正在查询本次结果…' };
     emit();
     try {
       // Copies prevent a custom transport from mutating the retained request.
@@ -82,7 +98,7 @@ export function createAIRequestState({ client = createInterpretationsClient(), o
       const interpretation = validateReceipt(result, state.payload);
       state = { ...state, status: interpretation.status, interpretation,
         message: interpretation.message || ({
-          pending: '这次解读仍在处理中。稍后可查询状态，不会自动再次生成。',
+          pending: '解读处理中，可稍后查询。',
           completed: '这次解读已完成。',
           incomplete: '本次解读未完成。可以调整预算后，由你决定是否重新生成。',
           failed: '本次解读未能完成。可调整设置后重新发起。',
@@ -109,6 +125,11 @@ export function createAIRequestState({ client = createInterpretationsClient(), o
           typeof payload.effort !== 'string' || !Number.isInteger(payload.maxOutputTokens)) throw new TypeError('解读请求格式不正确。');
       if ((payload.detail !== undefined && !AI_DETAILS.some(item => item.id === payload.detail)) ||
           (payload.focus !== undefined && !AI_FOCUSES.some(item => item.id === payload.focus))) throw new TypeError('解读选项不正确。');
+      if (payload.liveCheck !== undefined && typeof payload.liveCheck !== 'boolean') throw new TypeError('联网选项不正确。');
+      if (payload.liveCheck && payload.timeZone !== undefined) {
+        try { if (typeof payload.timeZone !== 'string') throw new Error(); new Intl.DateTimeFormat('en', { timeZone: payload.timeZone }); }
+        catch { throw new TypeError('本次核查的时区不正确。'); }
+      }
       aiReadingSignature(payload.reading); // Reject malformed local input before network activity.
       if (payload.id === state.payload?.id) throw new Error('这个请求编号已经使用，请为新的解读准备新编号。');
       state = { status: 'idle', payload: copy(payload), interpretation: null, message: '' };

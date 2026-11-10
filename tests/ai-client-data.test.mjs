@@ -18,6 +18,52 @@ function receipt(input, status = 'completed') {
 }
 function deferred() { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; }
 
+function liveReceipt(input) {
+  const result = receipt(input);
+  result.interpretation.webCheck = { status: 'searched', checkedAt: '2026-11-09T08:00:00.000Z', searchCalls: 1,
+    sources: [{ url: 'https://example.org/update', title: '发布说明' }] };
+  result.interpretation.answer.factChecks = [{ claim: '测试发布信息', finding: '此处为模拟核查内容。', status: 'supported', sourceUrls: ['https://example.org/update'] }];
+  return result;
+}
+
+test('live receipts require matching mode, time zone, actual search evidence and claim-linked sources', async () => {
+  const input = { ...payload(), liveCheck: true, timeZone: 'Australia/Melbourne' };
+  for (const mutate of [
+    value => { value.liveCheck = false; },
+    value => { value.timeZone = 'UTC'; },
+    value => { delete value.webCheck; },
+    value => { value.webCheck.searchCalls = 0; },
+    value => { value.answer.factChecks[0].sourceUrls = ['https://unseen.example/claim']; },
+    value => { value.answer.factChecks[0].sourceUrls = []; },
+    value => { value.webCheck.sources[0].url = 'javascript:alert(1)'; },
+  ]) {
+    let calls = 0;
+    const response = liveReceipt(input); mutate(response.interpretation);
+    const state = createAIRequestState({ client: { generate: async () => { calls++; return response; } } });
+    await state.generate(input);
+    assert.equal(state.snapshot().status, 'unknown'); assert.equal(state.unresolved, true); assert.equal(calls, 1);
+  }
+  let posts = 0, gets = 0;
+  const state = createAIRequestState({ client: {
+    generate: async () => { posts++; throw new Error('Lost response'); },
+    get: async () => { gets++; return liveReceipt(input); },
+  } });
+  await state.generate(input); await state.recover();
+  assert.equal(state.snapshot().status, 'completed');
+  assert.deepEqual(state.snapshot().interpretation.webCheck, liveReceipt(input).interpretation.webCheck);
+  assert.equal(posts, 1); assert.equal(gets, 1);
+});
+
+test('invalid live-check settings fail before dispatch and old offline receipts stay readable', async () => {
+  let calls = 0;
+  const state = createAIRequestState({ client: { generate: async () => { calls++; return receipt(payload()); } } });
+  await assert.rejects(state.generate({ ...payload(), liveCheck: 'true' }), /联网/);
+  await assert.rejects(state.generate({ ...payload(), liveCheck: true, timeZone: 'invalid-zone' }), /时区/);
+  assert.equal(calls, 0);
+  await state.generate({ ...payload(), liveCheck: false });
+  assert.equal(state.snapshot().status, 'completed'); assert.equal(calls, 1);
+});
+
 test('transport is idle until explicit invocation and sends only the selected request', async () => {
   const requests = [], input = payload(), client = createInterpretationsClient(async (url, options) => {
     requests.push({ url, options }); return Response.json(receipt(input), { status: 201 });

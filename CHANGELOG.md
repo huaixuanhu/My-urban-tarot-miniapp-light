@@ -1,5 +1,17 @@
 # Change history
 
+## 2026-11-10 — accepted release of interpretation and records refinement
+
+User accepted prompt stage2.5.13-v2 and requested publication of direct prose, opt-in live checking and date/title-first reading history. Design revision33 and minimal contextual-help presentation are retained.370 tests and two independent source reviews pass. Existing private access and shared storage are preserved; account/guest activation is deferred. Release status and hosted verification limits: docs/release/stage2.5.13/README.md.
+
+## 2026-11-10 — grounded fact-check premises and direct conditions
+
+Prompt stage2.5.13-v2 replaces repeated inability statements with concrete evidence and conditions, confines fact-check claims to complete quoted premises from the original question, and keeps newly discovered background in the relevant finding. Retain uncertainty, unfavorable evidence, card fidelity and existing schema/request protections.370 aggregate checks pass; one explicitly authorized same-question Sol live follow-up is owned by STATE.md stage2.5.13.6. Local only, no deployment.
+
+## 2026-11-09 — local interpretation and history refinement
+
+Add direct affirmative guidance in prompt `stage2.5.13-v1`, an explicit live-check option with provider search evidence and claim-linked sources, and list-first saved readings with full detail, selectable AI versions and complete export. Move supplementary explanation, interpretation basis and usage into adjacent `?` help. Preserve existing shared access and add only a presentation seam for future guest/account integration. Credential-free preview fixtures support seeded history and search success/failure cases. Verification and its current limits are owned by [stage2.5.13 evidence](docs/ai/stage2.5.13/README.md); actual-model quality/live compatibility remain deferred. Local and uncommitted; no real provider/cloud operation or release.
+
 ## 2026-11-04 — authenticated release verification complete
 
 Completed one real Terra and one Sol interpretation, saved both with the same three-card spread, and verified complete shared-record persistence after browser refresh and JSON export. Precisely removed the synthetic test record; retained both AI audit receipts and all869 quantum values. The JSONB repair and341-test Opus5.5 Max review remain the released code baseline. Final documentation-only checkpoint closes stage2.5.12; visitor/security design remains separate.
