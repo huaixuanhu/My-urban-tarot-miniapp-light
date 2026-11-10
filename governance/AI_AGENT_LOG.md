@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-11-10 — stage2.5.13.7 publication and closeout
+
+Executor: Codex desktop. Reviewed application2631af9e pushed normally; Vercel READY dpl_Geg5LaU2SpXnPRZ6HGm2LfHk6uGu matches the commit and canonical alias,33.72-second build. Canonical Cloudflare login, default-origin403 and unique-host Vercel login checks pass. Read-only before/after cloud hashes are identical (1 record,3 AI rows,4 random operations,714 remaining quantum values);115 protected files unchanged. Scoped30-minute error/fatal query is empty after adjusting an out-of-retention1-hour request; drain inventory404 leaves that configuration unverified. Browser control timeout prevents newly observed authenticated UI smoke. Reuse accepted local UI and actual Sol evidence without claiming hosted end-to-end requalification. No new model/random call or cloud write. Final docs-only commit preserves the exact application source. Scope, receipts, rollback and retained limits: STATE.md stage2.5.13.7 and docs/release/stage2.5.13/README.md.
+
 ## 2026-11-10 — stage2.5.13.7 accepted release preparation
 
 Executor: Codex desktop (exact host model ID not exposed), with independent read-only backend/shared and client/UI subagents. User accepts the current version and requests full release/closeout. Installed governance0.8.5/design0.4.2 and Vercel deployment guidance read; existing package reused without migration or restyling. Both reviews report no release blocker; fresh370-test aggregate/types/runtime/build pass. Local/remote main and prior READY Production match b1797c0d. Read-only cloud baseline:1 record,3 AI rows,4 random operations, poolversion3/cursor310/total1024/remaining714. These current values supersede older inventory snapshots for preservation checks, without altering historical receipts.

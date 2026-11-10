@@ -2,7 +2,7 @@
 
 ## 2026-11-10 — accepted release of interpretation and records refinement
 
-User accepted prompt stage2.5.13-v2 and requested publication of direct prose, opt-in live checking and date/title-first reading history. Design revision33 and minimal contextual-help presentation are retained.370 tests and two independent source reviews pass. Existing private access and shared storage are preserved; account/guest activation is deferred. Release status and hosted verification limits: docs/release/stage2.5.13/README.md.
+User accepted prompt stage2.5.13-v2 and requested publication of direct prose, opt-in live checking and date/title-first reading history. Design revision33 and minimal contextual-help presentation are retained.370 tests and two independent source reviews pass. Existing private access and shared storage are preserved; account/guest activation is deferred. Published application2631af9e to verified READY Production; data and access checks pass. Release receipts and hosted-browser verification limit: docs/release/stage2.5.13/README.md.
 
 ## 2026-11-10 — grounded fact-check premises and direct conditions
 
