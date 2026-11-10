@@ -1,5 +1,17 @@
 # Agent continuity log
 
+## 2026-11-11 — stage2.5.15.2 joint release preparation
+
+Executor: Codex desktop (exact host model ID unavailable), with independent read-only geometry/release review. The user explicitly acceptsK1.5 and authorizes full release. Reviewer finds no source blocker: production imports include the geometry helper and exclude comparison fixtures; API/access/storage/prompt sources are unchanged and115 protected hashes match. Fresh aggregate and hosted publication verification follow the existing private Git-linked path; evidence owner: docs/release/stage2.5.15/README.md.
+
+## 2026-11-11 — stage2.5.15.1 physical glass contour
+
+Executor: Codex desktop (exact host model ID unavailable), with read-only geometry/rim review. Added48-sample superellipse corner segments with matched bevel-aware comparison radii; an endpoint test caught a floating-point closing-edge duplicate inK1.8, corrected by exact endpoints. Rim rays now intersect the actual extrusion at retained heights.378 aggregate checks pass; final focused assertions also verify card-edge support. Independent784-ray review found zero misses. Neutral actual-material comparison and application day/night/narrow captures, reload and local one-card shuffle/place/reveal pass; no page errors.115 inherited/frozen hashes match. No real provider calls, production writes, commit/push/deployment. Revision35 and verification limits: docs/design/stage2.5.15/glass-table.md.
+
+## 2026-11-11 — stage2.5.15 local corner refinement
+
+Executor: Codex desktop (exact host model ID unavailable), with an optical-helper implementation subagent and an independent read-only geometry/integration reviewer. Loaded design-authorship0.4.2, supplied personal preferences and human-ai-governance0.8.5; retained the existing complete package. Compared five contours at matched dimensions/cut-in; selected K1.5 with three role radii and derived nested-frame radii. Extended computed-shape optical maps/cache while preserving round geometry. Review caught and corrected the narrow20px inset.376 checks/build pass; seven browser-state receipts and day/night/desktop/narrow/2× images retained. Forced fallback uses original22px/K1. Headless post-test restore timed out after completed receipts; the in-app browser independently loaded/reloaded/reopened More successfully and remains the local deliverable.115 protected hashes match. Design revision34 is delegated local evolution; uncommitted, unpushed and undeployed. Source/evidence/limits: STATE.md stage2.5.15 and docs/design/stage2.5.15/README.md.
+
 ## 2026-11-10 — stage2.5.14 Cloudflare72hour session
 
 Executor: Codex desktop (exact host model ID not exposed), with an independent read-only Cloudflare-docs/closeout reviewer. User authorized app login persistence72h and full closeout. After the user renewed an expired dashboard login, Codex inspected the Urban Tarot app24h value, sole Allow policy with inherited timeout/one rule/two identities, and One Client authenticationOff. Changed only the app duration to Custom72h; Cloudflare confirmed successful configuration and reopening showed72h. No rules, other apps/global settings, session revocation, application-data write or provider call.

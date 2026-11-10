@@ -1,0 +1,36 @@
+{
+  "size": [
+    480,
+    584
+  ],
+  "matchedRoundRadius": 26.120707977035178,
+  "cases": [
+    {
+      "name": "当前普通圆角",
+      "radius": 22,
+      "k": 1
+    },
+    {
+      "name": "较大普通圆角",
+      "radius": 26.120707977035178,
+      "k": 1
+    },
+    {
+      "name": "四次 Bézier",
+      "radius": 30.602316206779033,
+      "k": null
+    },
+    {
+      "name": "superellipse 1.5",
+      "radius": 35.2,
+      "k": 1.5
+    },
+    {
+      "name": "superellipse 1.8",
+      "radius": 42.38674979713801,
+      "k": 1.8
+    }
+  ],
+  "quarticSource": "my-skills-collection/evaluations/design-authorship/corner-curve-samples-2026-11-09/bezier.html",
+  "quarticExtentFactor": 1.171573
+}

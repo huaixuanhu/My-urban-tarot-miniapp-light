@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-11-11 — accepted K1.5 joint release
+
+Source: the user explicitly chooses1.5 and requests full publication/closeout for both the interface and glass slab. Accept design revision35 with revision34, preserving the comparison evidence and ordinary-radius fallback. Commit/push/private Production release now supersede the local-only boundary of both slices. No provider operation, data write or access change. Owner: STATE.md stage2.5.15.2; evidence: docs/release/stage2.5.15/README.md.
+
+## 2026-11-11 — physical glass follows the soft corner family
+
+Source: the user explicitly extends the corner upgrade to the glass slab and asks aboutK1.5/K1.8. ChooseK1.5 under delegated rendered comparison; keep the rectangle footprint and original bevel/material. Match comparisons at the actual beveled45degree cut-in, and derive highlight lines from the mesh. Preserve original gameplay and engraving. Design revision35 is local and verified; user visual review/release remain pending. Owner/evidence: STATE.md stage2.5.15.1 and docs/design/stage2.5.15/glass-table.md.
+
+## 2026-11-11 — soft continuous corners
+
+Source: the user requests the latest personal design skill and delegates assessment of quartic Bézier versus superellipse. Apply native K1.5 to the existing glass/functional surfaces, after matching corner cut-in for comparison. Preserve the supplied preference for circles/pills and ordinary-radius fallback. The visible distinction is restrained; native border/focus and live-lens compatibility support this choice over an additional quartic clipping hierarchy. Update optical maps with CSS geometry. Revision34 is locally verified delegated evolution; direct user acceptance/release remain pending. Authority: STATE.md stage2.5.15; comparison/limits: docs/design/stage2.5.15/README.md.
+
 ## 2026-11-10 — application-scoped72hour authentication
 
 Source: user's explicit72hour Cloudflare-login request and direct-closeout instruction. Change only Urban Tarot's application session from24h to72h; its existing trusted-email Allow policy inherits the application timeout. Preserve the two allowed identities, authentication methods and other apps/global settings. Current Cloudflare documentation establishes that an unexpired application session can outlast the global session, so no organization-wide change is needed. Save/readback and observed policy inheritance establish configuration; fresh-token lifetime and72elapsedhours remain unmeasured. Owner: STATE.md stage2.5.14; evidence/rollback: docs/access/stage2.5.14/README.md.

@@ -308,3 +308,42 @@
 .glass-sheet .ai-advanced-settings { grid-template-columns: repeat(2,minmax(0,1fr)); margin: 4px 0 16px; }
 @media (max-width: 700px) { .glass-sheet .ai-form > .ai-settings { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .glass-sheet .ai-advanced > summary::after { transition: none; } }
+
+/* Revision34: soft continuous corners. Original radii above remain the
+   unsupported-browser fallback; optical maps read the computed shape. */
+@supports (corner-shape: superellipse(1.5)) {
+  :root {
+    --reading-radius-surface: 35.2px;
+    --reading-radius-compact: 27.2px;
+    --reading-radius-control: 16px;
+    --reading-frame-inset: 28px;
+  }
+  .glass-sheet.fg-glass, .reader-details-body {
+    corner-shape: superellipse(1.5);
+    border-radius: var(--reading-radius-surface);
+  }
+  .help-tooltip.fg-glass, .help-detail.fg-glass {
+    corner-shape: superellipse(1.5);
+    border-radius: var(--reading-radius-compact);
+  }
+  .glass-sheet .record-field textarea, .glass-sheet .record-field input,
+  .glass-sheet .record-card-fields input, .glass-sheet .ai-setting select,
+  .glass-sheet .ai-setting input, .glass-sheet .ai-spread-preview input,
+  .glass-sheet .record-ai-picker select, .glass-sheet .sheet-link {
+    corner-shape: superellipse(1.5);
+    border-radius: var(--reading-radius-control);
+  }
+  /* The saved spread is the framed inset of the reading shell (28px padding).
+     Standalone fields above are control surfaces, not concentric panel frames. */
+  .glass-sheet .record-spread {
+    corner-shape: superellipse(1.5);
+    border-radius: calc(var(--reading-radius-surface) - var(--reading-frame-inset));
+  }
+  @media (max-width: 700px) { :root { --reading-frame-inset: 20px; } }
+  .fg-glass::before, .fg-glass::after,
+  .fg-glass > .fg-glass__lens, .fg-glass > .fg-glass__flat,
+  .fg-glass > .fg-glass__rf, .fg-glass > .fg-glass__hi,
+  .fg-glass > .fg-glass__glow {
+    corner-shape: inherit;
+  }
+}

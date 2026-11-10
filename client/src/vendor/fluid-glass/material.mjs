@@ -4,6 +4,8 @@
    有它时按浏览器和背景升到第 1 级：Chromium 用 backdrop-filter: url() 直接折射活的背景；别的浏览器在背景已知（宿主标了 data-fg-env）时
    用环境副本折射。另外负责：按下从指尖发光并传到同组、菜单显形、珍珠在分段里滑动、透明度滑块、副本模式下量背后的明暗。
    用法：引入 fluid-glass.js 后调 FluidGlass.init()；之后加进页面的玻璃调 FluidGlass.scan()。 */
+import { cornerExponentFromStyle, createCornerField, opticalShapeKey } from './corner-geometry.mjs';
+
 export const FluidGlass = (() => {
   const global = window;
   'use strict';
@@ -57,21 +59,12 @@ export const FluidGlass = (() => {
     for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) { const i = (y * cw + x) * 4; const v = fn(x, y); d[i] = v[0]; d[i + 1] = v[1]; d[i + 2] = v[2]; d[i + 3] = v[3]; }
     ctx.putImageData(img, 0, 0); return c.toDataURL();
   };
-  function makeMaps(W, H, R, G, pad) {
+  function makeMaps(W, H, R, K, G, pad) {
     const PW = W + 2 * pad, PH = H + 2 * pad, S = 2;
     const hx = W / 2, hy = H / 2;
     const w = Math.min(G.w, R * 0.8);
-    const geo = (px, py) => {
-      const x = px - pad - hx, y = py - pad - hy;
-      const qx = Math.abs(x) - (hx - R), qy = Math.abs(y) - (hy - R);
-      const mx = Math.max(qx, 0), my = Math.max(qy, 0);
-      const ol = Math.hypot(mx, my);
-      const sd = ol + Math.min(Math.max(qx, qy), 0) - R;
-      let nx, ny;
-      if (qx > 0 || qy > 0) { nx = ol > 1e-6 ? (mx / ol) * (x < 0 ? -1 : 1) : 0; ny = ol > 1e-6 ? (my / ol) * (y < 0 ? -1 : 1) : 0; }
-      else if (qx > qy) { nx = x < 0 ? -1 : 1; ny = 0; } else { nx = 0; ny = y < 0 ? -1 : 1; }
-      return { nx, ny, s: -sd, inside: sd <= 0 };
-    };
+    const field = createCornerField(W, H, R, K);
+    const geo = (px, py) => field(px - pad - hx, py - pad - hy);
     let amax = 0; for (let i = 0; i <= 200; i++) amax = Math.max(amax, Math.min(snellAt(i / 200, G, w).shift, w));
     const q2 = (px, py) => { const q = geo(px, py); const edge = q.inside && q.s < w; const x = clamp01(q.s / w); const sn = edge ? snellAt(x, G, w) : { theta: 0, shift: 0, tir: false }; return { nx: q.nx, ny: q.ny, inside: q.inside, edge, theta: sn.theta, a: Math.min(sn.shift, w) / amax, tir: sn.tir }; };
     const out = { scale: 2 * amax, PW, PH };
@@ -116,10 +109,10 @@ export const FluidGlass = (() => {
     const one = (id, blur) => `<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="${blur.toFixed(2)}" result="src"/><feImage href="${m.disp}" x="0" y="0" width="${m.PW}" height="${m.PH}" preserveAspectRatio="none" result="m"/><feDisplacementMap in="src" in2="m" scale="${m.scale.toFixed(2)}" xChannelSelector="R" yChannelSelector="G"/></filter>`;
     return one(`fg-${key}-r`, G.blur * k.r) + one(`fg-${key}-c`, G.blur * k.c);
   }
-  function ensureMaps(tier, W, H, R, pad, uniq) {
-    const key = `${tier}-${W}x${H}-r${Math.round(R)}-p${pad}${uniq ? '-' + uniq : ''}`;
+  function ensureMaps(tier, W, H, R, K, pad, uniq) {
+    const key = `${tier}-${W}x${H}-${opticalShapeKey(R, K)}-p${pad}${uniq ? '-' + uniq : ''}`;
     if (!cache.has(key)) {
-      const m = makeMaps(W, H, R, TIERS[tier], pad);
+      const m = makeMaps(W, H, R, K, TIERS[tier], pad);
       ensureDefs().insertAdjacentHTML('beforeend', filtersFor(key, m, TIERS[tier]));
       cache.set(key, { key, tier, hi: `url(${m.hi})`, rf: `url(${m.rf})` });
     }
@@ -221,8 +214,9 @@ export const FluidGlass = (() => {
     el.dataset.fgThick = tier;
     if (!el.hasAttribute('data-fg-lens')) return;
     const R = radiusOf(el, W, H);
+    const K = cornerExponentFromStyle(getComputedStyle(el));
     const pad = mode === 'backdrop' ? 0 : PAD;
-    const m = ensureMaps(tier, W, H, R, pad, el.dataset.fgUniq || '');
+    const m = ensureMaps(tier, W, H, R, K, pad, el.dataset.fgUniq || '');
     el.style.setProperty('--fg-hi', m.hi); el.style.setProperty('--fg-rf', m.rf);
     el._fgKey = m.key;
     if (mode === 'copy') {

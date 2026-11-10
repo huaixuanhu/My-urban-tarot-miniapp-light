@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Augurwell · 玻璃板圆角比较</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;background:#eee9e0;color:#34372f;font:14px system-ui}h1{font-size:23px;font-weight:500;margin:0 0 14px}nav{display:flex;gap:8px;margin-bottom:18px}button{border:1px solid #9998;border-radius:999px;background:#fff9;color:inherit;padding:9px 16px;cursor:pointer}button[aria-pressed=true]{background:#34372f;color:#fff}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}section h2{font-size:17px;font-weight:500;margin:0 0 9px}small{font-size:12px;opacity:.6;margin-left:12px}canvas{display:block;width:100%;height:440px;border-radius:18px}footer{margin-top:16px;opacity:.65;font-size:12px}body[data-theme=dark]{background:#211e1a;color:#e7dfd0}body[data-theme=dark] button{background:#35322e}body[data-theme=dark] button[aria-pressed=true]{background:#e7dfd0;color:#25231e}@media(max-width:720px){main{grid-template-columns:1fr}canvas{height:330px}}
+</style>
+<h1>玻璃板 · 1.5 / 1.8</h1>
+<nav><button data-view="perspective" aria-pressed="true">正常视角</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="corner" aria-pressed="false">近看边角</button><button id="theme">切换日夜</button></nav>
+<main><section><h2>superellipse 1.5 <small>半径 0.576</small></h2><canvas id="soft"></canvas></section><section><h2>superellipse 1.8 <small>半径 0.680</small></h2><canvas id="firm"></canvas></section></main>
+<footer>相同尺寸、厚度、刻纹、材质、光线与45°角部切入深度；这是局部材质比较，完整牌桌效果见本地应用。</footer>
+<script type="module" src="./glass-corners.verify.mjs"></script></html>

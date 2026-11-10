@@ -22,7 +22,7 @@
     "electron:build": "pnpm build:client && electron-builder --mac",
     "electron:build:win": "pnpm build:client && electron-builder --win",
     "electron:build:linux": "pnpm build:client && electron-builder --linux",
-    "test:reading": "node --test prototypes/shuffle-study/*.test.mjs",
+    "test:reading": "node --test prototypes/shuffle-study/*.test.mjs tests/glass-corners.test.mjs",
     "dev:motion": "vite --config prototypes/shuffle-study/vite.config.mjs",
     "test:records": "tsx --test tests/records*.test.mjs",
     "check:records-runtime": "node scripts/check-records-runtime.mjs",

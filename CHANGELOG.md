@@ -1,5 +1,17 @@
 # Change history
 
+## 2026-11-11 — accepted interface and glass corner upgrade
+
+The user accepted superellipseK1.5 for the interface and physical glass slab. Sheets, controls and optical edges share the updated contour; slab highlights follow its actual bevel. Original artwork, placement, engraving, shared data and72hour access stay intact. Joint release/closeout is tracked in docs/release/stage2.5.15/README.md.
+
+## 2026-11-11 — local physical-glass corner refinement
+
+Extended superellipseK1.5 to the physical slab after a matchedK1.8 comparison. Original slab dimensions/thickness, card support, material and engraving stay intact; upper/lower rim lines now follow the actual bevel.378 checks and local rendered gameplay verification pass. Local revision35 remains uncommitted and undeployed. Evidence: docs/design/stage2.5.15/glass-table.md.
+
+## 2026-11-11 — local continuous-corner upgrade
+
+Glass sheets/help and functional controls adopt feature-detected superellipse(1.5), with synchronized edge optics and original ordinary-radius fallback. Circles, pills, source artwork and table geometry retain their contours. The saved-spread frame follows desktop/narrow padding.376 checks and local rendered verification pass; this is local design revision34 pending user visual review, with no release. Evidence: docs/design/stage2.5.15/README.md.
+
 ## 2026-11-10 —72hour Cloudflare login session
 
 Urban Tarot's Cloudflare Access application session changed from24hours to72hours. The existing two-user Allow policy inherits this duration; other apps/global settings and application source remain unchanged. Save/readback,370 project checks and anonymous access protections pass. Newly issued sessions use the configured duration; no retroactive extension of existing tokens is claimed. Evidence and rollback: docs/access/stage2.5.14/README.md.
