@@ -1,6 +1,6 @@
 # Urban Tarot project entry
 
-Current continuation (2026-11-10): STATE.md stage2.5.13.7 is released and closed. User accepted promptv2/designrevision33; direct prose, opt-in live checking and list-first records are published from application2631af9e.370 checks, independent source reviews, READY deployment, access protection and cloud-data preservation pass. Authenticated browser smoke remains unverified because browser control timed out. Account isolation/guest mode remain integration seams; no further provider call is scheduled. Preserve inherited generated files, frozen samples and existing private/shared access. Release evidence: docs/release/stage2.5.13/README.md.
+Current continuation (2026-11-10): STATE.md stage2.5.14 records the completed user-requested72hour Cloudflare Access session for Urban Tarot and its closeout. Configuration saved/read back as72h; existing trusted-email policy inherits it.370 aggregate checks and anonymous/origin gates pass; fresh-token/72elapsedhour persistence was not measured. Preserve current identities, private/shared access, other apps/global settings, application source, all data and inherited/frozen files. Evidence: docs/access/stage2.5.14/README.md. No new model/random call or data write is scheduled.
 
 Generated/adapted from human-ai-governance v0.8.4
 

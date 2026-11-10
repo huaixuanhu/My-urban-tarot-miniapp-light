@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-10 —72hour Cloudflare login session
+
+Urban Tarot's Cloudflare Access application session changed from24hours to72hours. The existing two-user Allow policy inherits this duration; other apps/global settings and application source remain unchanged. Save/readback,370 project checks and anonymous access protections pass. Newly issued sessions use the configured duration; no retroactive extension of existing tokens is claimed. Evidence and rollback: docs/access/stage2.5.14/README.md.
+
 ## 2026-11-10 — accepted release of interpretation and records refinement
 
 User accepted prompt stage2.5.13-v2 and requested publication of direct prose, opt-in live checking and date/title-first reading history. Design revision33 and minimal contextual-help presentation are retained.370 tests and two independent source reviews pass. Existing private access and shared storage are preserved; account/guest activation is deferred. Published application2631af9e to verified READY Production; data and access checks pass. Release receipts and hosted-browser verification limit: docs/release/stage2.5.13/README.md.

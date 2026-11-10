@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-10 — application-scoped72hour authentication
+
+Source: user's explicit72hour Cloudflare-login request and direct-closeout instruction. Change only Urban Tarot's application session from24h to72h; its existing trusted-email Allow policy inherits the application timeout. Preserve the two allowed identities, authentication methods and other apps/global settings. Current Cloudflare documentation establishes that an unexpired application session can outlast the global session, so no organization-wide change is needed. Save/readback and observed policy inheritance establish configuration; fresh-token lifetime and72elapsedhours remain unmeasured. Owner: STATE.md stage2.5.14; evidence/rollback: docs/access/stage2.5.14/README.md.
+
 ## 2026-11-10 — accepted stage2.5.13 release
 
 Source: the user's explicit acceptance of the current result and request for full publication/closeout. Accept prompt stage2.5.13-v2 and design revision33, retain documented quality limits, and publish all three verified refinements. This supersedes the preceding local-only boundary for the reviewed commit/push/deployment. Preserve current private/shared access and data; future account/guest activation remains separate. Reuse completed Sol/live and rendered local evidence; no new paid provider request is scheduled. Scope/recovery: STATE.md stage2.5.13.7; release evidence: docs/release/stage2.5.13/README.md.

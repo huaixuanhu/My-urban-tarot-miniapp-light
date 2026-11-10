@@ -1,5 +1,11 @@
 # Agent continuity log
 
+## 2026-11-10 — stage2.5.14 Cloudflare72hour session
+
+Executor: Codex desktop (exact host model ID not exposed), with an independent read-only Cloudflare-docs/closeout reviewer. User authorized app login persistence72h and full closeout. After the user renewed an expired dashboard login, Codex inspected the Urban Tarot app24h value, sole Allow policy with inherited timeout/one rule/two identities, and One Client authenticationOff. Changed only the app duration to Custom72h; Cloudflare confirmed successful configuration and reopening showed72h. No rules, other apps/global settings, session revocation, application-data write or provider call.
+
+Fresh370 tests/types/runtime/build and six anonymous/origin access probes pass.115 inherited/frozen file hashes and all application source remain unchanged. Independent review found no blocking issue. No fresh-token or72hour elapsed test is claimed. The configuration is live independently of Vercel; the documentation-only commit/push and automatic deployment are reconciled in the ignored final receipt. Owner: STATE.md stage2.5.14; evidence/rollback: docs/access/stage2.5.14/README.md.
+
 ## 2026-11-10 — stage2.5.13.7 publication and closeout
 
 Executor: Codex desktop. Reviewed application2631af9e pushed normally; Vercel READY dpl_Geg5LaU2SpXnPRZ6HGm2LfHk6uGu matches the commit and canonical alias,33.72-second build. Canonical Cloudflare login, default-origin403 and unique-host Vercel login checks pass. Read-only before/after cloud hashes are identical (1 record,3 AI rows,4 random operations,714 remaining quantum values);115 protected files unchanged. Scoped30-minute error/fatal query is empty after adjusting an out-of-retention1-hour request; drain inventory404 leaves that configuration unverified. Browser control timeout prevents newly observed authenticated UI smoke. Reuse accepted local UI and actual Sol evidence without claiming hosted end-to-end requalification. No new model/random call or cloud write. Final docs-only commit preserves the exact application source. Scope, receipts, rollback and retained limits: STATE.md stage2.5.13.7 and docs/release/stage2.5.13/README.md.
