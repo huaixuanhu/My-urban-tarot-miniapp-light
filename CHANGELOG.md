@@ -1,5 +1,29 @@
 # Change history
 
+## 2026-11-19 — interaction release
+
+Accepted revision40 brings the waiting indicator for shuffling, camera/card drag continuity, current-reading save confirmation and the compact model and effort panel into the same release. The AI sheet opens from its entry and moves when dragged by its blank glass.
+
+## 2026-11-19 — stage2.5.17.3 motion and dragging
+
+The AI sheet expands from its entry and the compact model/effort panel opens from its row. The sheet can be repositioned by dragging blank glass with a mouse. Local browser evidence and 401 passing tests are recorded in docs/design/stage2.5.17/README.md.
+
+## 2026-11-18 — local small floating model control
+
+The compact model/effort row now opens a280×161px glass overlay above it, with bounded below-placement in tight spaces. Opening leaves the form in place. Reused help-surface haze/blur prevents underlying text from competing with the controls.399 checks, independent review and desktop/390px day/night plus short-window keyboard verification pass. Local design revision39 supersedes the inline arrangement and awaits review; no provider call, commit or deployment.
+
+## 2026-11-18 — local compact model and effort entry
+
+Model and effort now stay in one small current-value row; click opens the same glass slider and closing preserves selections. Native keyboard flow and layered Escape remain available. Outside dismissal waits for click activation to preserve following controls' positions.398 checks and desktop/390px day/night verification pass; design revision38 awaits local review. No new generation, commit or deployment. Evidence: docs/design/stage2.5.17/README.md.
+
+## 2026-11-18 — local glass model and effort control
+
+AI settings now group the selected effort, Terra/Sol model row and a native three-stop slider in one existing-material glass surface. Reset returns the default effort/budget while keeping the model; budget linkage, explicit generation, request locks and frozen results remain unchanged.396 checks, independent source review and desktop/390px day/night native-interaction verification pass. Design revision37 awaits user review. Retain all uncommitted stage2.5.16 work; no real provider call, commit or deployment. Evidence: docs/design/stage2.5.17/README.md.
+
+## 2026-11-17 — local interaction feedback and saved-record clarity
+
+Shuffle now immediately shows a small spinner and正在洗牌 through preparation and animation. Incidental drag interruption retains the current camera/existing-card position; unchanged resize reports no longer cancel gestures, and card previews use release bounds. Current-record drafts show the existing question, spread, labels and selected matching AI; successful saves open an已保存 receipt with补充记录. Full history refresh recovery and immutable supplement saves are covered.393 tests and desktop/390px day/night synthetic verification pass. Design revision36 is local and awaits user review; acceptedK1.5, data/request/access boundaries and115 protected files remain intact. No commit or release. Evidence: docs/design/stage2.5.16/README.md.
+
 ## 2026-11-11 — accepted interface and glass corner upgrade
 
 The user accepted superellipseK1.5 for the interface and physical glass slab. Sheets, controls and optical edges share the updated contour; slab highlights follow its actual bevel. Original artwork, placement, engraving, shared data and72hour access stay intact. Published asff238815 with378 checks, authenticated desktop/390px day/night display, access gates and identical data digests. Release/closeout: docs/release/stage2.5.15/README.md.

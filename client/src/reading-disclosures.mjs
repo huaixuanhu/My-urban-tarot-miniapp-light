@@ -1,3 +1,5 @@
+import { createSheetDrag } from './reading-sheet-drag.mjs';
+
 /** Shared, nonmodal glass sheets. Reading state and record storage stay outside. */
 export function createReadingDisclosures({ document, reducedMotion = () => false, prepareSurface = () => {} }) {
   const $ = id => document.getElementById(id);
@@ -12,6 +14,8 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     element: $(id), panel: $(id)?.querySelector('.glass-sheet'), trigger: $(triggerId),
     state: 'closed', animation: null, layers: [],
   }]).filter(([, entry]) => entry.element && entry.panel));
+  const aiSheet = sheets.get('reading-ai');
+  const aiDrag = aiSheet && createSheetDrag(aiSheet.panel, () => aiSheet.state === 'open');
   const cleanups = [];
   let disposed = false;
   const listen = (element, type, handler, options) => {
@@ -30,19 +34,34 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     entry.element.open = visible;
     entry.panel.inert = !visible;
     entry.state = visible ? 'open' : 'closed';
+    if (!visible && entry === aiSheet) aiDrag.reset();
     delete entry.panel.dataset.motion;
   }
 
-  function animate(entry, visible) {
-    entry.animation?.cancel(); entry.animation = null;
-    entry.layers.forEach(animation => animation.cancel()); entry.layers = [];
+  function animate(entry, visible, openingButton) {
     if (noMotion() || typeof entry.panel.animate !== 'function') { settle(entry, visible); return; }
     entry.state = visible ? 'opening' : 'closing';
     entry.panel.dataset.motion = entry.state;
+    if (entry.animation) {
+      entry.animation.reverse();
+      for (const layer of entry.layers) layer.reverse();
+      return;
+    }
     // Opacity on the glass itself creates a backdrop root and hides the room
     // from its refraction. Materialize only its content/optical child layers.
     const resting = { transform: 'translate(-50%, 0) scale(1)' };
-    const tucked = { transform: 'translate(-50%, 12px) scale(.94)' };
+    let tucked = { transform: 'translate(-50%, 12px) scale(.94)' };
+    if (openingButton?.width && openingButton.height) {
+      const panel = entry.panel.getBoundingClientRect();
+      if (panel.width && panel.height) {
+        const dx = openingButton.left + openingButton.width / 2 - (panel.left + panel.width / 2);
+        const dy = openingButton.top + openingButton.height / 2 - (panel.top + panel.height / 2);
+        const sx = openingButton.width / panel.width;
+        const sy = openingButton.height / panel.height;
+        resting.transformOrigin = 'center';
+        tucked = { transformOrigin: 'center', transform: `translate(-50%, 0) translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` };
+      }
+    }
     const timing = { duration: visible ? 380 : 300, easing: 'cubic-bezier(.22,.7,.2,1)', fill: 'both' };
     const animation = entry.panel.animate(visible ? [tucked, resting] : [resting, tucked], {
       ...timing,
@@ -52,13 +71,14 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     }
     entry.animation = animation;
     animation.finished.then(() => {
-      if (!disposed && entry.animation === animation) settle(entry, visible);
+      if (!disposed && entry.animation === animation) settle(entry, entry.state === 'opening');
     }).catch(() => {}); // A new user action may legitimately replace the motion.
   }
 
   function close(id, { restoreFocus = false, motion = true } = {}) {
     const entry = sheets.get(id);
     if (!entry || ['closed', 'closing'].includes(entry.state)) return;
+    if (entry === aiSheet) aiDrag.finish();
     if (restoreFocus || entry.panel.contains(document.activeElement)) $('tools-toggle')?.focus({ preventScroll: true });
     entry.trigger?.setAttribute('aria-expanded', 'false');
     entry.panel.inert = true;
@@ -77,13 +97,14 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
     if (!entry || ['open', 'opening'].includes(entry.state)) return;
     // Replacing sheet content retains the same origin; outgoing content becomes
     // inert immediately, so fast repeated clicks cannot operate two surfaces.
+    const openingButton = id === 'reading-ai' ? entry.trigger?.getBoundingClientRect() : null;
     for (const [otherId] of sheets) if (otherId !== id) close(otherId);
     if ($('reader-details')?.open) $('reader-details').open = false;
     entry.element.open = true;
     entry.panel.inert = false;
     entry.trigger?.setAttribute('aria-expanded', 'true');
     prepareSurface(entry.panel);
-    animate(entry, true);
+    animate(entry, true, openingButton);
     const focus = id === 'drawn-cards'
       ? $('placed-list')?.querySelector('button') || entry.panel.querySelector('h2')
       : entry.panel.querySelector('h2');
@@ -141,6 +162,6 @@ export function createReadingDisclosures({ document, reducedMotion = () => false
   return {
     open, close, closeAll, toggle,
     isOpen: id => ['open', 'opening'].includes(sheets.get(id)?.state),
-    dispose() { disposed = true; for (const cleanup of cleanups) cleanup(); for (const entry of sheets.values()) settle(entry, false); },
+    dispose() { disposed = true; for (const cleanup of cleanups) cleanup(); for (const entry of sheets.values()) settle(entry, false); aiDrag?.dispose(); },
   };
 }

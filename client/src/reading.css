@@ -101,7 +101,12 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .context-actions > button:not(:disabled) { background: #fffdf4b8; box-shadow: inset 0 1px 0 #ffffffd6,0 2px 9px #ac99721b; }
 :root[data-theme="dark"] .context-actions > button:not(:disabled) { background: #ffffff12; box-shadow: inset 0 1px 0 #ffffff24,0 1px 5px #00000014; }
 .reset-action { display: flex; align-items: center; justify-content: center; gap: 7px; }
-.reset-action > span { font-size: 20px; }
+.reset-action > .reset-icon { font-size: 20px; }
+.reset-action[aria-busy="true"] { opacity: 1; cursor: progress; }
+.reset-action[aria-busy="true"] > .reset-icon { flex: 0 0 14px; width: 14px; height: 14px; box-sizing: border-box; border: 1.5px solid currentColor; border-right-color: transparent; border-radius: 50%; font-size: 0; animation: shuffle-pending .8s linear infinite; }
+@keyframes shuffle-pending { to { transform: rotate(360deg); } }
+.reset-action[data-reduced-motion="true"] > .reset-icon { animation: none; }
+@media (prefers-reduced-motion: reduce) { .reset-action[aria-busy="true"] > .reset-icon { animation: none; } }
 .dock-count { font-size: 12px; line-height: 1.5; color: var(--ink); text-shadow: 0 0 3px var(--page),0 1px 5px var(--page); text-align: center; border-left: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; }
 #tools-toggle { font-size: 22px; letter-spacing: .1em; }
 .glass-dock button[aria-expanded="true"] { background: var(--hover); }
@@ -137,6 +142,8 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .record-spread { position: relative; aspect-ratio: 15 / 7.6; margin: 14px 0 22px; background: var(--hover); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
 .record-spread img { position: absolute; width: 9%; height: auto; transform: translate(-50%,-50%); border-radius: 3px; box-shadow: 1px 3px 7px var(--glass-shadow); }
 .record-spread img.is-reversed { transform: translate(-50%,-50%) rotate(180deg); }
+.record-current-spread { width: min(100%,360px); margin: 12px auto 18px; }
+.record-supplement { float: right; font-size: 12px; }
 .record-saved-cards li { border-top: 1px solid var(--line); }
 .record-saved-cards summary { padding: 12px 0; font-size: 13px; line-height: 1.6; }
 .record-saved-cards p, .record-prose { font: 14px/1.8 Georgia,"Songti SC",serif; overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -146,6 +153,10 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; outline:
 .record-ai-choices legend { font-size: 12px; padding: 0 8px 0 0; }
 .record-ai-choices label { display: flex; align-items: center; gap: 9px; min-height: 40px; font-size: 12px; line-height: 1.6; }
 .record-ai-choices input { accent-color: var(--selected); width: 17px; height: 17px; flex: 0 0 auto; }
+.record-attached-ai { margin: -10px 0 24px; }
+.record-ai-preview > summary { min-height: 36px; padding: 6px 0; cursor: pointer; font-size: 12px; line-height: 2; }
+.record-ai-preview[open] > summary { margin-bottom: 12px; }
+.record-saved-confirmation { margin: 0 0 12px; color: var(--ink); font-size: 13px; font-weight: 600; }
 .glass-sheet-ai .record-field { margin-bottom: 12px; }
 .glass-sheet-ai form > .record-intro { margin-bottom: 6px; }
 .ai-settings { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 12px 0 6px; }
@@ -297,7 +308,7 @@ footer a:hover { text-decoration: underline; }
   .glass-dock button { font-size: 12px; padding: 8px 5px; min-height: 40px; }
   .context-actions { padding: 2px; }
   .reset-action { gap: 5px; }
-  .reset-action > span { font-size: 18px; }
+  .reset-action > .reset-icon { font-size: 18px; }
   .dock-count { font-size: 11px; }
   #tools-toggle { font-size: 21px; }
   .progress { font-size: 9px; }

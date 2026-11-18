@@ -1,6 +1,6 @@
 # Urban Tarot project entry
 
-Current continuation (2026-11-11): STATE.md stage2.5.15.2 completes the accepted K1.5 interface/physical-glass corner release, design revision35. Applicationff238815 is published READY;378 tests, authenticated desktop/390px day/night display, access gates and data/hash preservation pass. Documentation-only synchronization is reconciled in the ignored final receipt. Preserve72hour private/shared access, all data/art/request behavior and65 inherited generated changes. No further AI/ANU call or data write is scheduled. Evidence: docs/release/stage2.5.15/README.md.
+Current continuation (2026-11-19): the owner accepted stages 2.5.16–2.5.17.3 and requested commit, push and Production publication. Follow governance/STATE.md stage2.5.17.4 for the release and docs/release/stage2.5.17/README.md for verification. Design revision40 is the accepted baseline.
 
 Generated/adapted from human-ai-governance v0.8.4
 

@@ -19,7 +19,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   const replaceContent = (container, ...children) => { disposeHelpTipsWithin(container); container.replaceChildren(...children); };
   const date = value => new Date(value).toLocaleString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   const tabs = el('nav', '', 'record-navigation'); tabs.setAttribute('aria-label', '占卜记录视图');
-  const currentTab = button('记录这次占卜', () => { show('current'); root.scrollTop = 0; });
+  const currentTab = button('记录本次占卜', () => openCurrent());
   const historyTab = button(access.label, () => { show('history'); loadList(); root.scrollTop = 0; });
   currentTab.hidden = !access.cloudRecords;
   tabs.append(historyTab, currentTab);
@@ -30,11 +30,12 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   root.append(tabs, current, history, detail, status);
   let mode = 'history', saving = false, disposed = false, listRequest = 0, detailRequest = 0;
   let explicitEntry = false, historyScroll = 0, historyOrigin = null, listLoading = false;
+  let historyLoaded = false, historyDirty = false, viewRevision = 0;
   const historyDays = new Map(), historyIds = new Set();
   let roundStartedAt = new Date().toISOString(), attempt = createSaveAttempt(), savedSignature = '';
-  let lastCardsKey = null, currentSavedId = null, noteChanged = false;
+  let lastCardsKey = null, lastSpreadKey = '', currentSavedId = null, currentSavedRecord = null, noteChanged = false;
   const draftListeners = new Set();
-  let aiResults = [], aiChoiceKey = '';
+  let aiResults = [], aiChoiceKey = '', aiPreviewKey = '';
   const includedAI = new Set();
   const form = el('form');
   const field = (label, id, max, rows, placeholder) => {
@@ -46,14 +47,17 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   };
   const question = field('这次的问题 · 选填', 'record-question', 1500, 2, '此刻，你想了解什么？');
   const cardSummary = el('p', '', 'record-intro');
+  const currentSpread = el('div', '', 'record-spread record-current-spread'); currentSpread.setAttribute('aria-label', '本次牌阵');
   const cardRows = el('ol', '', 'record-card-fields');
-  form.append(cardSummary, cardRows);
+  form.append(cardSummary, currentSpread, cardRows);
+  const aiChoices = el('fieldset', '', 'record-ai-choices'); aiChoices.hidden = true;
+  const aiPreview = el('section', '', 'record-attached-ai'); aiPreview.hidden = true;
+  form.append(aiChoices, aiPreview);
   const interpretation = field('我的解读 · 选填', 'record-interpretation', 8000, 3, '这几张牌，让你联想到了什么？');
   const reflection = field('留给之后的自己 · 选填', 'record-reflection', 8000, 2, '想记住的感受、行动或疑问');
-  const aiChoices = el('fieldset', '', 'record-ai-choices'); aiChoices.hidden = true;
   const save = el('button', '保存到共享记录', 'record-primary'); save.type = 'submit';
   const saveHint = el('p', '', 'record-save-hint');
-  form.append(aiChoices, save, saveHint); current.append(form);
+  form.append(save, saveHint); current.append(form);
   const labels = {};
   const signature = snapshot => JSON.stringify({ ...snapshot, id: '', startedAt: '' });
   function draft(id = crypto.randomUUID()) {
@@ -68,6 +72,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   }
   function message(text, error = false) { status.textContent = text; status.classList.toggle('is-error', error); }
   function show(next) {
+    viewRevision++;
     if (!access.cloudRecords) next = 'history';
     if (next !== 'detail') detailRequest++;
     if (next !== 'history') {
@@ -96,8 +101,23 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
       });
     }
     cardSummary.textContent = cards.length ? `自由摆牌 · ${cards.length} 张` : '先抽牌并翻开。';
+    const spreadKey = JSON.stringify(cards.map(card => [card.id, card.faceUp, card.x, card.z, card.zIndex, reading.reversed[card.id]]));
+    if (spreadKey !== lastSpreadKey) {
+      lastSpreadKey = spreadKey; currentSpread.replaceChildren();
+      const visibleCards = cards.filter(card => card.faceUp);
+      currentSpread.hidden = !visibleCards.length;
+      for (const card of [...visibleCards].sort((a, b) => a.zIndex - b.zIndex)) {
+        const image = el('img'); image.src = readingCardImage(card.id); image.alt = readingCard(card.id).name;
+        image.style.left = `${((card.x + 7.5) / 15) * 100}%`;
+        image.style.top = `${((card.z + 5.7) / 7.6) * 100}%`;
+        if (reading.reversed[card.id]) image.classList.add('is-reversed'); currentSpread.append(image);
+      }
+    }
     let unchanged = false;
     if (ready && savedSignature) unchanged = signature(draft()) === savedSignature;
+    if (ready && savedSignature && !saving && !attempt.pending) noteChanged = !unchanged;
+    currentTab.textContent = unchanged ? '查看本次记录' : currentSavedId ? '继续记录本次' : '记录本次占卜';
+    current.setAttribute('aria-busy', String(saving));
     save.disabled = !access.cloudRecords || saving || (!attempt.pending && (!ready || unchanged));
     save.textContent = saving ? '正在保存…' : attempt.pending ? '确认并重试保存' : unchanged ? '已保存到共享记录' : currentSavedId ? '保存为新记录' : '保存到共享记录';
     saveHint.textContent = attempt.pending ? '上次保存结果尚未确认。重试会核对同一份内容，避免重复记录。' : !ready && cards.length ? '翻开所有桌上的牌后即可保存。' : '';
@@ -116,6 +136,16 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
       }
     }
     for (const input of aiChoices.querySelectorAll('input')) input.disabled = saving || attempt.pending;
+    const selected = available.filter(result => includedAI.has(result.id));
+    const previewKey = selected.map(result => result.id).join('|');
+    if (previewKey !== aiPreviewKey) {
+      aiPreviewKey = previewKey; replaceContent(aiPreview); aiPreview.hidden = !selected.length;
+      for (const [index, result] of selected.entries()) {
+        const preview = el('details', '', 'record-ai-preview');
+        preview.append(el('summary', selected.length === 1 ? '查看附带的AI解读' : `查看解读 ${index + 1} · ${formatAISettings(result)}`), renderAIInterpretation(doc, result, { showQuestion: false }));
+        aiPreview.append(preview);
+      }
+    }
     for (const listener of draftListeners) listener();
   }
   form.addEventListener('submit', async event => {
@@ -123,15 +153,18 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     let snapshot;
     try { snapshot = attempt.snapshot() || attempt.prepare(draft()); }
     catch (error) { message(error.message, true); return; }
+    const submittedView = viewRevision;
     saving = true; update(); message('正在保存到共享记录…');
     try {
       const { record } = await client.save(snapshot);
       if (disposed) return;
-      currentSavedId = record.id; savedSignature = signature(snapshot); attempt.complete();
+      currentSavedId = record.id; currentSavedRecord = structuredClone(record); savedSignature = signature(snapshot); attempt.complete(); historyDirty = true;
       // A concurrently completed AI request can add a result after this save
       // snapshot was frozen. Keep that unsaved addition visible to reset/unload.
       try { noteChanged = signature(draft()) !== savedSignature; } catch { noteChanged = true; }
-      message('已保存。');
+      if (mode === 'current' && submittedView === viewRevision) showSavedRecord();
+      else if (mode === 'history') loadList();
+      else message('已保存。');
     } catch (error) { if (error.definite) attempt.complete(); if (!disposed) message(error.message, true); }
     finally { saving = false; if (!disposed) { update(); if (mode === 'current') status.scrollIntoView({ block: 'nearest' }); } }
   });
@@ -149,6 +182,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     const more = history.querySelector('.record-load-more');
     if (more) { more.disabled = true; more.textContent = '正在读取…'; }
     if (!cursor) {
+      historyLoaded = false;
       historyDays.clear(); historyIds.clear(); historyOrigin = null;
       replaceContent(history, el('p', '正在读取共享记录…', 'record-intro'));
     }
@@ -156,7 +190,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     try {
       const data = await client.list(cursor);
       if (disposed || request !== listRequest || mode !== 'history') return;
-      if (!cursor) replaceContent(history);
+      if (!cursor) { replaceContent(history); historyLoaded = true; historyDirty = false; }
       history.querySelector('.record-load-more')?.remove();
       if (!data.records.length && !cursor) history.append(el('p', '还没有保存的占卜。', 'record-empty'));
       for (const record of [...data.records].sort((a, b) => b.savedAt.localeCompare(a.savedAt) || b.id.localeCompare(a.id))) {
@@ -185,10 +219,83 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     }
   }
   function returnToHistory() {
-    show('history'); message(''); root.scrollTop = historyScroll;
-    (historyOrigin || historyTab).focus?.({ preventScroll: true });
+    show('history'); message('');
+    if (!historyLoaded || historyDirty) { root.scrollTop = 0; loadList(); historyTab.focus?.({ preventScroll: true }); }
+    else { root.scrollTop = historyScroll; (historyOrigin || historyTab).focus?.({ preventScroll: true }); }
   }
   const backButton = () => button('← 返回记录', returnToHistory, 'record-back');
+  function renderDetail(record, saved = false) {
+    replaceContent(detail, backButton());
+    if (saved) detail.append(button('补充记录', () => {
+      show('current'); message(''); root.scrollTop = 0;
+      current.tabIndex = -1; current.focus?.({ preventScroll: true });
+    }, 'record-supplement'), el('p', '已保存', 'record-saved-confirmation'));
+    const title = recordDisplayTitle(record.question);
+    detail.append(el('p', `${date(record.savedAt)} · ${record.spread.name} · ${record.cards.length} 张`, 'record-intro'), el('h3', title, 'record-detail-title'));
+    if (record.question && record.question !== title) detail.append(el('p', record.question, 'record-prose record-full-question'));
+    const randomSource = el('div', randomSourceLabel(record.randomness), 'record-intro record-meta-with-help');
+    if (record.randomness?.source === 'anu') randomSource.append(createHelpTip(doc, {
+      label: '本次量子随机来源', text: `这批数据获取于 ${date(record.randomness.fetchedAt)}；本次洗牌消耗 ${record.randomness.consumed} 个随机数。`, id: `record-random-help-${record.id}`,
+    }));
+    detail.append(randomSource);
+    const map = el('div', '', 'record-spread'); map.setAttribute('aria-label', '保存时的牌阵位置');
+    const cards = [...record.cards].sort((a, b) => a.drawOrder - b.drawOrder);
+    // Fixed table-relative coordinates retain relative placement and overlap.
+    for (const card of [...cards].sort((a, b) => a.zIndex - b.zIndex)) {
+      const image = el('img'); image.src = readingCardImage(card.physicalId); image.alt = card.sourceSnapshot.name;
+      image.style.left = `${((card.x + 7.5) / 15) * 100}%`;
+      image.style.top = `${((card.z + 5.7) / 7.6) * 100}%`;
+      if (card.reversed) image.classList.add('is-reversed'); map.append(image);
+    }
+    detail.append(map);
+    for (const [label, text] of [['我的解读', record.interpretation], ['留给之后的自己', record.reflection]]) {
+      if (text) detail.append(el('h4', label), el('p', text, 'record-prose'));
+    }
+    if (record.aiInterpretations?.length) {
+      const answers = record.aiInterpretations;
+      const answerBody = el('div', '', 'record-ai-body');
+      const renderAnswer = index => replaceContent(answerBody, renderAIInterpretation(doc, answers[index], { showQuestion: false }));
+      if (answers.length > 1) {
+        const label = el('label', 'AI 解读版本', 'record-ai-picker'), select = el('select');
+        select.setAttribute('aria-label', 'AI 解读版本');
+        answers.forEach((answer, index) => {
+          const option = el('option', `${index + 1} · ${formatAISettings(answer)} · ${date(answer.completedAt || answer.createdAt)}`);
+          option.value = String(index); select.append(option);
+        });
+        select.value = '0'; select.addEventListener('change', () => renderAnswer(Number(select.value)));
+        label.append(select); detail.append(label);
+      }
+      renderAnswer(0); detail.append(answerBody);
+    }
+    const sources = el('details', '', 'record-source-details');
+    sources.append(el('summary', `原始牌义与画面 · ${cards.length} 张`));
+    if (cards.some(card => card.reversed)) {
+      const reversal = el('div', '逆位资料', 'record-intro record-meta-with-help');
+      reversal.append(createHelpTip(doc, { label: '逆位资料', text: '原版资料没有单独的逆位牌义。这里保留原始基础说明；附带 AI 解读时，逆位延伸会单独标注。', id: `record-reversal-help-${record.id}` }));
+      sources.append(reversal);
+    }
+    const ordered = el('ol', '', 'record-saved-cards');
+    cards.forEach((card, index) => {
+      const row = el('li'), disclosure = el('details'), summary = el('summary', `${index + 1} · ${card.sourceSnapshot.name} · ${card.reversed ? '逆位' : '正位'}${card.positionLabel ? ` · ${card.positionLabel}` : ''}`);
+      disclosure.append(summary, el('p', card.sourceSnapshot.theme, 'record-theme'));
+      const meaning = el('p', card.sourceSnapshot.interpretation); meaning.lang = 'en'; disclosure.append(meaning);
+      const imagery = el('p', card.sourceSnapshot.urbanImagery); imagery.lang = 'en'; disclosure.append(imagery);
+      row.append(disclosure); ordered.append(row);
+    });
+    sources.append(ordered); detail.append(sources);
+    detail.append(button('导出这条记录', () => {
+      const blob = new Blob([JSON.stringify(record, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob), link = el('a'); link.href = url; link.download = `augurwell-${record.id}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }));
+  }
+  function showSavedRecord() {
+    if (!currentSavedRecord) return;
+    show('detail'); detailRequest++;
+    currentTab.setAttribute('aria-pressed', 'true'); historyTab.setAttribute('aria-pressed', 'false');
+    detail.setAttribute('aria-busy', 'false'); root.scrollTop = 0;
+    renderDetail(currentSavedRecord, true);
+    detail.tabIndex = -1; detail.focus?.({ preventScroll: true }); message('');
+  }
   async function loadDetail(id, origin) {
     if (!access.cloudRecords) { renderGuest(); return; }
     if (mode === 'history') { historyScroll = root.scrollTop || 0; historyOrigin = origin || null; }
@@ -199,74 +306,22 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     try {
       const { record } = await client.get(id);
       if (disposed || request !== detailRequest || mode !== 'detail') return;
-      replaceContent(detail, backButton());
-      const title = recordDisplayTitle(record.question);
-      detail.append(el('p', `${date(record.savedAt)} · ${record.spread.name} · ${record.cards.length} 张`, 'record-intro'), el('h3', title, 'record-detail-title'));
-      if (record.question && record.question !== title) detail.append(el('p', record.question, 'record-prose record-full-question'));
-      const randomSource = el('div', randomSourceLabel(record.randomness), 'record-intro record-meta-with-help');
-      if (record.randomness?.source === 'anu') randomSource.append(createHelpTip(doc, {
-        label: '本次量子随机来源', text: `这批数据获取于 ${date(record.randomness.fetchedAt)}；本次洗牌消耗 ${record.randomness.consumed} 个随机数。`, id: `record-random-help-${record.id}`,
-      }));
-      detail.append(randomSource);
-      const map = el('div', '', 'record-spread'); map.setAttribute('aria-label', '保存时的牌阵位置');
-      const cards = [...record.cards].sort((a, b) => a.drawOrder - b.drawOrder);
-      // Fixed table-relative coordinates retain relative placement and overlap.
-      for (const card of [...cards].sort((a, b) => a.zIndex - b.zIndex)) {
-        const image = el('img'); image.src = readingCardImage(card.physicalId); image.alt = card.sourceSnapshot.name;
-        image.style.left = `${((card.x + 7.5) / 15) * 100}%`;
-        image.style.top = `${((card.z + 5.7) / 7.6) * 100}%`;
-        if (card.reversed) image.classList.add('is-reversed'); map.append(image);
-      }
-      detail.append(map);
-      for (const [label, text] of [['我的解读', record.interpretation], ['留给之后的自己', record.reflection]]) {
-        if (text) detail.append(el('h4', label), el('p', text, 'record-prose'));
-      }
-      if (record.aiInterpretations?.length) {
-        const answers = record.aiInterpretations;
-        const answerBody = el('div', '', 'record-ai-body');
-        const renderAnswer = index => replaceContent(answerBody, renderAIInterpretation(doc, answers[index], { showQuestion: false }));
-        if (answers.length > 1) {
-          const label = el('label', 'AI 解读版本', 'record-ai-picker'), select = el('select');
-          select.setAttribute('aria-label', 'AI 解读版本');
-          answers.forEach((answer, index) => {
-            const option = el('option', `${index + 1} · ${formatAISettings(answer)} · ${date(answer.completedAt || answer.createdAt)}`);
-            option.value = String(index); select.append(option);
-          });
-          select.value = '0'; select.addEventListener('change', () => renderAnswer(Number(select.value)));
-          label.append(select); detail.append(label);
-        }
-        renderAnswer(0); detail.append(answerBody);
-      }
-      const sources = el('details', '', 'record-source-details');
-      sources.append(el('summary', `原始牌义与画面 · ${cards.length} 张`));
-      if (cards.some(card => card.reversed)) {
-        const reversal = el('div', '逆位资料', 'record-intro record-meta-with-help');
-        reversal.append(createHelpTip(doc, { label: '逆位资料', text: '原版资料没有单独的逆位牌义。这里保留原始基础说明；附带 AI 解读时，逆位延伸会单独标注。', id: `record-reversal-help-${record.id}` }));
-        sources.append(reversal);
-      }
-      const ordered = el('ol', '', 'record-saved-cards');
-      cards.forEach((card, index) => {
-        const row = el('li'), disclosure = el('details'), summary = el('summary', `${index + 1} · ${card.sourceSnapshot.name} · ${card.reversed ? '逆位' : '正位'}${card.positionLabel ? ` · ${card.positionLabel}` : ''}`);
-        disclosure.append(summary, el('p', card.sourceSnapshot.theme, 'record-theme'));
-        const meaning = el('p', card.sourceSnapshot.interpretation); meaning.lang = 'en'; disclosure.append(meaning);
-        const imagery = el('p', card.sourceSnapshot.urbanImagery); imagery.lang = 'en'; disclosure.append(imagery);
-        row.append(disclosure); ordered.append(row);
-      });
-      sources.append(ordered); detail.append(sources);
-      detail.append(button('导出这条记录', () => {
-        const blob = new Blob([JSON.stringify(record, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob), link = el('a'); link.href = url; link.download = `augurwell-${record.id}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }));
+      renderDetail(record);
     } catch (error) {
       if (!disposed && request === detailRequest && mode === 'detail') replaceContent(detail, backButton(), el('p', error.message, 'record-empty'), button('重新打开', () => loadDetail(id)));
     } finally { if (!disposed && request === detailRequest) detail.setAttribute('aria-busy', 'false'); }
   }
   function onOpen(event) {
-    if (event.detail.id !== 'reading-records' || !event.detail.open || explicitEntry) return;
+    if (event.detail.id !== 'reading-records') return;
+    if (!event.detail.open) { viewRevision++; return; }
+    if (explicitEntry) return;
     update(); show('history'); root.scrollTop = 0; loadList();
   }
   function openCurrent() {
-    show('current'); root.scrollTop = 0;
+    let unchanged = false;
+    try { unchanged = !!currentSavedRecord && !saving && !attempt.pending && signature(draft()) === savedSignature; } catch {}
+    if (unchanged) showSavedRecord(); else { show('current'); message(''); }
+    root.scrollTop = 0;
     if (!access.cloudRecords) renderGuest();
     explicitEntry = true;
     try { disclosures.open('reading-records'); } finally { explicitEntry = false; }
@@ -311,8 +366,8 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     },
     reset() {
       question.value = interpretation.value = reflection.value = ''; Object.keys(labels).forEach(key => delete labels[key]);
-      roundStartedAt = new Date().toISOString(); savedSignature = ''; currentSavedId = null; noteChanged = false; attempt = createSaveAttempt(); lastCardsKey = null; message('');
-      aiResults = []; includedAI.clear(); aiChoiceKey = ''; aiChoices.replaceChildren(); aiChoices.hidden = true;
+      roundStartedAt = new Date().toISOString(); savedSignature = ''; currentSavedId = null; currentSavedRecord = null; noteChanged = false; attempt = createSaveAttempt(); lastCardsKey = null; message('');
+      aiResults = []; includedAI.clear(); aiChoiceKey = ''; aiPreviewKey = ''; aiChoices.replaceChildren(); aiChoices.hidden = true; replaceContent(aiPreview); aiPreview.hidden = true;
       update();
       root.scrollTop = 0;
     },

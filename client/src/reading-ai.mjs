@@ -33,13 +33,34 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   }
   const detail = selectField('解读详细度', 'ai-detail', AI_DETAILS, '简读抓住重点，标准展开主要联系，细读进一步讨论有依据的替代理解。篇幅与计算强度分别设置。'); detail.value = AI_DEFAULTS.detail;
   const focus = selectField('解读侧重', 'ai-focus', AI_FOCUSES, '先跟随你的问题。侧重只调整关注角度，其他类型的问题也可以正常解读；需要特别关注什么，直接写进问题即可。'); focus.value = AI_DEFAULTS.focus;
-  const model = selectField('模型', 'ai-model', AI_MODELS); model.value = AI_DEFAULTS.model;
+  const computeDisclosure = el('details', '', 'ai-compute-disclosure'); computeDisclosure.id = 'ai-compute-disclosure';
+  const computeToggle = el('summary'); computeToggle.id = 'ai-compute-toggle';
+  const compute = el('section', '', 'ai-compute-control fg-glass fg-glass--mid'); compute.setAttribute('aria-label', '模型与思考强度');
+  compute.setAttribute('data-fg-tier', 'mid'); compute.setAttribute('data-fg-press', 'off');
+  const computeContent = el('div', '', 'ai-compute-content'); compute.append(computeContent);
+  const computeHeading = el('div', '', 'ai-compute-heading');
+  const effortCaption = el('label', '思考强度', 'field-caption'); effortCaption.htmlFor = 'ai-effort';
+  effortCaption.append(createHelpTip(doc, { label: '思考强度', text: '调节模型的分析投入；解读详细度决定回答如何展开。切换强度会同步生成预算，可在高级设置中调整。', id: 'ai-effort-help' }));
+  const effort = el('input', '', 'ai-effort-slider'); effort.type = 'range'; effort.id = 'ai-effort'; effort.min = '0'; effort.max = String(AI_EFFORTS.length - 1); effort.step = '1';
+  effort.value = String(AI_EFFORTS.findIndex(item => item.id === AI_DEFAULTS.effort)); effort.setAttribute('aria-label', '思考强度');
+  const selectedEffort = () => AI_EFFORTS[Number(effort.value)];
+  const effortValue = el('output', '', 'ai-effort-value'); effortValue.id = 'ai-effort-value'; effortValue.setAttribute('for', effort.id); effortValue.setAttribute('aria-live', 'off');
+  const resetEffort = button('↺', () => {
+    if (resetEffort.disabled) return;
+    effort.value = String(AI_EFFORTS.findIndex(item => item.id === AI_DEFAULTS.effort)); applyEffort();
+  }, 'ai-effort-reset'); resetEffort.id = 'ai-effort-reset'; resetEffort.setAttribute('aria-label', '恢复默认思考强度');
+  computeHeading.append(effortCaption, resetEffort);
+  const modelRow = el('div', '', 'ai-model-row');
+  const model = selectField('模型', 'ai-model', AI_MODELS, null, modelRow); model.value = AI_DEFAULTS.model;
+  const effortStops = el('div', '', 'ai-effort-stops'); effortStops.setAttribute('aria-hidden', 'true');
+  effortStops.append(...AI_EFFORTS.map(item => el('span', item.label)));
+  computeContent.append(computeHeading, effortValue, modelRow, effort, effortStops);
+  computeDisclosure.append(computeToggle, compute);
   const liveRow = el('div', '', 'ai-live-row');
   const liveLabel = el('label', '', 'ai-live-label'), liveCheck = el('input');
   liveCheck.type = 'checkbox'; liveCheck.id = 'ai-live-check'; liveCheck.checked = AI_DEFAULTS.liveCheck;
   liveLabel.append(liveCheck, el('span', '实时联网核查'));
   liveRow.append(liveLabel, createHelpTip(doc, { label: '实时联网核查', text: '勾选后，本次解读会搜索公开信息，并保留来源与核查时间。只提交必要的公开查询词。每次搜索 US$0.01，检索内容另按模型用量计费；等待时间可能增加。搜索结果可能仍有信息缺口。', id: 'ai-live-help' }));
-  const effort = selectField('计算强度', 'ai-effort', AI_EFFORTS, '调节模型的分析投入；解读详细度决定回答如何展开。生成预算另设，较高强度可能需要更多预算。', advancedSettings); effort.value = AI_DEFAULTS.effort;
   const budget = selectField('生成预算', 'ai-budget', [...AI_TOKEN_PRESETS.map(value => ({ id: String(value), label: `${value.toLocaleString('en-US')} tokens` })), { id: 'custom', label: '自定义' }], 'Token 是模型处理文字的计量单位。这里限制推理与回答的合计用量，输入另计；预算不必用满，用尽时回答可能未完成。', advancedSettings); budget.value = String(AI_DEFAULTS.maxOutputTokens);
   const customLabel = el('label', '自定义上限', 'ai-setting ai-custom-budget');
   const custom = el('input'); custom.type = 'number'; custom.id = 'ai-custom-tokens'; custom.step = '1'; custom.max = String(AI_MAX_OUTPUT_TOKENS); custom.value = String(AI_DEFAULTS.maxOutputTokens); customLabel.append(custom); advancedSettings.append(customLabel);
@@ -65,7 +86,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const resultSelect = el('select'); resultSelect.id = 'ai-result-picker'; resultSelectLabel.append(resultSelect); resultSelectLabel.hidden = true;
   const resultBody = el('div', '', 'ai-result-body');
   const saveLink = button('保存这次占卜与解读', () => records.openCurrent(), 'ai-save-link'); saveLink.id = 'ai-save-record'; saveLink.hidden = true;
-  form.append(questionLabel, previewHint, preview, settings, liveRow, advanced, costRow, generate, readiness);
+  form.append(questionLabel, previewHint, preview, settings, computeDisclosure, liveRow, advanced, costRow, generate, readiness);
   root.append(form, status, submitted, recover, continueUnknown, previous, stale, resultSelectLabel, resultBody, saveLink);
   let disposed = false, results = [], displayedId = '', lastPreviewKey = '', lastResultKey = '', lastStatusKey = '', previousKey = '', submittedId = '';
   const previousRequests = [];
@@ -108,7 +129,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     }
   }
 
-  const settingsValue = () => ({ model: model.value, detail: detail.value, focus: focus.value, effort: effort.value, maxOutputTokens: Number(budget.value === 'custom' ? custom.value : budget.value), liveCheck: liveCheck.checked,
+  const settingsValue = () => ({ model: model.value, detail: detail.value, focus: focus.value, effort: selectedEffort()?.id || '', maxOutputTokens: Number(budget.value === 'custom' ? custom.value : budget.value), liveCheck: liveCheck.checked,
     ...(liveCheck.checked ? { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC' } : {}) });
   function settingsProblem() {
     const value = settingsValue(), strength = AI_EFFORTS.find(item => item.id === value.effort);
@@ -145,7 +166,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     for (const input of preview.querySelectorAll('input')) input.disabled = records.locked;
     previewHint.textContent = cards.length ? `牌阵 · ${cards.length} 张` : '';
     previewHint.hidden = !cards.length;
-    const state = request.snapshot(), invalid = settingsProblem(), strength = AI_EFFORTS.find(item => item.id === effort.value);
+    const state = request.snapshot(), invalid = settingsProblem(), strength = selectedEffort();
     if ((state.payload?.id || '') !== submittedId) {
       submittedId = state.payload?.id || ''; submitted.replaceChildren(); submitted.hidden = !state.payload;
       if (state.payload) {
@@ -156,9 +177,17 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
       }
     }
     custom.min = String(strength?.minimumTokens || 1000); customLabel.hidden = budget.value !== 'custom'; custom.required = budget.value === 'custom';
-    for (const input of [model, detail, focus, liveCheck, effort, budget, custom]) input.disabled = request.unresolved || processing() || records.locked;
+    const settingsLocked = request.unresolved || processing() || records.locked;
+    for (const input of [model, detail, focus, liveCheck, effort, budget, custom]) input.disabled = settingsLocked;
+    effortValue.textContent = strength?.label || '';
+    computeToggle.textContent = `${AI_MODELS.find(item => item.id === model.value)?.label || ''} · ${strength?.label || ''}`;
+    computeToggle.setAttribute('aria-label', `模型与思考强度：${computeToggle.textContent}`);
+    effort.setAttribute('aria-valuetext', strength?.label || '请选择思考强度');
+    compute.setAttribute('data-effort', strength?.id || '');
+    effort.style.setProperty('--ai-effort-progress', `${strength ? Number(effort.value) / (AI_EFFORTS.length - 1) * 100 : 0}%`);
+    resetEffort.disabled = settingsLocked || (strength?.id === AI_DEFAULTS.effort && settingsValue().maxOutputTokens === AI_DEFAULTS.maxOutputTokens);
     settingError.textContent = invalid; settingError.hidden = !invalid; if (invalid) advanced.open = true; custom.setAttribute('aria-invalid', String(!!invalid));
-    cost.textContent = aiCostHint(model.value, effort.value, liveCheck.checked);
+    cost.textContent = aiCostHint(model.value, strength?.id, liveCheck.checked);
     generate.disabled = !ready || !question.value.trim() || !!invalid || request.unresolved || processing() || records.locked || results.length >= 10;
     generate.textContent = request.inFlight ? '正在解读…' : state.payload || previousRequests.length ? '再次解读' : '开始解读';
     readiness.textContent = request.unresolved ? '' : results.length >= 10 ? '已有10份解读，请保存后开始新的占卜。' : !cards.length ? '先抽牌并翻开。' : !allShown ? '翻开所有牌后可解读。' : getBusy() ? '等待翻牌完成。' : !question.value.trim() ? '写下问题后可解读。' : '';
@@ -200,7 +229,13 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     saveLink.disabled = records.locked || request.inFlight;
   }
   question.addEventListener('input', () => records.setQuestion(question.value));
-  effort.addEventListener('change', () => { const target = AI_EFFORTS.find(item => item.id === effort.value)?.suggestedTokens; if (target) { budget.value = String(target); custom.value = String(target); } update(); });
+  function applyEffort() {
+    if (effort.disabled) return;
+    const target = selectedEffort()?.suggestedTokens;
+    if (target) { budget.value = String(target); custom.value = String(target); }
+    update();
+  }
+  effort.addEventListener('input', applyEffort);
   for (const input of [model, detail, focus, liveCheck, budget, custom]) input.addEventListener(input === custom ? 'input' : 'change', update);
   resultSelect.addEventListener('change', () => { displayedId = resultSelect.value; update(); });
   form.addEventListener('submit', event => {
@@ -213,8 +248,51 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     request.generate(payload).catch(() => {});
   });
   const unsubscribe = records.subscribe(update);
-  const onOpen = event => { if (event.detail.id === 'reading-ai' && event.detail.open) update(); };
+  function closeCompute(restoreFocus = false) {
+    if (!computeDisclosure.open) return;
+    computeDisclosure.open = false;
+    if (restoreFocus) computeToggle.focus({ preventScroll: true });
+  }
+  const placeCompute = () => {
+    if (!computeDisclosure.open) return;
+    const viewport = computeDisclosure.closest?.('.sheet-content')?.getBoundingClientRect();
+    if (!viewport) return;
+    const anchor = computeToggle.getBoundingClientRect();
+    // The panel and trigger share their right edge. Put the pivot at the
+    // actual trigger center, including the gap on either placement side.
+    compute.style.setProperty('--ai-trigger-half-width', `${computeToggle.offsetWidth / 2}px`);
+    compute.style.setProperty('--ai-trigger-half-height', `${computeToggle.offsetHeight / 2}px`);
+    compute.style.setProperty('--ai-compute-max-height', '');
+    const above = Math.max(0, anchor.top - Math.max(0, viewport.top) - 12);
+    const below = Math.max(0, Math.min(view.innerHeight, viewport.bottom) - anchor.bottom - 12);
+    const side = above >= compute.scrollHeight + 2 || above >= below ? 'above' : 'below';
+    computeDisclosure.setAttribute('data-placement', side);
+    compute.style.setProperty('--ai-compute-max-height', `${Math.floor(side === 'above' ? above : below)}px`);
+  };
+  const onComputeScroll = event => {
+    if (!compute.contains(event.target) && !event.target.closest?.('.reading-help-layer')) closeCompute(compute.contains(doc.activeElement));
+  };
+  const onComputeResize = () => closeCompute(compute.contains(doc.activeElement));
+  const onComputeOutside = event => {
+    if (!computeDisclosure.contains(event.target) && !event.target.closest?.('.reading-help-layer')) closeCompute();
+  };
+  // Help registers window capture first; the sheet handles document capture.
+  const onComputeEscape = event => {
+    if (event.key !== 'Escape' || event.defaultPrevented || !computeDisclosure.open) return;
+    event.preventDefault(); event.stopImmediatePropagation(); closeCompute(true);
+  };
+  const onOpen = event => {
+    if (event.detail.id !== 'reading-ai') return;
+    if (event.detail.open) update(); else closeCompute();
+  };
   doc.addEventListener('reading:disclosurechange', onOpen);
+  // Wait for click activation: collapsing on pointerdown/focus would move
+  // following controls before the pointer is released. Tab keeps native flow.
+  doc.addEventListener('click', onComputeOutside, { capture: true });
+  computeDisclosure.addEventListener('toggle', placeCompute);
+  doc.addEventListener('scroll', onComputeScroll, { capture: true });
+  view.addEventListener('resize', onComputeResize);
+  view.addEventListener('keydown', onComputeEscape, { capture: true });
   const beforeUnload = event => { if (unfinished()) { event.preventDefault(); event.returnValue = ''; } };
   view.addEventListener('beforeunload', beforeUnload);
   update();
@@ -226,8 +304,16 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     },
     reset() {
       if (request.unresolved || processing()) return;
+      closeCompute();
       request.reset(); results = []; displayedId = ''; lastResultKey = ''; lastPreviewKey = ''; lastStatusKey = ''; disposeHelpTipsWithin(resultBody); resultBody.replaceChildren(); resultSelect.replaceChildren(); update();
     },
-    dispose() { disposed = true; unsubscribe(); request.dispose(); previousRequests.forEach(item => item.dispose()); disposeHelpTipsWithin(root); doc.removeEventListener('reading:disclosurechange', onOpen); view.removeEventListener('beforeunload', beforeUnload); },
+    dispose() {
+      disposed = true; unsubscribe(); request.dispose(); previousRequests.forEach(item => item.dispose()); disposeHelpTipsWithin(root);
+      doc.removeEventListener('reading:disclosurechange', onOpen);
+      doc.removeEventListener('click', onComputeOutside, { capture: true });
+      computeDisclosure.removeEventListener('toggle', placeCompute);
+      doc.removeEventListener('scroll', onComputeScroll, { capture: true }); view.removeEventListener('resize', onComputeResize);
+      view.removeEventListener('keydown', onComputeEscape, { capture: true }); view.removeEventListener('beforeunload', beforeUnload);
+    },
   };
 }

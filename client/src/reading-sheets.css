@@ -50,6 +50,12 @@
   --fg-veil-min: .52; --fg-veil-0: .58; --fg-veil-1: .72; --fg-veil-2: .96;
 }
 .glass-sheet > .sheet-heading, .glass-sheet > .sheet-content { position: relative; z-index: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .glass-sheet-ai > .sheet-heading { cursor: grab; }
+  .glass-sheet-ai .sheet-heading h2 { cursor: text; }
+  .glass-sheet-ai[data-sheet-dragging] { cursor: grabbing; }
+  .glass-sheet-ai[data-sheet-dragging] > .sheet-heading { cursor: grabbing; }
+}
 .glass-sheet > .sheet-heading { align-items: center; padding: 24px 28px 20px; border: 0; gap: 16px; }
 .sheet-heading h2 { margin: 0; font: 400 24px/1.4 var(--fgs-font-serif); letter-spacing: .08em; }
 .sheet-title-line { gap: 8px; }
@@ -309,6 +315,96 @@
 @media (max-width: 700px) { .glass-sheet .ai-form > .ai-settings { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .glass-sheet .ai-advanced > summary::after { transition: none; } }
 
+/* Model and reasoning share one control; the native range retains keyboard
+   stepping while its shell and thumb use the existing glass/pearl material. */
+.glass-sheet .ai-form > .ai-settings { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.glass-sheet .ai-compute-disclosure { position: relative; z-index: 5; margin: 12px 0 14px; }
+.glass-sheet .ai-compute-disclosure > summary {
+  display: flex; align-items: center; justify-content: flex-end; gap: 7px;
+  width: fit-content; max-width: 100%; min-height: 36px; margin-left: auto;
+  padding: 4px 2px 4px 10px; list-style: none; cursor: pointer;
+  color: var(--muted); font: 13px/1.6 var(--fgs-font-ui);
+}
+.glass-sheet .ai-compute-disclosure > summary::-webkit-details-marker { display: none; }
+.glass-sheet .ai-compute-disclosure > summary::after { content: '⌄'; font-size: 16px; line-height: 1; transition: transform 160ms ease; }
+.glass-sheet .ai-compute-disclosure[open] > summary::after { transform: rotate(180deg); }
+.glass-sheet .ai-compute-disclosure > summary:hover { color: var(--ink); background: transparent; }
+.glass-sheet .ai-compute-disclosure > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .glass-sheet .ai-compute-disclosure > summary::after { transition: none; } }
+.glass-sheet .ai-compute-control {
+  --ai-compute-gap: 8px;
+  --ai-pivot-y: calc(100% + var(--ai-compute-gap) + var(--ai-trigger-half-height,18px));
+  transform-origin: calc(100% - var(--ai-trigger-half-width,54px)) var(--ai-pivot-y);
+  position: absolute; right: 0; bottom: calc(100% + var(--ai-compute-gap)); z-index: 1;
+  width: min(100%,280px); max-height: var(--ai-compute-max-height,none);
+  margin: 0; padding: 10px 16px 12px; overflow-y: auto; scrollbar-width: thin;
+  border-radius: 17px; --fg-veil-boost: 0; --fg-blur: 20px;
+  --fg-veil-min: .56; --fg-veil-0: .64; --fg-veil-1: .78; --fg-veil-2: .96;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+[data-theme="dark"] .glass-sheet .ai-compute-control {
+  --fg-veil: #3b3633; --fg-veil-min: .60; --fg-veil-0: .67; --fg-veil-1: .82; --fg-veil-2: .96;
+}
+.glass-sheet .ai-compute-disclosure[data-placement="below"] .ai-compute-control {
+  --ai-pivot-y: calc(0px - var(--ai-compute-gap) - var(--ai-trigger-half-height,18px));
+  bottom: auto; top: calc(100% + var(--ai-compute-gap));
+}
+
+/* Native details owns focus and open state. Keep its content painted through
+   the closing transition; rapid toggles reverse from the current scale. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(details::details-content) and (transition-behavior: allow-discrete) {
+    body:not(:has(#reduce:checked)) .ai-compute-disclosure::details-content {
+      transition: content-visibility 160ms allow-discrete;
+    }
+    body:not(:has(#reduce:checked)) .ai-compute-disclosure > .ai-compute-control {
+      scale: .22; opacity: 0; pointer-events: none;
+      transition: scale 160ms cubic-bezier(.42,0,.8,.4), opacity 130ms ease-in;
+    }
+    body:not(:has(#reduce:checked)) .ai-compute-disclosure[open] > .ai-compute-control {
+      scale: 1; opacity: 1; pointer-events: auto;
+      transition: scale 270ms cubic-bezier(.18,.84,.24,1), opacity 140ms ease-out;
+    }
+    @starting-style {
+      body:not(:has(#reduce:checked)) .ai-compute-disclosure[open] > .ai-compute-control { scale: .22; opacity: 0; }
+    }
+  }
+  @supports not (selector(details::details-content) and (transition-behavior: allow-discrete)) {
+    body:not(:has(#reduce:checked)) .ai-compute-disclosure[open] > .ai-compute-control {
+      animation: ai-compute-unfold 270ms cubic-bezier(.18,.84,.24,1);
+    }
+  }
+}
+@keyframes ai-compute-unfold { from { transform: scale(.22); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+body:has(#reduce:checked) .ai-compute-disclosure > summary::after { transition: none; }
+.glass-sheet .ai-compute-control:hover { --fg-k-sh: 1; --fg-veil-boost: 0; }
+.ai-compute-content { position: relative; z-index: 1; }
+.ai-compute-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 24px; color: var(--muted); font-size: 11px; }
+.ai-compute-heading .field-caption { display: inline-flex; align-items: center; gap: 3px; }
+.glass-sheet #ai-effort-reset { width: 28px; height: 28px; min-height: 28px; padding: 0; border-radius: 50%; font: 20px/1 var(--fgs-font-ui); color: var(--muted); }
+.glass-sheet #ai-effort-reset:hover:not(:disabled) { background: rgb(from var(--fgs-veil) r g b / .26); color: var(--ink); }
+.ai-effort-value { display: block; margin: 0; text-align: center; font: 500 22px/1.3 var(--fgs-font-serif); color: var(--ink); }
+.glass-sheet .ai-model-row { display: flex; justify-content: center; align-items: center; width: max-content; max-width: 100%; margin: 0 auto 2px; position: relative; }
+.glass-sheet .ai-model-row .field-caption { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+.glass-sheet .ai-model-row select { width: auto; margin: 0; min-height: 28px; padding: 2px 22px 2px 10px; border: 0; border-radius: 10px; background: transparent; box-shadow: none; text-align: center; appearance: none; -webkit-appearance: none; color: var(--muted); font: 13px/1.7 var(--fgs-font-ui); cursor: pointer; }
+.glass-sheet .ai-model-row::after { content: '⌄'; position: absolute; right: 6px; top: 50%; transform: translateY(-55%); pointer-events: none; font: 16px/1 var(--fgs-font-ui); color: var(--muted); }
+.glass-sheet .ai-model-row select:hover:not(:disabled) { color: var(--ink); background: rgb(from var(--fgs-veil) r g b / .16); }
+.glass-sheet .ai-effort-slider {
+  --ai-effort-progress: 0%; --ai-track-fill: rgb(from var(--fgs-ink) r g b / .18);
+  --ai-track-rest: rgb(from var(--fgs-veil) r g b / .32);
+  --ai-thumb-fill: linear-gradient(155deg,var(--fgs-pearl-hi),var(--fgs-pearl) 58%,var(--fgs-pearl-lo));
+  display: block; appearance: none; -webkit-appearance: none; width: 100%; min-width: 0;
+  height: 36px; min-height: 36px; margin: 0; padding: 0; border: 0; background: transparent; cursor: pointer;
+}
+.glass-sheet .ai-effort-slider::-webkit-slider-runnable-track { height: 20px; border-radius: 999px; background: linear-gradient(to right,var(--ai-track-fill) var(--ai-effort-progress),var(--ai-track-rest) var(--ai-effort-progress)); box-shadow: inset 0 1px 3px rgb(from var(--fgs-shade) r g b / .10),0 1px 0 rgb(from var(--fgs-reflect-sky) r g b / .20); border: 1px solid var(--line); }
+.glass-sheet .ai-effort-slider::-moz-range-track { height: 20px; border-radius: 999px; background: var(--ai-track-rest); border: 1px solid var(--line); }
+.glass-sheet .ai-effort-slider::-moz-range-progress { height: 20px; border-radius: 999px; background: var(--ai-track-fill); }
+.glass-sheet .ai-effort-slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 28px; height: 28px; margin-top: -5px; border: 1px solid rgb(from var(--fgs-ink) r g b / .10); border-radius: 50%; background: var(--ai-thumb-fill); box-shadow: var(--fgs-shadow-pearl); }
+.glass-sheet .ai-effort-slider::-moz-range-thumb { width: 26px; height: 26px; border: 1px solid rgb(from var(--fgs-ink) r g b / .10); border-radius: 50%; background: var(--ai-thumb-fill); box-shadow: var(--fgs-shadow-pearl); }
+.glass-sheet .ai-effort-slider:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 999px; }
+.glass-sheet .ai-effort-slider:disabled { cursor: default; opacity: .45; }
+.ai-effort-stops { display: flex; justify-content: space-between; padding: 0 4px; color: var(--muted); font: 10px/1.6 var(--fgs-font-ui); pointer-events: none; }
+
 /* Revision34: soft continuous corners. Original radii above remain the
    unsupported-browser fallback; optical maps read the computed shape. */
 @supports (corner-shape: superellipse(1.5)) {
@@ -323,6 +419,10 @@
     border-radius: var(--reading-radius-surface);
   }
   .help-tooltip.fg-glass, .help-detail.fg-glass {
+    corner-shape: superellipse(1.5);
+    border-radius: var(--reading-radius-compact);
+  }
+  .glass-sheet .ai-compute-control {
     corner-shape: superellipse(1.5);
     border-radius: var(--reading-radius-compact);
   }

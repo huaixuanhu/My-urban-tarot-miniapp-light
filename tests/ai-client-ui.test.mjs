@@ -17,7 +17,7 @@ artHook.deregister();
 // Controller-only DOM double. Real layout, focus and glass appearance are
 // separately checked in the browser; this catches state and safe-text regressions.
 class Element extends EventTarget {
-  constructor(tag, document) { super(); this.tagName = tag; this.ownerDocument = document; this.children = []; this.attributes = {}; this.style = {}; this._value = ''; this._text = ''; this.hidden = false; this.disabled = false; this.className = ''; }
+  constructor(tag, document) { super(); this.tagName = tag; this.ownerDocument = document; this.children = []; this.attributes = {}; this.style = { setProperty(name, value) { this[name] = String(value); }, getPropertyValue(name) { return this[name] || ''; } }; this._value = ''; this._text = ''; this.hidden = false; this.disabled = false; this.className = ''; }
   get textContent() { return this._text + this.children.map(child => typeof child === 'string' ? child : child.textContent).join(''); }
   set textContent(value) { this._text = String(value); this.children = []; }
   set innerHTML(_value) { throw new Error('Unsafe HTML rendering'); }
@@ -39,6 +39,7 @@ class Element extends EventTarget {
   querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
   remove() { this.parent.children = this.parent.children.filter(item => item !== this); }
   scrollIntoView() {}
+  focus() { this.ownerDocument.activeElement = this; }
   click() { this.dispatchEvent(new Event('click')); }
 }
 class Document extends EventTarget {
@@ -85,7 +86,7 @@ test('opening, shared question/label edits and option changes never call AI; hid
   f.root.querySelector('.ai-spread-preview').querySelector('input').value = '当下';
   f.root.querySelector('.ai-spread-preview').querySelector('input').dispatchEvent(new Event('input'));
   assert.equal(f.records.getLabels()[0], '当下');
-  f.input('ai-effort', 'high', 'change'); assert.equal(f.find('ai-budget').value, '12000');
+  f.input('ai-effort', '2'); assert.equal(f.find('ai-budget').value, '12000');
   f.input('ai-model', 'gpt-6.1-sol', 'change'); assert.equal(f.requests.length, 0);
   f.busy = true; f.submit(); assert.equal(f.requests.length, 0);
   f.busy = false; f.reading = reduceReading(f.reading, { type: 'draw', id: 1, x: 1, z: -1 }); f.submit(); assert.equal(f.requests.length, 0);
@@ -230,17 +231,21 @@ test('source basis markers render understandable Chinese and never leak internal
   f.dispose();
 });
 
-test('detail and focus are visible defaults; advanced computing controls remain optional and presets do not dispatch', async () => {
+test('detail and focus remain outside the collapsed computing control while budget stays in advanced settings', async () => {
   const f = fixture();
   assert.equal(f.find('ai-detail').value, 'standard'); assert.equal(f.find('ai-focus').value, 'general');
   assert.ok(!f.find('ai-advanced').open);
   assert.equal(f.find('ai-advanced').querySelector('#ai-detail'), null);
   assert.equal(f.find('ai-advanced').querySelector('#ai-model'), null);
-  assert.equal(f.find('ai-advanced').querySelector('#ai-effort'), f.find('ai-effort'));
+  assert.equal(f.find('ai-advanced').querySelector('#ai-effort'), null);
+  const compute = f.root.querySelector('.ai-compute-control');
+  assert.ok(!f.find('ai-compute-disclosure').open);
+  assert.equal(compute.querySelector('#ai-model'), f.find('ai-model'));
+  assert.equal(compute.querySelector('#ai-effort'), f.find('ai-effort'));
   assert.equal(f.find('ai-advanced').querySelector('#ai-budget'), f.find('ai-budget'));
   f.input('ai-question', '我想怎样理解最近反复想到的一种颜色？');
   f.input('ai-detail', 'deep', 'change'); f.input('ai-focus', 'general', 'change');
-  assert.equal(f.requests.length, 0); assert.equal(f.find('ai-effort').value, 'low'); assert.equal(f.find('ai-budget').value, '3000');
+  assert.equal(f.requests.length, 0); assert.equal(f.find('ai-effort').value, '0'); assert.equal(f.find('ai-budget').value, '3000');
   f.submit(); await settle();
   assert.equal(f.requests[0].detail, 'deep'); assert.equal(f.requests[0].focus, 'general');
   assert.match(f.root.querySelector('.ai-result-body').textContent, /细读 · 跟随问题/);
@@ -252,12 +257,155 @@ test('detail and focus are visible defaults; advanced computing controls remain 
   f.dispose();
 });
 
+test('compact summary follows current choices and closing the AI sheet retains them without requests', () => {
+  const f = fixture();
+  try {
+    const disclosure = f.find('ai-compute-disclosure'), summary = f.find('ai-compute-toggle');
+    assert.equal(summary.tagName, 'summary'); assert.ok(!disclosure.open);
+    assert.equal(summary.textContent, '6.1 Terra · 轻量');
+    disclosure.open = true;
+    f.input('ai-model', 'gpt-6.1-sol', 'change'); f.input('ai-effort', '1');
+    assert.equal(summary.textContent, '6.1 Sol · 标准');
+    const close = new Event('reading:disclosurechange'); close.detail = { id: 'reading-ai', open: false };
+    f.document.dispatchEvent(close); assert.equal(disclosure.open, false);
+    disclosure.open = true;
+    assert.equal(f.find('ai-model').value, 'gpt-6.1-sol'); assert.equal(f.find('ai-effort').value, '1');
+    assert.equal(f.find('ai-budget').value, '6000'); assert.equal(f.requests.length, 0);
+  } finally { f.dispose(); }
+});
+
+test('compact disclosure dismisses outside and restores summary focus on Escape with cleaned listeners', () => {
+  const f = fixture(), view = f.document.defaultView;
+  const keyListeners = getEventListeners(view, 'keydown');
+  const clickListeners = getEventListeners(f.document, 'click');
+  const scrollListeners = getEventListeners(f.document, 'scroll');
+  const resizeListeners = getEventListeners(view, 'resize');
+  try {
+    const disclosure = f.find('ai-compute-disclosure');
+    disclosure.open = true;
+    const inside = new Event('focusin'); Object.defineProperty(inside, 'target', { value: f.find('ai-effort') });
+    f.document.dispatchEvent(inside); assert.equal(disclosure.open, true);
+    f.document.dispatchEvent(new Event('pointerdown')); assert.equal(disclosure.open, true);
+    f.document.dispatchEvent(new Event('focusin')); assert.equal(disclosure.open, true);
+    f.document.dispatchEvent(new Event('click')); assert.equal(disclosure.open, false);
+    disclosure.open = true;
+    const escape = new Event('keydown', { cancelable: true }); escape.key = 'Escape';
+    view.dispatchEvent(escape);
+    assert.equal(escape.defaultPrevented, true); assert.equal(disclosure.open, false);
+    assert.equal(f.document.activeElement, f.find('ai-compute-toggle'));
+    disclosure.open = true; f.find('ai-effort').focus();
+    const internalScroll = new Event('scroll'); Object.defineProperty(internalScroll, 'target', { value: f.root.querySelector('.ai-compute-control') });
+    f.document.dispatchEvent(internalScroll); assert.equal(disclosure.open, true);
+    f.document.dispatchEvent(new Event('scroll')); assert.equal(disclosure.open, false);
+    assert.equal(f.document.activeElement, f.find('ai-compute-toggle'));
+    disclosure.open = true; f.find('ai-effort').focus(); view.dispatchEvent(new Event('resize'));
+    assert.equal(disclosure.open, false); assert.equal(f.document.activeElement, f.find('ai-compute-toggle'));
+    assert.equal(f.requests.length, 0);
+  } finally { f.dispose(); }
+  // The document-wide help manager outlives individual controllers.
+  assert.equal(getEventListeners(view, 'keydown').length, keyListeners.length - 1);
+  assert.equal(getEventListeners(f.document, 'click').length, clickListeners.length - 1);
+  assert.equal(getEventListeners(f.document, 'scroll').length, scrollListeners.length - 1);
+  assert.equal(getEventListeners(view, 'resize').length, resizeListeners.length - 1);
+});
+
+test('floating computing panel fits above, below and within a short visible sheet', () => {
+  const f = fixture();
+  try {
+    const disclosure = f.find('ai-compute-disclosure'), summary = f.find('ai-compute-toggle'), panel = f.root.querySelector('.ai-compute-control');
+    f.document.defaultView.innerHeight = 844; panel.scrollHeight = 160; disclosure.open = true;
+    summary.offsetWidth = 112; summary.offsetHeight = 36;
+    for (const [bounds, anchor, side, height] of [
+      [{ top: 130, bottom: 680 }, { top: 400, bottom: 436 }, 'above', '258px'],
+      [{ top: 130, bottom: 680 }, { top: 140, bottom: 176 }, 'below', '492px'],
+      [{ top: 130, bottom: 320 }, { top: 200, bottom: 236 }, 'below', '72px'],
+    ]) {
+      disclosure.closest = () => ({ getBoundingClientRect: () => bounds });
+      summary.getBoundingClientRect = () => anchor;
+      disclosure.dispatchEvent(new Event('toggle'));
+      assert.equal(disclosure.getAttribute('data-placement'), side);
+      assert.equal(panel.style.getPropertyValue('--ai-compute-max-height'), height);
+      assert.equal(panel.style.getPropertyValue('--ai-trigger-half-width'), '56px');
+      assert.equal(panel.style.getPropertyValue('--ai-trigger-half-height'), '18px');
+    }
+    assert.equal(f.requests.length, 0);
+  } finally { f.dispose(); }
+});
+
+test('each native slider step names its effort, updates budget and submits the canonical value only on explicit generation', async () => {
+  for (const [step, id, label, tokens, progress, upper] of [
+    ['0', 'low', '轻量', '3000', '0%', '0.20'],
+    ['1', 'medium', '标准', '6000', '50%', '0.25'],
+    ['2', 'high', '深入', '12000', '100%', '0.30'],
+  ]) {
+    const f = fixture();
+    try {
+      const slider = f.find('ai-effort');
+      assert.equal(slider.type, 'range'); assert.equal(slider.min, '0'); assert.equal(slider.max, '2'); assert.equal(slider.step, '1');
+      assert.equal(slider.getAttribute('aria-label'), '思考强度');
+      f.input('ai-effort', step);
+      assert.equal(slider.getAttribute('aria-valuetext'), label); assert.equal(f.find('ai-effort-value').textContent, label);
+      assert.equal(f.find('ai-budget').value, tokens); assert.equal(f.find('ai-custom-tokens').value, tokens);
+      assert.equal(slider.style.getPropertyValue('--ai-effort-progress'), progress);
+      assert.equal(f.root.querySelector('.ai-effort-stops').getAttribute('aria-hidden'), 'true');
+      f.input('ai-model', 'gpt-6.1-sol', 'change');
+      assert.equal(slider.value, step); assert.equal(f.find('ai-budget').value, tokens);
+      assert.ok(f.find('ai-cost-hint').textContent.includes(upper)); assert.equal(f.requests.length, 0);
+      f.input('ai-question', '我想调整自己的学习安排'); f.submit(); await settle();
+      assert.equal(f.requests.length, 1); assert.equal(f.requests[0].effort, id);
+      assert.equal(f.requests[0].model, 'gpt-6.1-sol'); assert.equal(f.requests[0].maxOutputTokens, Number(tokens));
+    } finally { f.dispose(); }
+  }
+});
+
+test('effort reset restores the default budget and label while retaining model and other choices without a request', () => {
+  const f = fixture();
+  try {
+    const reset = f.find('ai-effort-reset');
+    assert.equal(reset.getAttribute('aria-label'), '恢复默认思考强度'); assert.equal(reset.disabled, true);
+    f.input('ai-model', 'gpt-6.1-sol', 'change'); f.input('ai-detail', 'deep', 'change');
+    f.input('ai-budget', 'custom', 'change'); f.input('ai-custom-tokens', '6000');
+    assert.equal(reset.disabled, false); reset.click();
+    assert.equal(f.find('ai-effort').value, '0'); assert.equal(f.find('ai-budget').value, '3000');
+    assert.equal(f.find('ai-custom-tokens').value, '3000'); assert.equal(reset.disabled, true);
+    f.input('ai-effort', '2'); assert.equal(reset.disabled, false); reset.click();
+    assert.equal(f.find('ai-effort-value').textContent, '轻量'); assert.equal(f.find('ai-effort').getAttribute('aria-valuetext'), '轻量');
+    assert.equal(f.find('ai-model').value, 'gpt-6.1-sol'); assert.equal(f.find('ai-detail').value, 'deep');
+    assert.equal(f.find('ai-budget').value, '3000'); assert.equal(reset.disabled, true); assert.equal(f.requests.length, 0);
+  } finally { f.dispose(); }
+});
+
+test('unknown-request and record-save locks cover slider, model and reset while preserving the submitted effort', async () => {
+  let submitted, finishSave, savedBody, calls = 0, lookups = 0;
+  const f = fixture({
+    aiClient: {
+      generate: async body => { calls++; submitted = body; throw new Error('结果尚未确认'); },
+      get: async id => { lookups++; assert.equal(id, submitted.id); return completed(submitted); },
+    },
+    recordClient: { save: body => { savedBody = body; return new Promise(done => { finishSave = done; }); } },
+  });
+  try {
+    f.input('ai-question', '保留提交时的强度'); f.input('ai-effort', '2'); f.submit(); await settle();
+    for (const id of ['ai-model', 'ai-effort', 'ai-effort-reset']) assert.equal(f.find(id).disabled, true);
+    f.find('ai-effort-reset').click();
+    assert.equal(f.find('ai-effort').value, '2'); assert.equal(submitted.effort, 'high'); assert.equal(submitted.maxOutputTokens, 12000);
+    f.find('ai-recover').click(); await settle();
+    for (const id of ['ai-model', 'ai-effort', 'ai-effort-reset']) assert.equal(f.find(id).disabled, false);
+    f.recordRoot.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+    for (const id of ['ai-model', 'ai-effort', 'ai-effort-reset']) assert.equal(f.find(id).disabled, true);
+    f.find('ai-effort-reset').click(); assert.equal(f.find('ai-effort').value, '2');
+    finishSave({ record: savedBody }); await settle();
+    for (const id of ['ai-model', 'ai-effort', 'ai-effort-reset']) assert.equal(f.find(id).disabled, false);
+    assert.equal(calls, 1); assert.equal(lookups, 1);
+  } finally { f.dispose(); }
+});
+
 test('pending presets stay locked and the submission snapshot keeps its original settings', async () => {
   let body, finish;
   const f = fixture({ aiClient: { generate: input => { body = input; return new Promise(resolve => { finish = resolve; }); }, get: async () => completed(body) } });
   f.input('ai-question', '比较两个方向'); f.input('ai-detail', 'brief', 'change'); f.input('ai-focus', 'comparison', 'change'); f.submit();
   assert.equal(body.detail, 'brief'); assert.equal(body.focus, 'comparison');
-  for (const id of ['ai-detail', 'ai-focus', 'ai-model', 'ai-effort', 'ai-budget']) assert.equal(f.find(id).disabled, true);
+  for (const id of ['ai-detail', 'ai-focus', 'ai-model', 'ai-effort', 'ai-effort-reset', 'ai-budget']) assert.equal(f.find(id).disabled, true);
   finish({ interpretation: { ...body, status: 'pending', createdAt: '2026-11-01T00:00:00Z' } }); await settle();
   assert.equal(f.find('ai-detail').disabled, true); assert.equal(f.find('ai-focus').disabled, true);
   assert.match(f.root.querySelector('.ai-request-snapshot').textContent, /简读 · 选择比较/);

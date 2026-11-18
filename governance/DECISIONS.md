@@ -1,5 +1,29 @@
 # Decisions
 
+## 2026-11-19 — accept and publish revision40
+
+The owner requested commit, push and Production publication for the reviewed local interaction changes. Publish stages 2.5.16 through 2.5.17.3 together on the existing private site.
+
+## 2026-11-19 — stage2.5.17.3 motion and dragging
+
+Anchor each opening to its own visible trigger. Allow blank-space mouse drags on the AI sheet, preserve native form interaction and reset position on reopening. The local revision40 contract is in DESIGN.md.
+
+## 2026-11-18 — floating settings rather than expanded form geometry
+
+User rejects the large in-flow control and requests a smaller floating surface above its row. Revision39 uses an anchored280×161px overlay, visible-scroll-area placement and height limits, retaining native controls and compactK1.5. Reuse the help-surface glass haze/blur for overlay legibility. STATE.md stage2.5.17.2 owns scope; docs/design/stage2.5.17/README.md owns measured no-displacement and rendered evidence. Local review remains pending.
+
+## 2026-11-18 — compact model and effort entry
+
+Source: user's second Codex screenshot requests the model/effort control stay collapsed as one small line until clicked. Use a native disclosure that expands the existing glass slider inline, retaining model/effort and synchronizing the summary. This visibility refinement supersedes revision37's always-visible shell; material, options and request behavior remain. DESIGN.md revision38 owns the local candidate; STATE.md stage2.5.17.1 owns scope. No release or external operation.
+
+## 2026-11-18 — reference hierarchy with existing glass and native controls
+
+Source: user asks for a Codex-like model/thinking-strength slider using project glass. Group the controls visibly, retain native categorical model selection and map native range positions to existinglow/medium/high. Use the actual mid-tier FluidGlass shell, compactK1.5 role and pearl thumb; keep the reference's unsupported model/effort names and purple decoration outside the app contract. Budget remains under高级, explanations under help, and model changes retain effort/budget. Local revision37 is rendered/verified but awaits user review. Parent and evidence: STATE.md stage2.5.17 and docs/design/stage2.5.17/README.md. No release or provider expansion.
+
+## 2026-11-17 — local interaction continuity and explicit saved receipts
+
+Source: user's2026-11-16 request and clarification about missing carried-over content or unclear save state. Improve the existing flow within acceptedK1.5 styling. Treat incidental pointer/resize interruption as settling the current view/existing-card preview; retain deliberate Escape/invalid-drop rules and never turn an interrupted deck preview into a draw. Show the existing shared question/labels and selected matching AI visibly, then display the canonical save response; keep an explicit补充记录 route to a separate new record. Preserve original records, request identity recovery and exact AI matching. Local design revision36 is delegated implementation pending user review. Scope/evidence: STATE.md stage2.5.16 and docs/design/stage2.5.16/README.md; no release authority.
+
 ## 2026-11-11 — accepted K1.5 joint release
 
 Source: the user explicitly chooses1.5 and requests full publication/closeout for both the interface and glass slab. Accept design revision35 with revision34, preserving the comparison evidence and ordinary-radius fallback. Commit/push/private Production release now supersede the local-only boundary of both slices. No provider operation, data write or access change. Owner: STATE.md stage2.5.15.2; evidence: docs/release/stage2.5.15/README.md.

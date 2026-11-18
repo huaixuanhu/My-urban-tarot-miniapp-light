@@ -54,11 +54,24 @@ export function createSheetMaterial(document, { storage } = {}) {
   };
   const observer = new ResizeObserver(refreshVisible);
   panels.forEach(panel => observer.observe(panel));
+  // Nested disclosures have no measurable glass bounds while collapsed.
+  let disclosureFrame = 0;
+  const prepareDisclosure = event => {
+    const disclosure = event.target;
+    if (disclosure.tagName !== 'DETAILS' || !disclosure.open || !disclosure.closest('.glass-sheet')) return;
+    cancelAnimationFrame(disclosureFrame);
+    disclosureFrame = requestAnimationFrame(() => {
+      if (disclosure.open) FluidGlass.scan(disclosure);
+    });
+  };
+  document.addEventListener('toggle', prepareDisclosure, true);
   return {
-    prepare(panel) { FluidGlass.update(panel); },
+    prepare(panel) { FluidGlass.scan(panel); FluidGlass.update(panel); },
     prepareHelp(host) { FluidGlass.scan(host); },
     dispose() {
       observer.disconnect(); cancelAnimationFrame(frame); cancelAnimationFrame(transparencyFrame);
+      cancelAnimationFrame(disclosureFrame);
+      document.removeEventListener('toggle', prepareDisclosure, true);
       slider.removeEventListener('input', adjust);
       slider.removeEventListener('change', remember);
       reset.removeEventListener('click', restore);

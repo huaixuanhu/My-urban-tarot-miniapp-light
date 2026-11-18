@@ -21,6 +21,7 @@ const port = Number(process.argv.slice(2).find(argument => !argument.startsWith(
 const attempts = new Map(), records = new Map();
 let scenario = 'completed', calls = 0, searchCalls = 0, seededRecords = 0;
 let randomScenario = 'completed', randomCalls = 0;
+let drawDelayMs = 0, drawRequests = 0;
 const randomStore = createMemoryRandomStore();
 const clone = value => structuredClone(value);
 function seedRecords() {
@@ -120,10 +121,14 @@ const server = http.createServer(async (req, res) => {
             if (!['completed', 'failed', 'unknown', 'slow'].includes(value.randomScenario)) throw new Error('Unknown random fixture.');
             randomScenario = value.randomScenario;
           }
+          if (value.drawDelayMs !== undefined) {
+            if (!Number.isInteger(value.drawDelayMs) || value.drawDelayMs < 0 || value.drawDelayMs > 15000) throw new Error('Invalid draw delay.');
+            drawDelayMs = value.drawDelayMs;
+          }
           if (value.seedRecords === true) seedRecords();
         }
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify({ fixture: true, visitorPreview, scenario, calls, searchCalls, externalCalls: 0, seededRecords, randomScenario, randomCalls, attempts: attempts.size, records: records.size })); return;
+        res.end(JSON.stringify({ fixture: true, visitorPreview, scenario, calls, searchCalls, externalCalls: 0, seededRecords, randomScenario, randomCalls, drawDelayMs, drawRequests, attempts: attempts.size, records: records.size })); return;
       }
       const handler = url.pathname === '/api/interpretations' ? interpret : url.pathname === '/api/records' ? record : url.pathname === '/api/random' ? random : null;
       if (!handler) { res.writeHead(404); res.end(); return; }
@@ -132,6 +137,10 @@ const server = http.createServer(async (req, res) => {
       if (visitorPreview) {
         res.writeHead(401, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
         res.end(JSON.stringify({ error: { code: 'ACCESS_REQUIRED', message: '此功能需要邮箱验证；本地访客预览尚未接入验证。' } })); return;
+      }
+      if (url.pathname === '/api/random' && req.method === 'POST' && JSON.parse(body.toString()).action === 'draw') {
+        drawRequests++;
+        if (drawDelayMs) await new Promise(resolve => setTimeout(resolve, drawDelayMs));
       }
       const headers = new Headers({ 'cf-access-jwt-assertion': await syntheticToken() });
       if (req.method !== 'GET') { headers.set('origin', appOrigin); headers.set('content-type', req.headers['content-type'] || ''); }

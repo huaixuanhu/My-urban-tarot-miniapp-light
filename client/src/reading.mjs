@@ -21,7 +21,7 @@ import { createReadingProjection } from './reading-projection.mjs';
 import { createScreenGlass } from './reading-screen-glass.mjs';
 import { createReadingRoom } from './reading-room.mjs';
 import { createReadingRoomPass } from './reading-room-pass.mjs';
-import { canPlaceAt, clampPlacement } from './reading-layout.mjs';
+import { createCardDrag, updateCardDrag, finishCardDrag, finishViewDrag, viewportChanged } from './reading-drag.mjs';
 import { pickFan } from './reading-picking.mjs';
 import { createReadingFan } from './reading-fan.mjs';
 import { readingTablePose, sampleSideRevealPose, REVEAL_DURATION_MS } from './reading-reveal.mjs';
@@ -41,7 +41,7 @@ function freshReading(deck) {
 // An unprepared table is visual staging only; it cannot supply drawable cards.
 let reading = createReading(), readingReady = false, preparingReset = false;
 let readingFan = createReadingFan(reading.order);
-let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass;
+let scene, camera, projection, renderer, meshes, outline, resizeObserver, sceneStyle, screenGlass, room, roomPass, fittedViewport;
 let appearanceController, disclosures, recordsController, aiController, randomController;
 let scheduled = 0, failed = false, disposed = false, reset = null, drag = null, hoverId = null, deckFocusId = reading.order[0], lastTap = null;
 let noticeText = '', noticeUntil = 0, noticeTimer = null;
@@ -102,7 +102,7 @@ function updateUI() {
   const busy = tableBusy();
   $('table').classList.toggle('is-resetting', !!reset);
   $('table').classList.toggle('has-cards', placed.length > 0);
-  $('table').dataset.readingState = failed ? 'error' : reset ? 'resetting' : isOpened(selected) ? 'revealed' : placed.length ? 'hidden' : 'empty';
+  $('table').dataset.readingState = failed ? 'error' : preparingReset ? 'preparing' : reset ? 'resetting' : isOpened(selected) ? 'revealed' : placed.length ? 'hidden' : 'empty';
   $('reset-message').hidden = !reset;
   $('counts').textContent = `已抽 ${placed.length} · 已揭示 ${opened}`;
   $('dock-count').textContent = `已揭示 ${opened} 张`;
@@ -118,7 +118,10 @@ function updateUI() {
   $('undo').disabled = busy || !canUndo(reading);
   $('arrange').disabled = busy || placed.length < 3 || flips.size > 0;
   $('reset').disabled = busy;
-  $('reset').innerHTML = readingReady ? '<span aria-hidden="true">↻</span> 重洗' : '<span aria-hidden="true">↻</span> 开始';
+  const shuffling = !failed && (preparingReset || !!reset);
+  $('reset').setAttribute('aria-busy', String(shuffling));
+  $('reset').dataset.reducedMotion = String($('reduce').checked || reducedPreference.matches);
+  $('reset-label').textContent = shuffling ? '正在洗牌' : readingReady ? '重洗' : '开始';
   $('view-home').disabled = busy || (isDefaultView(view) && zoomTarget === 1 && !viewTransition);
   $('zoom-in').disabled = busy || zoomTarget >= ZOOM_LIMITS.max;
   $('zoom-out').disabled = busy || zoomTarget <= ZOOM_LIMITS.min;
@@ -127,8 +130,8 @@ function updateUI() {
   for (const id of ['previous', 'next', 'place']) $(id).disabled = busy || !readingReady || deckFocusId === null;
   $('deck-position').textContent = deckFocusId === null ? '牌带已空' : `第 ${reading.order.indexOf(deckFocusId) + 1} / 78 张`;
   $('deck-hint').textContent = !readingReady ? '先开始洗牌，再沿牌带挑选' : hoverId !== null && !reading.placed[hoverId] ? `第 ${reading.order.indexOf(hoverId) + 1} 张 · 按住拖到桌面` : '沿牌带挑选 · 按住拖出';
-  $('progress').textContent = preparingReset ? '正在准备本轮随机牌序…' : reset ? '正在洗牌…' : !readingReady ? '选择随机方式，开始这一轮。' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
-  if (!reset && noticeText && performance.now() < noticeUntil) $('progress').textContent = noticeText;
+  $('progress').textContent = shuffling ? '正在洗牌…' : !readingReady ? '选择随机方式，开始这一轮。' : placed.length === 0 ? '拖出抽牌 · 双击翻开' : opened === placed.length ? '点选一张，看看它带来的线索。' : `已揭示 ${opened} / ${placed.length} 张`;
+  if (!shuffling && noticeText && performance.now() < noticeUntil) $('progress').textContent = noticeText;
   const list = $('placed-list');
   const signature = placed.map(card => `${card.id}:${isOpened(card)}:${card.id === reading.selectedId}`).join('|');
   if (list.dataset.signature !== signature) {
@@ -265,7 +268,7 @@ async function reveal(id) {
 async function beginReset() {
   if (tableBusy() || disposed || !randomController || currentPoses.size !== CARD_COUNT) return;
   if (!aiController?.mayReset() || !recordsController?.mayReset()) return;
-  preparingReset = true; cancelDrag(); lastTap = null; hoverId = null;
+  preparingReset = true; cancelDrag(); lastTap = null; hoverId = null; noticeText = '';
   disclosures.closeAll({ motion: false });
   updateUI();
   try {
@@ -320,21 +323,25 @@ function pick(event) {
   const hit = raycaster.intersectObjects(placed, false)[0];
   return hit ? hit.object.userData.id : deckAt(event);
 }
-function validDrop(event, point) {
+function insideDropArea(event) {
   const box = renderer.domElement.getBoundingClientRect();
-  return canPlaceAt(point) && event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top + 82 && event.clientY <= box.bottom;
+  return event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top + 82 && event.clientY <= box.bottom;
 }
-function cancelDrag() {
-  if (viewDrag) {
-    const action = viewDrag; viewDrag = null; applyView(action.startView);
+function endDrag(reason, pointerId) {
+  if (viewDrag && (pointerId === undefined || pointerId === viewDrag.pointerId)) {
+    const action = viewDrag; viewDrag = null; applyView(finishViewDrag(action, view, reason));
     if (renderer.domElement.hasPointerCapture(action.pointerId)) renderer.domElement.releasePointerCapture(action.pointerId);
     renderer.domElement.style.cursor = 'grab'; lastTap = null; updateUI(); invalidate();
   }
-  if (!drag) return;
-  const capture = drag.pointerId; drag = null; lastTap = null;
+  if (!drag || (pointerId !== undefined && pointerId !== drag.pointerId)) return;
+  const result = finishCardDrag(drag, reason), capture = drag.pointerId;
+  drag = null; lastTap = null;
   if (renderer.domElement.hasPointerCapture(capture)) renderer.domElement.releasePointerCapture(capture);
+  if (result.action) dispatch(result.action);
   renderer.domElement.style.cursor = 'grab'; updateUI(); invalidate();
 }
+function cancelDrag() { endDrag('cancel'); }
+function interruptDrag(event) { endDrag('interrupt', event?.pointerId); }
 function onPointerDown(event) {
   if (tableBusy() || event.button !== 0 || drag || viewDrag) return;
   viewTransition = null; zoomTarget = view.zoom;
@@ -350,8 +357,7 @@ function onPointerDown(event) {
   if (!point) return;
   if (origin) dispatch({ type: 'select', id });
   else { deckFocusId = id; dispatch({ type: 'select', id: null }); }
-  drag = { id, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, started: false, fromDeck: !origin, point,
-    offsetX: origin ? origin.x - point.x : 0, offsetZ: origin ? origin.z - point.z : 0 };
+  drag = createCardDrag(id, event, point, origin);
   renderer.domElement.setPointerCapture(event.pointerId); renderer.domElement.focus({ preventScroll: true });
   event.preventDefault(); updateUI();
 }
@@ -363,10 +369,8 @@ function onPointerMove(event) {
   }
   if (drag) {
     if (event.pointerId !== drag.pointerId) return;
-    if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 7) { drag.started = true; lastTap = null; }
-    const point = planePoint(event);
-    if (point) drag.point = { x: point.x + drag.offsetX, z: point.z + drag.offsetZ };
-    if (drag.started) renderer.domElement.style.cursor = 'grabbing';
+    updateCardDrag(drag, event, planePoint(event), insideDropArea(event));
+    if (drag.started) { lastTap = null; renderer.domElement.style.cursor = 'grabbing'; }
     invalidate(); return;
   }
   const id = readingReady ? pick(event) : null;
@@ -381,19 +385,17 @@ function onPointerUp(event) {
     updateUI(); invalidate(); return;
   }
   if (!drag || event.pointerId !== drag.pointerId) return;
-  const action = drag; drag = null;
-  action.started ||= Math.hypot(event.clientX - action.startX, event.clientY - action.startY) > 7;
+  updateCardDrag(drag, event, planePoint(event), insideDropArea(event));
+  const action = drag, result = finishCardDrag(drag, 'release', event.pointerId); drag = null;
   if (renderer.domElement.hasPointerCapture(event.pointerId)) renderer.domElement.releasePointerCapture(event.pointerId);
   renderer.domElement.style.cursor = 'grab';
   let notice = '';
   if (action.started) {
     lastTap = null;
-    const point = planePoint(event);
-    const target = point && { x: point.x + action.offsetX, z: point.z + action.offsetZ };
-    if (validDrop(event, target)) {
-      dispatch({ type: action.fromDeck ? 'draw' : 'move', id: action.id, ...clampPlacement(target) });
+    if (result.action) {
+      dispatch(result.action);
       hoverId = null;
-    } else notice = '未放到桌面，已回到原位。';
+    } else if (result.invalidDrop) notice = '未放到桌面，已回到原位。';
   } else if (!action.fromDeck) {
     const now = performance.now();
     if (lastTap?.id === action.id && now - lastTap.at < 360) { reveal(action.id); lastTap = null; }
@@ -470,8 +472,10 @@ function onWheel(event) {
 }
 function fit() {
   if (!renderer || failed) return;
-  cancelDrag(); if (!viewTransition) zoomTarget = view.zoom;
   const box = $('scene').getBoundingClientRect();
+  if (!viewportChanged(fittedViewport, box)) return;
+  fittedViewport = { width: box.width, height: box.height };
+  interruptDrag(); if (!viewTransition) zoomTarget = view.zoom;
   updateProjection(); updateControlBounds(); renderer.setSize(box.width, box.height); invalidate();
 }
 function fail(error) {
@@ -507,9 +511,9 @@ try {
   renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
   renderer.domElement.addEventListener('pointermove', onPointerMove);
   renderer.domElement.addEventListener('pointerup', onPointerUp);
-  renderer.domElement.addEventListener('pointercancel', cancelDrag);
+  renderer.domElement.addEventListener('pointercancel', interruptDrag);
   renderer.domElement.addEventListener('lostpointercapture', event => {
-    if ((drag?.pointerId === event.pointerId || viewDrag?.pointerId === event.pointerId) && !renderer.domElement.hasPointerCapture(event.pointerId)) cancelDrag();
+    if ((drag?.pointerId === event.pointerId || viewDrag?.pointerId === event.pointerId) && !renderer.domElement.hasPointerCapture(event.pointerId)) interruptDrag(event);
   });
   renderer.domElement.addEventListener('pointerleave', () => { if (!drag && !viewDrag) { hoverId = null; updateUI(); invalidate(); } });
   renderer.domElement.addEventListener('keydown', event => {
@@ -580,7 +584,7 @@ document.addEventListener('keydown', event => {
   } else { cancelDrag(); dispatch({ type: 'select', id: null }); }
 });
 document.addEventListener('visibilitychange', () => {
-  cancelDrag(); if (!viewTransition) zoomTarget = view.zoom;
+  interruptDrag(); if (!viewTransition) zoomTarget = view.zoom;
   if (document.hidden) { cancelAnimationFrame(scheduled); scheduled = 0; }
   else { if (reset) reset.lastTime = performance.now(); invalidate(); }
 });
