@@ -1,6 +1,6 @@
 # Urban Tarot project entry
 
-Current continuation (2026-11-19): the owner accepted stages 2.5.16–2.5.17.3 and requested commit, push and Production publication. Follow governance/STATE.md stage2.5.17.4 for the release and docs/release/stage2.5.17/README.md for verification. Design revision40 is the accepted baseline.
+Current continuation (2026-11-19): stages 2.5.16–2.5.17.3 are live on the private Production site at application revision d13e0f47. Follow governance/STATE.md stage2.5.17.4 for the release and docs/release/stage2.5.17/README.md for verification. Design revision40 is the accepted baseline.
 
 Generated/adapted from human-ai-governance v0.8.4
 

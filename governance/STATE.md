@@ -2,7 +2,7 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: stage2.5.17.4. On 2026-11-19 the owner accepted the local interaction improvements and requested commit, push and Production publication. Design revision40 incorporates the stage2.5.16 interaction updates.
+Current continuation: stage2.5.17.4 is published. Application commit d13e0f47 reached READY on the canonical Production domain on 2026-11-19. All six access checks passed after publication. Design revision40 incorporates the stage2.5.16 interaction updates.
 
 ### stage2.5.17.4 — interaction release
 

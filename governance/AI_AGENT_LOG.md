@@ -2,7 +2,7 @@
 
 ## 2026-11-19 — stage2.5.17.4 release
 
-Fresh aggregate checks passed all 401 tests and the production build. Independent source review verified that synthetic preview behavior stays local. The 115 protected files and eight earlier interaction files match their recorded hashes. Deployment evidence belongs to docs/release/stage2.5.17/README.md.
+Fresh aggregate checks passed all 401 tests and the production build. Independent source review verified that synthetic preview behavior stays local. The 115 protected files and eight earlier interaction files match their recorded hashes. Verified the production domain against the exact application commit and repeated all six access checks. Deployment evidence is in docs/release/stage2.5.17/README.md.
 
 ## 2026-11-19 — stage2.5.17.3 motion and dragging
 
