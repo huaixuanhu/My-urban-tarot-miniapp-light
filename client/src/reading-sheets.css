@@ -106,6 +106,30 @@
 .glass-sheet .ai-setting { font-size: 12px; }
 .glass-sheet .ai-cost-row { margin: 12px 0 0; }
 .glass-sheet .ai-cost-hint, .glass-sheet .record-save-hint { font-size: 12px; }
+.glass-sheet .ai-result-actions {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px;
+  padding: 4px 0 8px; border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb,var(--fgs-solid) 65%,transparent);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+}
+.glass-sheet #ai-body { scroll-padding-top: 58px; }
+.glass-sheet .ai-result-actions button { min-height: 40px; margin: 0; font-size: 13px; line-height: 1.5; }
+.glass-sheet .ai-result-actions .ai-save-link { width: auto; padding: 8px 16px; text-align: center; letter-spacing: normal; }
+.glass-sheet .ai-result-actions .ai-edit-result { margin-inline-start: auto; }
+.glass-sheet .ai-view-record, .glass-sheet .ai-edit-result { color: var(--muted); padding: 4px 3px; }
+.glass-sheet .ai-save-feedback:not(.sr-only) { width: 100%; margin: 0; font-size: 12px; }
+.glass-sheet .ai-result-picker { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; }
+.glass-sheet .ai-result-picker select { flex: 0 1 auto; width: auto; min-width: 0; max-width: calc(100% - 64px); min-height: 36px; margin: 0; }
+.glass-sheet .ai-result-body .ai-answer { border-top: 0; margin-top: 0; padding-top: 12px; }
+.glass-sheet .ai-result-body .ai-answer h3 { font-size: 20px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-wrap; }
+.glass-sheet .ai-search-receipt > summary { cursor: pointer; padding-block: 6px; color: var(--muted); font-size: 13px; }
+.glass-sheet .ai-search-receipt .ai-web-status { margin: 4px 0; }
+.glass-sheet .ai-web-check { margin: 12px 0 20px; padding-bottom: 10px; }
+@media (max-height: 430px) {
+  .glass-sheet .ai-result-actions { position: static; }
+  .glass-sheet #ai-body { scroll-padding-top: 0; }
+}
 .glass-sheet .record-navigation { gap: 4px; padding: 0 0 24px; }
 .glass-sheet .record-navigation button { min-height: 40px; font-size: 13px; padding: 8px 20px; color: var(--muted); }
 .glass-sheet .record-navigation button[aria-pressed="true"] { background: var(--fgs-pearl); color: var(--fgs-on-pearl); box-shadow: var(--fgs-shadow-pearl); }

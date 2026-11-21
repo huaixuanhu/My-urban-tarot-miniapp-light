@@ -34,6 +34,8 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   const historyDays = new Map(), historyIds = new Set();
   let roundStartedAt = new Date().toISOString(), attempt = createSaveAttempt(), savedSignature = '';
   let lastCardsKey = null, lastSpreadKey = '', currentSavedId = null, currentSavedRecord = null, noteChanged = false;
+  let pendingResultId = null, lastSaveError = null, recordsOpen = false;
+  const aiReceipts = new Map();
   const draftListeners = new Set();
   let aiResults = [], aiChoiceKey = '', aiPreviewKey = '';
   const includedAI = new Set();
@@ -60,15 +62,21 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   form.append(save, saveHint); current.append(form);
   const labels = {};
   const signature = snapshot => JSON.stringify({ ...snapshot, id: '', startedAt: '' });
-  function draft(id = crypto.randomUUID()) {
-    const snapshot = captureRecord(getReading(), { id, startedAt: roundStartedAt, question: question.value, interpretation: interpretation.value, reflection: reflection.value, labels });
+  function capture(id = crypto.randomUUID()) {
+    return captureRecord(getReading(), { id, startedAt: roundStartedAt, question: question.value, interpretation: interpretation.value, reflection: reflection.value, labels });
+  }
+  function draft(id) {
+    const snapshot = capture(id);
     const ids = matchingAI(snapshot).filter(result => includedAI.has(result.id)).map(result => result.id);
     if (ids.length) snapshot.aiInterpretationIds = ids;
     return snapshot;
   }
+  function matchesReading(result, snapshot, expected = aiReadingSignature(snapshot)) {
+    return result.status === 'completed' && result.reading.startedAt === snapshot.startedAt && aiReadingSignature(result.reading) === expected;
+  }
   function matchingAI(snapshot) {
     const expected = aiReadingSignature(snapshot);
-    return aiResults.filter(result => result.status === 'completed' && aiReadingSignature(result.reading) === expected);
+    return aiResults.filter(result => matchesReading(result, snapshot, expected));
   }
   function message(text, error = false) { status.textContent = text; status.classList.toggle('is-error', error); }
   function show(next) {
@@ -114,8 +122,16 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
       }
     }
     let unchanged = false;
-    if (ready && savedSignature) unchanged = signature(draft()) === savedSignature;
-    if (ready && savedSignature && !saving && !attempt.pending) noteChanged = !unchanged;
+    if (ready && savedSignature) {
+      const snapshot = draft();
+      unchanged = signature(snapshot) === savedSignature;
+      if (!saving && !attempt.pending) {
+        const { aiInterpretationIds = [], ...content } = snapshot;
+        const key = signature(content);
+        const savedSeparately = aiInterpretationIds.length > 0 && aiInterpretationIds.every(id => aiReceipts.get(id)?.signature === key);
+        noteChanged = !unchanged && !savedSeparately;
+      }
+    }
     currentTab.textContent = unchanged ? '查看本次记录' : currentSavedId ? '继续记录本次' : '记录本次占卜';
     current.setAttribute('aria-busy', String(saving));
     save.disabled = !access.cloudRecords || saving || (!attempt.pending && (!ready || unchanged));
@@ -148,26 +164,62 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     }
     for (const listener of draftListeners) listener();
   }
-  form.addEventListener('submit', async event => {
-    event.preventDefault(); if (!access.cloudRecords || save.disabled) return;
+  function aiSaveState(id) {
+    const receipt = aiReceipts.get(id);
+    const state = (action, error = '') => ({ action, hasReceipt: !!receipt, error });
+    if (!access.cloudRecords || !id) return state('unavailable');
+    if (saving) return state(pendingResultId === id ? 'saving' : 'busy');
+    if (attempt.pending) return state(pendingResultId === id ? 'retry' : 'other-pending', lastSaveError?.id === id ? lastSaveError.text : '');
+    if (getBusy()) return state('unavailable');
     let snapshot;
-    try { snapshot = attempt.snapshot() || attempt.prepare(draft()); }
+    try { snapshot = capture(); } catch { return state('unavailable'); }
+    if (!matchingAI(snapshot).some(item => item.id === id)) return state('unavailable');
+    if (receipt?.signature === signature(snapshot)) return state('saved');
+    return state(currentSavedId ? 'new' : 'save', lastSaveError?.id === id ? lastSaveError.text : '');
+  }
+  async function submitRecord(resultId = null) {
+    if (disposed || !access.cloudRecords || saving) return;
+    if (resultId && !['save', 'new', 'retry'].includes(aiSaveState(resultId).action)) return;
+    if (!resultId && save.disabled) return;
+    const retry = attempt.pending;
+    let snapshot;
+    try {
+      if (retry) snapshot = attempt.snapshot();
+      else {
+        snapshot = resultId ? { ...capture(), aiInterpretationIds: [resultId] } : draft();
+        snapshot = attempt.prepare(snapshot);
+        pendingResultId = resultId;
+      }
+    }
     catch (error) { message(error.message, true); return; }
     const submittedView = viewRevision;
-    saving = true; update(); message('正在保存到共享记录…');
+    saving = true; lastSaveError = null; update(); message('正在保存到共享记录…');
     try {
       const { record } = await client.save(snapshot);
       if (disposed) return;
-      currentSavedId = record.id; currentSavedRecord = structuredClone(record); savedSignature = signature(snapshot); attempt.complete(); historyDirty = true;
+      const { aiInterpretationIds = [], ...savedContent } = snapshot;
+      const attachments = record?.aiInterpretations ?? [];
+      if (record?.id !== snapshot.id || !Array.isArray(attachments) || attachments.length !== aiInterpretationIds.length ||
+          attachments.some((item, index) => item?.id !== aiInterpretationIds[index])) {
+        throw new Error('保存回执与本次提交不一致。请重试以核对原记录。');
+      }
+      currentSavedId = record.id; currentSavedRecord = structuredClone(record); savedSignature = signature(snapshot); attempt.complete(); pendingResultId = null; historyDirty = true;
+      const receipt = { record: currentSavedRecord, signature: signature(savedContent) };
+      for (const id of aiInterpretationIds) aiReceipts.set(id, receipt);
       // A concurrently completed AI request can add a result after this save
       // snapshot was frozen. Keep that unsaved addition visible to reset/unload.
       try { noteChanged = signature(draft()) !== savedSignature; } catch { noteChanged = true; }
-      if (mode === 'current' && submittedView === viewRevision) showSavedRecord();
-      else if (mode === 'history') loadList();
+      if (!resultId && mode === 'current' && submittedView === viewRevision) showSavedRecord();
+      else if (mode === 'history' && (recordsOpen || !resultId)) loadList();
       else message('已保存。');
-    } catch (error) { if (error.definite) attempt.complete(); if (!disposed) message(error.message, true); }
-    finally { saving = false; if (!disposed) { update(); if (mode === 'current') status.scrollIntoView({ block: 'nearest' }); } }
-  });
+    } catch (error) {
+      lastSaveError = { id: pendingResultId, text: error.message };
+      // A rejection of a retry cannot disprove an earlier, unacknowledged write.
+      if (error.definite && !retry) { attempt.complete(); pendingResultId = null; }
+      if (!disposed) message(error.message, true);
+    } finally { saving = false; if (!disposed) { update(); if (!resultId && mode === 'current') status.scrollIntoView({ block: 'nearest' }); } }
+  }
+  form.addEventListener('submit', event => { event.preventDefault(); submitRecord(); });
   function renderGuest() {
     const entry = el('div', '', 'record-meta-with-help');
     entry.append(button('登录与记录', () => { message('账号登录尚未接入。'); }, 'record-guest-entry'), createHelpTip(doc, {
@@ -224,8 +276,8 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     else { root.scrollTop = historyScroll; (historyOrigin || historyTab).focus?.({ preventScroll: true }); }
   }
   const backButton = () => button('← 返回记录', returnToHistory, 'record-back');
-  function renderDetail(record, saved = false) {
-    replaceContent(detail, backButton());
+  function renderDetail(record, saved = false, { selectedResult, onReturn } = {}) {
+    replaceContent(detail, onReturn ? button('← 返回AI解读', onReturn, 'record-back') : backButton());
     if (saved) detail.append(button('补充记录', () => {
       show('current'); message(''); root.scrollTop = 0;
       current.tabIndex = -1; current.focus?.({ preventScroll: true });
@@ -253,6 +305,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     }
     if (record.aiInterpretations?.length) {
       const answers = record.aiInterpretations;
+      const initialIndex = Math.max(0, answers.findIndex(answer => answer.id === selectedResult));
       const answerBody = el('div', '', 'record-ai-body');
       const renderAnswer = index => replaceContent(answerBody, renderAIInterpretation(doc, answers[index], { showQuestion: false }));
       if (answers.length > 1) {
@@ -262,10 +315,10 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
           const option = el('option', `${index + 1} · ${formatAISettings(answer)} · ${date(answer.completedAt || answer.createdAt)}`);
           option.value = String(index); select.append(option);
         });
-        select.value = '0'; select.addEventListener('change', () => renderAnswer(Number(select.value)));
+        select.value = String(initialIndex); select.addEventListener('change', () => renderAnswer(Number(select.value)));
         label.append(select); detail.append(label);
       }
-      renderAnswer(0); detail.append(answerBody);
+      renderAnswer(initialIndex); detail.append(answerBody);
     }
     const sources = el('details', '', 'record-source-details');
     sources.append(el('summary', `原始牌义与画面 · ${cards.length} 张`));
@@ -313,6 +366,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
   }
   function onOpen(event) {
     if (event.detail.id !== 'reading-records') return;
+    recordsOpen = event.detail.open;
     if (!event.detail.open) { viewRevision++; return; }
     if (explicitEntry) return;
     update(); show('history'); root.scrollTop = 0; loadList();
@@ -345,7 +399,21 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     },
     getLabels: () => ({ ...labels }),
     getAIReading(id = crypto.randomUUID()) {
-      const result = draft(id); result.interpretation = ''; result.reflection = ''; delete result.aiInterpretationIds; return result;
+      const result = capture(id); result.interpretation = ''; result.reflection = ''; return result;
+    },
+    matchesCurrentAIResult(result) {
+      try { return matchesReading(result, capture()); } catch { return false; }
+    },
+    aiSaveState,
+    saveAIResult(id) { if (id) return submitRecord(id); },
+    openAIReceipt(id, onReturn) {
+      const receipt = aiReceipts.get(id);
+      if (!receipt || !access.cloudRecords) return;
+      explicitEntry = true;
+      try { disclosures.open('reading-records'); } finally { explicitEntry = false; }
+      show('detail'); detailRequest++; detail.setAttribute('aria-busy', 'false'); root.scrollTop = 0;
+      renderDetail(receipt.record, false, { selectedResult: id, onReturn }); message('');
+      detail.tabIndex = -1; detail.focus?.({ preventScroll: true });
     },
     get locked() { return saving || attempt.pending; },
     subscribe(listener) { draftListeners.add(listener); return () => draftListeners.delete(listener); },
@@ -367,6 +435,7 @@ export function createReadingRecords({ root, getReading, getBusy, disclosures, c
     reset() {
       question.value = interpretation.value = reflection.value = ''; Object.keys(labels).forEach(key => delete labels[key]);
       roundStartedAt = new Date().toISOString(); savedSignature = ''; currentSavedId = null; currentSavedRecord = null; noteChanged = false; attempt = createSaveAttempt(); lastCardsKey = null; message('');
+      aiReceipts.clear(); pendingResultId = null; lastSaveError = null;
       aiResults = []; includedAI.clear(); aiChoiceKey = ''; aiPreviewKey = ''; aiChoices.replaceChildren(); aiChoices.hidden = true; replaceContent(aiPreview); aiPreview.hidden = true;
       update();
       root.scrollTop = 0;

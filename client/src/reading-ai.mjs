@@ -1,5 +1,6 @@
-import { AI_MODELS, AI_EFFORTS, AI_DETAILS, AI_FOCUSES, AI_TOKEN_PRESETS, AI_MAX_OUTPUT_TOKENS, AI_DEFAULTS, aiCostHint, aiReadingSignature } from '../../shared/ai-options.mjs';
+import { AI_MODELS, AI_EFFORTS, AI_DETAILS, AI_FOCUSES, AI_TOKEN_PRESETS, AI_MAX_OUTPUT_TOKENS, AI_DEFAULTS, aiCostHint } from '../../shared/ai-options.mjs';
 import { readingCard } from './reading-content.mjs';
+import { recordDisplayTitle } from './reading-record-view.mjs';
 import { createInterpretationsClient, createAIRequestState } from './reading-ai-data.mjs';
 import { renderAIInterpretation, formatAISettings } from './reading-ai-render.mjs';
 import { createHelpTip, disposeHelpTipsWithin } from './reading-help.mjs';
@@ -14,6 +15,15 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     const node = el('button', text, className); node.type = 'button'; node.addEventListener('click', action); return node;
   };
   const form = el('form', '', 'ai-form');
+  form.id = 'ai-generation-form';
+  let editingResult = false;
+  const editResult = button('调整问题与设置', () => {
+    editingResult = !editingResult;
+    if (!editingResult) closeCompute();
+    update();
+    root.scrollTop = 0;
+  }, 'ai-edit-result');
+  editResult.setAttribute('aria-controls', form.id);
   const questionLabel = el('label', '你想问什么？', 'record-field');
   const question = el('textarea'); question.id = 'ai-question'; question.rows = 3; question.maxLength = 1500; question.required = true;
   question.placeholder = '写下问题…'; questionLabel.append(question);
@@ -82,12 +92,30 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   }, 'ai-continue'); continueUnknown.id = 'ai-continue'; continueUnknown.hidden = true;
   const previous = el('section', '', 'ai-previous-attempts'); previous.hidden = true;
   const stale = el('p', '', 'ai-stale'); stale.hidden = true;
-  const resultSelectLabel = el('label', '本次已生成的解读', 'ai-setting ai-result-picker');
+  const resultSelectLabel = el('label', '解读版本', 'ai-setting ai-result-picker');
   const resultSelect = el('select'); resultSelect.id = 'ai-result-picker'; resultSelectLabel.append(resultSelect); resultSelectLabel.hidden = true;
   const resultBody = el('div', '', 'ai-result-body');
-  const saveLink = button('保存这次占卜与解读', () => records.openCurrent(), 'ai-save-link'); saveLink.id = 'ai-save-record'; saveLink.hidden = true;
+  const resultActions = el('div', '', 'ai-result-actions');
+  const saveLink = button('保存到共享记录', async () => {
+    if (saveLink.disabled || saveLink.hidden || !lastResultKey) return;
+    const id = lastResultKey;
+    if (records.aiSaveState(id).action === 'other-pending') { records.openCurrent(); return; }
+    const heldFocus = doc.activeElement === saveLink;
+    await records.saveAIResult(id);
+    if (!disposed && heldFocus && lastResultKey === id && [saveLink, doc.body].includes(doc.activeElement)) {
+      (saveLink.disabled && !viewRecord.hidden ? viewRecord : saveLink).focus({ preventScroll: true });
+    }
+  }, 'record-primary ai-save-link'); saveLink.id = 'ai-save-record'; saveLink.hidden = true;
+  const viewRecord = button('查看已存记录', () => {
+    const id = lastResultKey;
+    records.openAIReceipt(id, () => {
+      displayedId = id; update(); disclosures.open('reading-ai'); viewRecord.focus({ preventScroll: true });
+    });
+  }, 'ai-view-record'); viewRecord.id = 'ai-view-record';
+  const saveFeedback = el('p', '', 'ai-save-feedback'); saveFeedback.setAttribute('role', 'status');
+  resultActions.append(saveLink, viewRecord, editResult, saveFeedback);
   form.append(questionLabel, previewHint, preview, settings, computeDisclosure, liveRow, advanced, costRow, generate, readiness);
-  root.append(form, status, submitted, recover, continueUnknown, previous, stale, resultSelectLabel, resultBody, saveLink);
+  root.append(resultActions, form, status, submitted, recover, continueUnknown, previous, stale, resultSelectLabel, resultBody);
   let disposed = false, results = [], displayedId = '', lastPreviewKey = '', lastResultKey = '', lastStatusKey = '', previousKey = '', submittedId = '';
   const previousRequests = [];
   function makeRequest() {
@@ -96,7 +124,11 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
       if (state.status === 'completed' && state.interpretation && !results.some(item => item.id === state.interpretation.id)) {
         results.push(structuredClone(state.interpretation));
         // A late older result stays attached to its original question and spread.
-        if (controller === request) displayedId = state.interpretation.id;
+        if (controller === request) {
+          displayedId = state.interpretation.id;
+          // A user may already be writing a different question while the reply arrives.
+          editingResult = !records.matchesCurrentAIResult(state.interpretation);
+        }
         records.setAIResults(results);
       }
       update();
@@ -137,9 +169,6 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     if (!AI_DETAILS.some(item => item.id === value.detail) || !AI_FOCUSES.some(item => item.id === value.focus)) return '请选择解读详细度与侧重。';
     if (!Number.isSafeInteger(value.maxOutputTokens) || value.maxOutputTokens < strength.minimumTokens || value.maxOutputTokens > AI_MAX_OUTPUT_TOKENS) return `这个强度请选择 ${strength.minimumTokens.toLocaleString('en-US')}–${AI_MAX_OUTPUT_TOKENS.toLocaleString('en-US')} 之间的整数预算。`;
     return '';
-  }
-  function currentSignature() {
-    try { return aiReadingSignature(records.getAIReading()); } catch { return null; }
   }
   function update() {
     if (disposed) return;
@@ -214,19 +243,48 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
     const displayed = results.find(item => item.id === displayedId) || results.at(-1);
     if (resultSelect.options.length !== results.length) {
       resultSelect.replaceChildren();
+      const differentQuestions = new Set(results.map(item => item.reading.question)).size > 1;
       for (const [i, item] of results.entries()) {
-        const option = el('option', `${i + 1} · ${formatAISettings(item)}`); option.value = item.id; resultSelect.append(option);
+        const modelLabel = AI_MODELS.find(model => model.id === item.model)?.label || item.model;
+        const context = differentQuestions ? recordDisplayTitle(item.reading.question) : AI_DETAILS.find(detail => detail.id === item.detail)?.label;
+        const option = el('option', [`第 ${i + 1} 版`, modelLabel, context].filter(Boolean).join(' · '));
+        option.value = item.id; resultSelect.append(option);
       }
     }
     resultSelectLabel.hidden = results.length < 2;
     if (displayed) resultSelect.value = displayed.id;
+    const collapseEditor = !!displayed && !editingResult;
+    const returnFocus = collapseEditor && !form.hidden && form.contains(doc.activeElement);
+    if (collapseEditor && !form.hidden) {
+      closeCompute();
+      root.scrollTop = 0;
+    }
+    form.hidden = collapseEditor;
+    editResult.hidden = !displayed;
+    editResult.textContent = editingResult ? '收起设置' : '调整问题与设置';
+    editResult.setAttribute('aria-expanded', String(!collapseEditor));
+    submitted.hidden = !state.payload || (state.status === 'completed' && (collapseEditor || displayed?.id !== submittedId));
+    if (returnFocus) editResult.focus({ preventScroll: true });
     const resultKey = displayed?.id || '';
-    if (resultKey !== lastResultKey) { lastResultKey = resultKey; disposeHelpTipsWithin(resultBody); resultBody.replaceChildren(); if (displayed) resultBody.append(renderAIInterpretation(doc, displayed)); }
-    const isStale = !!displayed && aiReadingSignature(displayed.reading) !== currentSignature();
+    if (resultKey !== lastResultKey) {
+      lastResultKey = resultKey;
+      disposeHelpTipsWithin(resultBody);
+      resultBody.replaceChildren();
+      if (displayed) resultBody.append(renderAIInterpretation(doc, displayed, { heading: displayed.reading.question, showQuestion: false }));
+    }
+    const isStale = !!displayed && !records.matchesCurrentAIResult(displayed);
     stale.hidden = !isStale;
     stale.textContent = '牌阵或问题已更新，下方为先前的解读。';
-    saveLink.hidden = !displayed || isStale;
-    saveLink.disabled = records.locked || request.inFlight;
+    const { action, hasReceipt, error } = records.aiSaveState(resultKey);
+    const saveLabels = { save: '保存到共享记录', new: '另存为新记录', retry: '确认并重试保存', saving: '正在保存…', saved: '已保存', 'other-pending': '查看待确认的记录' };
+    saveLink.hidden = !displayed || action === 'unavailable' || (isStale && !['retry', 'other-pending'].includes(action));
+    saveLink.disabled = request.inFlight || ['saving', 'busy', 'saved'].includes(action);
+    saveLink.textContent = saveLabels[action] || '保存到共享记录';
+    viewRecord.hidden = !hasReceipt;
+    resultActions.hidden = !displayed;
+    const feedback = error || (action === 'saved' ? '已保存到共享记录。' : '');
+    saveFeedback.classList.toggle('sr-only', !error);
+    if (saveFeedback.textContent !== feedback) saveFeedback.textContent = feedback;
   }
   question.addEventListener('input', () => records.setQuestion(question.value));
   function applyEffort() {

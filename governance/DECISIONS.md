@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-21 — bind direct save to the visible answer
+
+Use the records controller for both save entries. The explicit save on an AI answer attaches that displayed version, current matching spread and personal notes. The existing record form retains its multiple-version selection. Reuse the canonical save response and keep the current answer available after success. Selected source evidence and search discovery links remain distinct. The owner accepted this version and requested Production publication under stage2.5.18.1.
+
 ## 2026-11-19 — accept and publish revision40
 
 The owner requested commit, push and Production publication for the reviewed local interaction changes. Publish stages 2.5.16 through 2.5.17.3 together on the existing private site.

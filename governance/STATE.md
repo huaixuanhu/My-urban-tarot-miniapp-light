@@ -2,7 +2,15 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: stage2.5.17.4 is published. Application commit d13e0f47 reached READY on the canonical Production domain on 2026-11-19. All six access checks passed after publication. Design revision40 incorporates the stage2.5.16 interaction updates.
+Current continuation: stage2.5.18.1. The owner accepted revision41 on 2026-11-21 and requested commit, push, Production publication and verification.
+
+### stage2.5.18.1 — release direct saving from an AI answer
+
+Parent: stage2.5.18 below. Publish the reviewed client, regression tests and design evidence via the existing main-branch integration. Verify the deployed revision, the canonical domain and normal access protection. The release receipt belongs to docs/release/stage2.5.18/README.md.
+
+### stage2.5.18 — save the displayed answer in place
+
+Parent: stage2.5.17.4 and the existing current-record and AI flows. Locally refine the completed answer, saving its selected version with the matching shared reading, confirming the write and opening the corresponding receipt. Keep the record editor for individual notes and multi-version selection. Review version switching, interrupted saves and the distinction between cited facts and search sources. Use synthetic browser and controller checks. The owner subsequently accepted revision41. DESIGN.md and docs/design/stage2.5.18/README.md record the design and local evidence.
 
 ### stage2.5.17.4 — interaction release
 

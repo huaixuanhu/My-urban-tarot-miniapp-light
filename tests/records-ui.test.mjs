@@ -224,6 +224,19 @@ test('current entry carries the shared question, labels, spread and selected mat
   assert.deepEqual(f.calls, { list: 0, get: 0, save: 0 });
 });
 
+test('a recovered result from a different round stays detached even if the question and cards are identical', async t => {
+  const f = fixture(); t.after(f.dispose);
+  f.records.setQuestion('同样的问题');
+  const reading = f.records.getAIReading();
+  reading.startedAt = '2026-10-20T01:00:00.000Z';
+  const result = { ...answer(crypto.randomUUID(), '上一轮的解读', reading.cards), reading };
+  f.records.setAIResults([result]);
+  assert.equal(f.records.matchesCurrentAIResult(result), false);
+  assert.equal(f.records.aiSaveState(result.id).action, 'unavailable');
+  assert.equal(f.find('.record-ai-choices').hidden, true);
+  await f.records.saveAIResult(result.id); assert.equal(f.calls.save, 0);
+});
+
 test('successful save displays its canonical returned detail and unchanged reentry retains the receipt', async t => {
   let saved, carried;
   const f = fixture({ client: {

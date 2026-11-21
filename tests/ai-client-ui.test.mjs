@@ -5,6 +5,7 @@ import { registerHooks } from 'node:module';
 import { createReadingAI } from '../client/src/reading-ai.mjs';
 import { renderAIInterpretation } from '../client/src/reading-ai-render.mjs';
 import { createReading, reduceReading } from '../client/src/reading-state.mjs';
+import { buildStoredRecord } from '../shared/record-schema.mjs';
 
 // Vite owns art URL expansion. This controller test doesn't load card images.
 const artHook = registerHooks({ resolve(specifier, context, nextResolve) {
@@ -59,6 +60,13 @@ function completed(body, text = '这是一段测试解读') {
     answer: { summary: text, cards: body.reading.cards.map(card => ({ sourceCardId: card.sourceCardId, reversed: card.reversed, positionLabel: card.positionLabel, interpretation: text, basis: '原版资料' })), reflectionQuestions: [text], limitations: [text] },
   } };
 }
+function saveReceipt(body, requests) {
+  const record = buildStoredRecord(body, { savedAt: '2026-11-21T03:04:00.000Z', createdBy: 'test-user' });
+  if (body.aiInterpretationIds?.length) {
+    record.aiInterpretations = body.aiInterpretationIds.map(id => completed(requests.find(request => request.id === id)).interpretation);
+  }
+  return { record };
+}
 function fixture({ aiClient, recordClient } = {}) {
   const document = new Document(), root = document.createElement('div'), recordRoot = document.createElement('div');
   globalThis.window = document.defaultView;
@@ -66,7 +74,7 @@ function fixture({ aiClient, recordClient } = {}) {
   const disclosures = { open: id => opened.push(id) };
   const recordRequests = [], requests = [];
   const records = createReadingRecords({ root: recordRoot, getReading: () => reading, getBusy: () => busy, disclosures,
-    client: recordClient || { save: async body => { recordRequests.push(body); return { record: body }; } } });
+    client: recordClient || { save: async body => { recordRequests.push(body); return saveReceipt(body, requests); } } });
   const ai = createReadingAI({ root, getReading: () => reading, getBusy: () => busy, records, disclosures,
     client: aiClient || { generate: async body => { requests.push(body); return completed(body); }, get: async () => { throw new Error('Unexpected GET'); } } });
   const find = id => root.querySelector(`#${id}`) || recordRoot.querySelector(`#${id}`);
@@ -91,6 +99,97 @@ test('opening, shared question/label edits and option changes never call AI; hid
   f.busy = true; f.submit(); assert.equal(f.requests.length, 0);
   f.busy = false; f.reading = reduceReading(f.reading, { type: 'draw', id: 1, x: 1, z: -1 }); f.submit(); assert.equal(f.requests.length, 0);
   f.dispose();
+});
+
+test('direct save stores only the displayed version with the shared draft and reopens its exact receipt', async t => {
+  const snapshots = [], receipts = [], versions = new Map();
+  const f = fixture({ recordClient: { save: async snapshot => {
+    snapshots.push(structuredClone(snapshot));
+    const record = { ...buildStoredRecord(snapshot, { savedAt: '2026-11-21T03:04:00.000Z', createdBy: 'test-user' }),
+      aiInterpretations: snapshot.aiInterpretationIds.map(id => versions.get(id)) };
+    receipts.push(record); return { record };
+  } } }); t.after(() => f.dispose());
+  f.input('ai-question', '同一牌阵的两版解读');
+  f.records.setLabel(0, '当下'); f.input('record-interpretation', '我写的解读');
+  f.input('record-reflection', '稍后回看');
+  f.submit(); await settle(); f.submit(); await settle();
+  const [a,b] = f.requests.map(item => item.id);
+  f.requests.forEach((request, index) => versions.set(request.id, completed(request, `版本 ${index + 1}`).interpretation));
+  f.input('ai-result-picker', a, 'change');
+  const save = f.find('ai-save-record'), view = f.find('ai-view-record');
+  save.click(); save.click(); await settle();
+  assert.deepEqual(snapshots[0].aiInterpretationIds, [a]);
+  assert.equal(snapshots[0].interpretation, '我写的解读'); assert.equal(snapshots[0].reflection, '稍后回看');
+  assert.equal(snapshots[0].cards[0].positionLabel, '当下');
+  assert.equal(snapshots.length, 1); assert.deepEqual(f.opened, []);
+  assert.equal(save.textContent, '已保存'); assert.equal(view.hidden, false);
+  f.input('ai-result-picker', b, 'change'); assert.equal(view.hidden, true);
+  assert.equal(save.textContent, '另存为新记录'); save.click(); await settle();
+  assert.deepEqual(snapshots[1].aiInterpretationIds, [b]); assert.notEqual(snapshots[0].id, snapshots[1].id);
+  f.document.defaultView.confirm = () => false;
+  assert.equal(f.records.mayReset(), true);
+  f.input('ai-result-picker', a, 'change'); assert.equal(save.disabled, true);
+  save.click(); assert.equal(snapshots.length, 2); assert.equal(f.requests.length, 2);
+  view.click(); assert.deepEqual(f.opened, ['reading-records']);
+  assert.match(f.recordRoot.querySelector('.record-ai-body').textContent, /版本 1/);
+  assert.doesNotMatch(f.recordRoot.querySelector('.record-ai-body').textContent, /版本 2/);
+  f.recordRoot.querySelector('.record-back').click(); assert.equal(f.opened.at(-1), 'reading-ai');
+  assert.equal(f.find('ai-result-picker').value, a);
+  f.input('record-interpretation', '补充后的文字'); assert.equal(f.records.mayReset(), false);
+  assert.equal(save.textContent, '另存为新记录');
+  f.input('ai-question', '新问题'); assert.equal(save.hidden, true);
+  f.records.saveAIResult(a); assert.equal(snapshots.length, 2); assert.equal(receipts[0].interpretation, '我写的解读');
+});
+
+test('uncertain result save preserves its frozen attempt across another version, record-form auth failure and in-place retry', async t => {
+  const attempts = [], f = fixture({ recordClient: { save: async body => {
+    attempts.push(structuredClone(body));
+    if (attempts.length === 1) throw new Error('暂未收到保存回执');
+    if (attempts.length === 2) throw Object.assign(new Error('需要重新登录'), { definite: true });
+    return saveReceipt(body, f.requests);
+  } } }); t.after(() => f.dispose());
+  f.input('ai-question', '保留最初提交'); f.submit(); await settle(); f.submit(); await settle();
+  const [a,b] = f.requests.map(item => item.id), save = f.find('ai-save-record');
+  f.input('ai-result-picker', a, 'change'); save.click(); await settle();
+  assert.equal(f.records.locked, true); assert.equal(save.textContent, '确认并重试保存');
+  assert.match(f.root.querySelector('.ai-save-feedback').textContent, /回执/);
+  f.input('ai-result-picker', b, 'change'); assert.equal(save.textContent, '查看待确认的记录');
+  save.click(); assert.equal(attempts.length, 1); assert.equal(f.opened.at(-1), 'reading-records');
+  f.recordRoot.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true })); await settle();
+  assert.equal(f.records.locked, true); assert.equal(attempts.length, 2);
+  f.reading.placed[0].x += .5; f.records.update(); f.input('ai-result-picker', a, 'change');
+  assert.match(f.root.querySelector('.ai-save-feedback').textContent, /登录/);
+  save.click(); await settle();
+  assert.deepEqual(attempts, [attempts[0], attempts[0], attempts[0]]);
+  assert.deepEqual(attempts[0].aiInterpretationIds, [a]); assert.equal(f.requests.length, 2);
+  assert.equal(f.records.locked, false); assert.equal(f.find('ai-view-record').hidden, false);
+  assert.equal(save.hidden, true);
+});
+
+test('a wrong record or missing, extra or substituted AI attachment keeps the frozen save unconfirmed', async t => {
+  const attempts = [], malformed = [
+    record => { record.id = crypto.randomUUID(); },
+    record => { delete record.aiInterpretations; },
+    record => { record.aiInterpretations.push(structuredClone(record.aiInterpretations[0])); },
+    record => { record.aiInterpretations[0].id = crypto.randomUUID(); },
+  ];
+  const f = fixture({ recordClient: { save: async body => {
+    const response = saveReceipt(body, f.requests);
+    malformed[attempts.length]?.(response.record);
+    attempts.push(structuredClone(body)); return response;
+  } } }); t.after(() => f.dispose());
+  f.input('ai-question', '回执核对'); f.submit(); await settle();
+  const save = f.find('ai-save-record'), view = f.find('ai-view-record');
+  for (let index = 0; index < malformed.length; index++) {
+    save.click(); await settle();
+    assert.equal(save.textContent, '确认并重试保存'); assert.equal(view.hidden, true);
+    assert.match(f.root.querySelector('.ai-save-feedback').textContent, /回执/);
+    assert.equal(f.records.locked, true); assert.equal(attempts.length, index + 1);
+  }
+  save.click(); await settle();
+  assert.equal(save.textContent, '已保存'); assert.equal(view.hidden, false); assert.equal(f.records.locked, false);
+  assert.ok(attempts.every(attempt => JSON.stringify(attempt) === JSON.stringify(attempts[0])));
+  assert.equal(f.requests.length, 1);
 });
 
 test('explicit generation freezes snapshot, keeps human notes separate and invalidates only semantic changes', async () => {
@@ -179,7 +278,7 @@ test('save includes only explicitly selected matching AI IDs and preserves an AI
   f.input('ai-question', '同一个问题'); f.submit();
   f.recordRoot.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
   assert.equal(savedBody.aiInterpretationIds, undefined);
-  aiDone(completed(aiBody)); await settle(); saveDone({ record: savedBody }); await settle();
+  aiDone(completed(aiBody)); await settle(); saveDone(saveReceipt(savedBody, [])); await settle();
   let warned = false; f.document.defaultView.confirm = () => { warned = true; return false; };
   assert.equal(f.records.mayReset(), false); assert.equal(warned, true);
   const checkbox = f.recordRoot.querySelector('.record-ai-choices').querySelector('input'); assert.equal(checkbox.checked, true);
@@ -394,7 +493,7 @@ test('unknown-request and record-save locks cover slider, model and reset while 
     f.recordRoot.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
     for (const id of ['ai-model', 'ai-effort', 'ai-effort-reset']) assert.equal(f.find(id).disabled, true);
     f.find('ai-effort-reset').click(); assert.equal(f.find('ai-effort').value, '2');
-    finishSave({ record: savedBody }); await settle();
+    finishSave(saveReceipt(savedBody, [submitted])); await settle();
     for (const id of ['ai-model', 'ai-effort', 'ai-effort-reset']) assert.equal(f.find(id).disabled, false);
     assert.equal(calls, 1); assert.equal(lookups, 1);
   } finally { f.dispose(); }
@@ -420,6 +519,45 @@ test('legacy results render without inventing a detail or focus selection', () =
   const node = renderAIInterpretation(f.document, completed(body).interpretation);
   assert.match(node.querySelector('.ai-answer-meta').textContent, /6.1 Terra · 计算·轻量/);
   assert.doesNotMatch(node.querySelector('.ai-answer-meta').textContent, /跟随问题|简读|细读|标准/);
+  f.dispose();
+});
+
+test('completion leads to the displayed answer; adjusting the draft and browsing earlier receipts are free', async () => {
+  const f = fixture();
+  const form = f.root.querySelector('form'), toggle = f.root.querySelector('.ai-edit-result');
+  assert.ok(toggle.hidden);
+  f.input('ai-question', '要记录的问题'); f.submit(); await settle();
+  assert.ok(form.hidden); assert.equal(toggle.hidden, false);
+  const firstId = f.requests[0].id;
+  assert.equal(f.root.querySelector('.ai-result-body').querySelector('h3').textContent.trim().startsWith('要记录的问题'), true);
+  f.root.scrollTop = 600; toggle.click();
+  assert.equal(form.hidden, false); assert.equal(f.root.scrollTop, 0);
+  assert.equal(f.requests.length, 1);
+  f.input('ai-question', '另一个问题'); f.submit(); await settle();
+  assert.ok(form.hidden);
+  f.input('ai-result-picker', firstId, 'change'); toggle.click();
+  assert.ok(f.root.querySelector('.ai-request-snapshot').hidden);
+  assert.equal(f.requests.length, 2);
+  f.dispose();
+});
+
+test('open-ended questions keep search links inspectable without assigning them to factual claims', () => {
+  const f = fixture(); f.records.setQuestion('分析当前情况');
+  const result = completed({ id: crypto.randomUUID(), reading: f.records.getAIReading(), model: 'gpt-6.1-sol', effort: 'low', liveCheck: true }).interpretation;
+  result.answer.factChecks = [];
+  result.webCheck = { status: 'searched', searchCalls: 1, checkedAt: '2026-11-21T01:00:00Z', sources: [
+    { url: 'https://example.org/market', title: '公开背景' }, { url: 'javascript:alert(1)', title: '无效' },
+    { url: 'https://example.org/market', title: '公开背景' },
+  ] };
+  const node = renderAIInterpretation(f.document, result);
+  const receipt = node.querySelector('.ai-search-receipt');
+  assert.match(receipt.querySelector('summary').textContent, /检索来源 · 1/);
+  assert.equal(receipt.querySelector('a').href, 'https://example.org/market');
+  assert.ok(!receipt.open); assert.equal(node.querySelector('.ai-fact'), null);
+  assert.ok(node.children.indexOf(node.querySelector('.record-prose')) < node.children.indexOf(node.querySelector('.ai-web-check')));
+  result.webCheck.sources = [];
+  const noLinks = renderAIInterpretation(f.document, result);
+  assert.match(noLinks.textContent, /未返回来源链接/); assert.equal(noLinks.querySelectorAll('a').length, 0);
   f.dispose();
 });
 

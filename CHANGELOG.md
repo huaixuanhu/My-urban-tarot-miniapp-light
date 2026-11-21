@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-21 — direct save from the AI answer
+
+Completed answers can be saved from the reading panel, with a receipt for the selected version. Returning to settings keeps the answer, and search links remain accessible on open-ended questions. An interrupted save retains its original identifier through a later failed retry.
+
 ## 2026-11-19 — interaction release
 
 Accepted revision40 brings the waiting indicator for shuffling, camera/card drag continuity, current-reading save confirmation and the compact model and effort panel into the same release. The AI sheet opens from its entry and moves when dragged by its blank glass.
