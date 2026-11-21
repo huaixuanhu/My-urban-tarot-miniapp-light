@@ -2,7 +2,7 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: stage2.5.18.1. The owner accepted revision41 on 2026-11-21 and requested commit, push, Production publication and verification.
+Current continuation: stage2.5.18.1 is published and verified. Accepted revision41 reached the canonical Production domain at application commit 96848d42. The authenticated AI panel loaded the tested assets. All six anonymous access checks passed. Direct saving and fresh-page readback were verified on the production bundle with an isolated synthetic store. The release receipt is in docs/release/stage2.5.18/README.md.
 
 ### stage2.5.18.1 — release direct saving from an AI answer
 

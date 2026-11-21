@@ -2,7 +2,7 @@
 
 ## 2026-11-21 — stage2.5.18 answer and shared-record flow
 
-Codex desktop implemented and reviewed the local UI and canonical record-save changes. Independent review reproduced duplicate writes after a lost response followed by an authentication rejection, and a receipt carrying the wrong result. Regression checks cover both failures. Browser validation and community references are in docs/design/stage2.5.18/README.md. The owner accepted the result for publication. Stage2.5.18.1 release evidence is in docs/release/stage2.5.18/README.md.
+Codex desktop implemented and reviewed the local UI and canonical record-save changes. Independent review reproduced duplicate writes after a lost response followed by an authentication rejection, and a receipt carrying the wrong result. Regression checks cover both failures. Browser validation and community references are in docs/design/stage2.5.18/README.md. The owner accepted revision41. Codex verified the authenticated Production panel, its application assets and six anonymous access checks. An independent browser run verified saving and fresh-page readback using those built assets with a local store. Stage2.5.18.1 release evidence is in docs/release/stage2.5.18/README.md.
 
 ## 2026-11-19 — stage2.5.17.4 release
 

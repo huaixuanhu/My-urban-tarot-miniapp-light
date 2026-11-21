@@ -1,6 +1,6 @@
 # Urban Tarot project entry
 
-Current continuation (2026-11-21): the owner accepted revision41 and authorized the stage2.5.18.1 Production release. See governance/STATE.md and docs/release/stage2.5.18/README.md.
+Current continuation (2026-11-21): accepted revision41 is live on the private Production site at application commit 96848d42. See governance/STATE.md stage2.5.18.1 and docs/release/stage2.5.18/README.md for the verification.
 
 Generated/adapted from human-ai-governance v0.8.4
 
