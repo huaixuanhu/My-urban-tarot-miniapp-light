@@ -76,7 +76,7 @@ export function createReadingAI({ root, getReading, getBusy, records, disclosure
   const custom = el('input'); custom.type = 'number'; custom.id = 'ai-custom-tokens'; custom.step = '1'; custom.max = String(AI_MAX_OUTPUT_TOKENS); custom.value = String(AI_DEFAULTS.maxOutputTokens); customLabel.append(custom); advancedSettings.append(customLabel);
   const costRow = el('div', '', 'ai-cost-row');
   const cost = el('span', '', 'ai-cost-hint'); cost.id = 'ai-cost-hint';
-  costRow.append(cost, createHelpTip(doc, { label: '费用', text: '宽泛参考范围，按 OpenAI 实际用量计费。问题、牌义、推理和回答都会影响费用；不会自动再次生成。', id: 'ai-cost-help' }));
+  costRow.append(cost, createHelpTip(doc, { label: '费用', text: '模型按实际用量计费。问题和牌义计入输入，推理和回答计入输出。', id: 'ai-cost-help' }));
   const settingError = el('p', '', 'ai-setting-error'); settingError.id = 'ai-setting-error';
   custom.setAttribute('aria-describedby', settingError.id); budget.setAttribute('aria-describedby', settingError.id);
   advanced.append(settingError);

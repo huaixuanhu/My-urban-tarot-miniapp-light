@@ -13,7 +13,7 @@ export function publicInterpretation(attempt: any, now?: Date): any;
 export function createInterpretationsHandler(options: {
   accessGuard: (request: Request) => Promise<Response>;
   getStore: () => Promise<AIStore>;
-  getProvider: () => Promise<AIProvider>;
+  getProvider: (model: string) => AIProvider | Promise<AIProvider>;
   now?: () => Date;
   onError?: (code: string) => void;
 }): (request: Request) => Promise<Response>;

@@ -2,15 +2,14 @@ export class AIProviderError extends Error {
   constructor(kind) { super(kind); this.kind = kind; }
 }
 
-/** One official request per operation. No redirect, SDK retry, fallback or body logging. */
-export function createOpenAIProvider(apiKey, { fetcher = fetch, timeoutMs = 115000 } = {}) {
-  if (typeof apiKey !== 'string' || !apiKey.trim()) throw new AIProviderError('not_configured');
-  async function request(path, payload, requestTimeoutMs = timeoutMs) {
+/** One request to the provider's fixed origin. No redirect, retry or body logging. */
+export function providerRequest(baseUrl, headers, fetcher, timeoutMs) {
+  return async function request(path, payload, requestTimeoutMs = timeoutMs) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), requestTimeoutMs);
     try {
-      const response = await fetcher(`https://api.openai.com/v1${path}`, {
-        method: 'POST', headers: { Authorization: `Bearer ${apiKey.trim()}`, 'Content-Type': 'application/json' },
+      const response = await fetcher(`${baseUrl}${path}`, {
+        method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' },
         body: JSON.stringify(payload), redirect: 'error', signal: controller.signal,
       });
       if (!response.ok) { await response.body?.cancel(); throw new AIProviderError(response.status < 500 ? 'rejected' : 'unknown'); }
@@ -32,7 +31,12 @@ export function createOpenAIProvider(apiKey, { fetcher = fetch, timeoutMs = 1150
       if (error instanceof AIProviderError) throw error;
       throw new AIProviderError('unknown');
     } finally { clearTimeout(timer); }
-  }
+  };
+}
+
+export function createOpenAIProvider(apiKey, { fetcher = fetch, timeoutMs = 115000 } = {}) {
+  if (typeof apiKey !== 'string' || !apiKey.trim()) throw new AIProviderError('not_configured');
+  const request = providerRequest('https://api.openai.com/v1', { Authorization: `Bearer ${apiKey.trim()}` }, fetcher, timeoutMs);
   return {
     async count(payload) {
       const body = Object.fromEntries(['model', 'instructions', 'input', 'text', 'reasoning', 'tools', 'tool_choice'].filter(key => payload[key] !== undefined).map(key => [key, payload[key]]));

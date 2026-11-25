@@ -20,7 +20,7 @@ export function normalizeAIInput(value) {
   delete reading.randomness;
   if (!reading.question) invalid('请先写下这次想了解的问题。');
   if (reading.interpretation || reading.reflection || reading.aiInterpretationIds?.length) invalid('AI 请求仅接收问题和牌阵，不接收已有解读。');
-  if (!AI_MODELS.some(model => model.id === value.model)) invalid('请选择 6.1 Terra 或 6.1 Sol。');
+  if (!AI_MODELS.some(model => model.id === value.model)) invalid('请选择列表中的解读模型。');
   const detail = value.detail === undefined ? AI_DEFAULTS.detail : value.detail;
   const focus = value.focus === undefined ? AI_DEFAULTS.focus : value.focus;
   if (!AI_DETAILS.some(item => item.id === detail)) invalid('请选择支持的解读详细度。');

@@ -1,5 +1,11 @@
 # Agent continuity log
 
+## 2026-11-25 — stage2.5.19 local Claude integration
+
+After the owner entered the server key locally, both official model lookups returned their exact IDs and advertised web search support. The real Anthropic count_tokens endpoint accepted six synthetic requests, covering low, medium and high for each model, including the web-tool configuration at high effort. These checks used only model lookup and free token counting. They did not run generation, execute a search or measure a credit deduction.
+
+Codex desktop (GPT-6) integrated Anthropic's native Messages API and checked the published model IDs, effort and subscriber credit terms. The local aggregate passed all 421 tests, runtime checks and the production build. Transport fixtures covered both Claude models at each effort, same-ID recovery, search failure and source provenance. In Chromium the 1280px view submitted Opus at high effort with a synthetic search, and the 390px view submitted Sonnet at medium effort with search off. Each saved its own complete answer and settings in the shared-record fixture and opened the matching receipt. Fixture counters recorded two generations, two records and zero external calls. All 115 previously protected files matched their baseline. No production configuration or deployment was performed.
+
 ## 2026-11-21 — stage2.5.18 answer and shared-record flow
 
 Codex desktop implemented and reviewed the local UI and canonical record-save changes. Independent review reproduced duplicate writes after a lost response followed by an authentication rejection, and a receipt carrying the wrong result. Regression checks cover both failures. Browser validation and community references are in docs/design/stage2.5.18/README.md. The owner accepted revision41. Codex verified the authenticated Production panel, its application assets and six anonymous access checks. An independent browser run verified saving and fresh-page readback using those built assets with a local store. Stage2.5.18.1 release evidence is in docs/release/stage2.5.18/README.md.

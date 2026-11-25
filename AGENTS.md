@@ -1,6 +1,6 @@
 # Urban Tarot project entry
 
-Current continuation (2026-11-21): accepted revision41 is live on the private Production site at application commit 96848d42. See governance/STATE.md stage2.5.18.1 and docs/release/stage2.5.18/README.md for the verification.
+Current continuation (2026-11-25) is the authorized release of the accepted Claude integration in governance/STATE.md stage2.5.19.1.
 
 Generated/adapted from human-ai-governance v0.8.4
 

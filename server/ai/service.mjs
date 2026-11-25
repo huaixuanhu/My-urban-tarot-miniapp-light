@@ -69,12 +69,16 @@ function usageFrom(response, cap, liveCheck = false) {
     if (!Number.isSafeInteger(value) || value < 0 || value > ceiling) throw new AIValidationError('AI 用量明细未通过验证。');
     return value;
   };
+  // Anthropic reports billed searches separately; a failed tool use is free.
+  // Keep all observed attempts in webCheck and preserve the reported usage.
+  const observedSearches = liveCheck ? webCheckFromResponse(response, '').searchCalls : 0;
+  const reportedSearches = detail(usage.server_tool_use?.web_search_requests, observedSearches);
   return {
     inputTokens: usage.input_tokens, outputTokens: usage.output_tokens, totalTokens: usage.total_tokens,
     reasoningTokens: detail(usage.output_tokens_details?.reasoning_tokens, usage.output_tokens),
     cachedInputTokens: detail(usage.input_tokens_details?.cached_tokens, usage.input_tokens),
     cacheWriteTokens: detail(usage.input_tokens_details?.cache_write_tokens, usage.input_tokens),
-    ...(liveCheck ? { searchCalls: webCheckFromResponse(response, '').searchCalls } : {}),
+    ...(liveCheck ? { searchCalls: reportedSearches ?? observedSearches } : {}),
   };
 }
 
@@ -137,7 +141,7 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
         if (!matchesRequest(existing, hash, noWebHash, legacyHash)) return problem('AI_CONFLICT', '这个调用编号已用于其他内容，请读取原结果。', 409);
         const view = publicInterpretation(existing, now()); return json({ interpretation: view }, view.status === 'pending' ? 202 : 200);
       }
-      const provider = await getProvider();
+      const provider = await getProvider(input.model);
       const createdAt = now().toISOString();
       const attempt = {
         id: input.id, status: 'pending', createdAt, createdBy: subject, promptVersion: AI_PROMPT_VERSION, requestHash: hash,
@@ -179,7 +183,8 @@ export function createInterpretationsHandler({ accessGuard, getStore, getProvide
       return json({ interpretation: publicInterpretation(persisted, now()) }, persisted.status === 'completed' ? 201 : 200);
     } catch (error) {
       if (error instanceof AIValidationError || error instanceof RecordValidationError) return problem('INVALID_AI_REQUEST', error.message, 400);
-      if (error instanceof AIStorageNotConfigured || (error instanceof AIProviderError && error.kind === 'not_configured')) return problem('AI_NOT_CONFIGURED', 'AI 解读尚未接通，这次没有调用。', 503);
+      if (error instanceof AIStorageNotConfigured) return problem('AI_NOT_CONFIGURED', 'AI 解读的存储尚未接通。', 503);
+      if (error instanceof AIProviderError && error.kind === 'not_configured') return problem('AI_NOT_CONFIGURED', '所选模型尚未接通。可以切换模型后再试。', 503);
       onError('AI_STORAGE_UNCERTAIN');
       return problem('AI_STORAGE_UNCERTAIN', '暂时无法确认这次解读的保存状态。请保留当前内容并查询原调用，勿重复发起。', 503);
     }

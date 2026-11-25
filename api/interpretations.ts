@@ -3,7 +3,7 @@ import { accessConfig } from '../access/config.js';
 import { createAccessGuard } from '../access/guard.js';
 import { createInterpretationsHandler, AIStorageNotConfigured, type AIStore } from '../server/ai/service.mjs';
 import { createNeonAIStore } from '../server/ai/neon-store.mjs';
-import { createOpenAIProvider } from '../server/ai/provider.mjs';
+import { createModelProvider } from '../server/ai/providers.mjs';
 
 const keys = createRemoteJWKSet(new URL(`${accessConfig.issuer}/cdn-cgi/access/certs`), {
   timeoutDuration: 5000, cooldownDuration: 30000, cacheMaxAge: 3600000,
@@ -17,7 +17,7 @@ const handler = createInterpretationsHandler({
     store ??= createNeonAIStore(connection).catch(error => { store = undefined; throw error; });
     return store;
   },
-  getProvider: async () => createOpenAIProvider(process.env.OPENAI_API_KEY),
+  getProvider: createModelProvider,
   onError: code => console.error('[augurwell-ai]', code),
 });
 

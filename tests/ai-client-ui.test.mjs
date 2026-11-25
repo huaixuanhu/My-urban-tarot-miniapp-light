@@ -457,6 +457,35 @@ test('each native slider step names its effort, updates budget and submits the c
   }
 });
 
+test('Sonnet and Opus retain each GPT effort and its custom budget through generation and a saved receipt', async t => {
+  for (const [model, label, rates] of [
+    ['claude-sonnet-5-5', 'Sonnet 5.5', '输入 US$2 / 输出 US$10'],
+    ['claude-opus-5-5', 'Opus 5.5', '输入 US$4 / 输出 US$20'],
+  ]) {
+    for (const [step, effort, strength] of [['0', 'low', '轻量'], ['1', 'medium', '标准'], ['2', 'high', '深入']]) {
+      await t.test(`${label} · ${strength}`, async t => {
+        const f = fixture(); t.after(() => f.dispose());
+        assert.ok(f.find('ai-model').options.some(option => option.value === model && option.textContent === label));
+        f.input('ai-effort', step); f.input('ai-budget', 'custom', 'change'); f.input('ai-custom-tokens', '7500');
+        f.input('ai-model', model, 'change');
+        assert.equal(f.find('ai-compute-toggle').textContent, `${label} · ${strength}`);
+        assert.equal(f.find('ai-effort').value, step);
+        assert.equal(f.find('ai-budget').value, 'custom');
+        assert.ok(f.find('ai-cost-hint').textContent.includes(rates));
+        assert.equal(f.requests.length, 0);
+        f.input('ai-question', '我该如何安排这周的学习时间？'); f.submit(); await settle();
+        const [request] = f.requests;
+        assert.equal(request.model, model); assert.equal(request.effort, effort); assert.equal(request.maxOutputTokens, 7500);
+        f.find('ai-save-record').click(); await settle();
+        assert.deepEqual(f.recordRequests[0].aiInterpretationIds, [request.id]);
+        f.find('ai-view-record').click();
+        const meta = f.recordRoot.querySelector('.record-ai-body').querySelector('.ai-answer-meta');
+        assert.ok(meta.textContent.includes(label)); assert.ok(meta.textContent.includes(`计算·${strength}`));
+      });
+    }
+  }
+});
+
 test('effort reset restores the default budget and label while retaining model and other choices without a request', () => {
   const f = fixture();
   try {

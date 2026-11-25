@@ -1,5 +1,9 @@
 # Urban Tarot design owner
 
+## stage2.5.19 — accepted revision42, Claude model choices
+
+Derived from accepted revision41 and governance/STATE.md stage2.5.19. Add Sonnet 5.5 and Opus 5.5 to the same model menu as Terra and Sol. The compact summary, floating glass panel and three slider positions follow revision41. Switching model carries the selected effort and custom generation budget across providers. Receipts use the submitted model and effort, including when an older version is selected. The owner accepted revision42 for Production on 2026-11-25.
+
 ## stage2.5.18 — accepted revision41, save from the answer
 
 Derived from revision40 and governance/STATE.md stage2.5.18. Keep the accepted K1.5 glass sheet, typography, pearl buttons and contextual help. The initial view is the question editor. When a matching answer arrives, show the question as its title, followed by its settings, synthesis and supporting material. Use a compact action row with a primary save for the selected version. Keep editing and paid regeneration explicit. Short viewports allow the entire row to scroll. Saving preserves reading position and offers the exact saved record with a return to the answer. Per-claim citations stay next to their findings. Other tool-returned links are available in a disclosure. The [local comparison](docs/design/stage2.5.18/README.md) records the comparison reviewed before acceptance on 2026-11-21.

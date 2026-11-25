@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-25 — one effort control for all four models
+
+Use Anthropic's direct Claude API for Sonnet and Opus so the owner can use the linked Claude Console organization's API credits. Send the selected effort explicitly on every generation. The existing slider, custom token limit, explicit submit and shared records apply to all four models. The local app does not manage the subscription or allocate a separate monthly balance.
+
 ## 2026-11-21 — bind direct save to the visible answer
 
 Use the records controller for both save entries. The explicit save on an AI answer attaches that displayed version, current matching spread and personal notes. The existing record form retains its multiple-version selection. Reuse the canonical save response and keep the current answer available after success. Selected source evidence and search discovery links remain distinct. The owner accepted this version and requested Production publication under stage2.5.18.1.

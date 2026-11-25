@@ -6,6 +6,7 @@ import { accessConfig } from '../access/config.ts';
 import { createAccessGuard } from '../access/guard.ts';
 import { createInterpretationsHandler, AIStorageNotConfigured, publicInterpretation } from '../server/ai/service.mjs';
 import { createOpenAIProvider, AIProviderError } from '../server/ai/provider.mjs';
+import { createModelProvider } from '../server/ai/providers.mjs';
 import { AI_PROMPT_VERSION, AI_SYSTEM_PROMPT, AI_DETAIL_PROMPTS, AI_FOCUS_PROMPTS, buildProviderPayload } from '../server/ai/prompt.mjs';
 import { AI_DETAILS, AI_FOCUSES } from '../shared/ai-options.mjs';
 import { normalizeAIInput } from '../shared/ai-schema.mjs';
@@ -219,6 +220,78 @@ test('unconfigured provider/storage has explicit unavailable response before gen
     const f = fixture({ handler }); const response = await f.handler(await request(input()));
     assert.equal(response.status, 503); assert.equal((await response.json()).error.code, 'AI_NOT_CONFIGURED'); assert.equal(f.calls.generate, 0);
   }
+});
+
+test('a missing selected-provider key uses neither the other account nor a request claim', async () => {
+  for (const [model, env] of [
+    ['claude-opus-5-5', { OPENAI_API_KEY: 'synthetic-openai' }],
+    ['gpt-6.1-terra', { ANTHROPIC_API_KEY: 'synthetic-anthropic' }],
+  ]) {
+    const f = fixture({ handler: { getProvider: id => createModelProvider(id, env) } });
+    const res = await f.handler(await request(input({ model })));
+    assert.equal(res.status, 503);
+    const { error } = await res.json();
+    assert.equal(error.code, 'AI_NOT_CONFIGURED');
+    assert.match(error.message, /所选模型/);
+    assert.equal(f.store.entries.size, 0);
+  }
+  assert.throws(() => createModelProvider('claude-unknown', {}), /请选择/);
+});
+
+test('one spread can save GPT and Claude interpretations with the selected effort and recover them without credentials', async () => {
+  const env = { OPENAI_API_KEY: 'synthetic-openai', ANTHROPIC_API_KEY: 'synthetic-anthropic' };
+  const spread = reading(), ids = [], calls = [];
+  const settings = [
+    ['gpt-6.1-sol', 'low', 3000],
+    ['claude-sonnet-5-5', 'medium', 6000],
+    ['claude-opus-5-5', 'high', 12000],
+  ];
+  const fetcher = async (url, init) => {
+    const target = new URL(url), payload = JSON.parse(init.body), headers = new Headers(init.headers);
+    calls.push(target.pathname);
+    if (target.host === 'api.openai.com') {
+      assert.equal(headers.get('authorization'), 'Bearer synthetic-openai');
+      assert.equal(headers.has('x-api-key'), false);
+      assert.equal(payload.model, 'gpt-6.1-sol');
+      return Response.json(target.pathname.endsWith('/input_tokens') ? { input_tokens: 900 } : responseFor(payload));
+    }
+    assert.equal(target.origin, 'https://api.anthropic.com');
+    assert.equal(headers.get('x-api-key'), 'synthetic-anthropic');
+    assert.equal(headers.has('authorization'), false);
+    if (target.pathname.endsWith('/count_tokens')) return Response.json({ input_tokens: 900 });
+    const chosen = settings.find(([model]) => model === payload.model);
+    assert.equal(payload.output_config.effort, chosen[1]);
+    assert.equal(payload.max_tokens, chosen[2]);
+    const answer = answerFor({ input: JSON.stringify(spread) });
+    return Response.json({ type: 'message', id: 'msg_synthetic', role: 'assistant', model: payload.model, stop_reason: 'end_turn',
+      content: [{ type: 'text', text: JSON.stringify(answer) }], usage: { input_tokens: 900, output_tokens: 600 } });
+  };
+  const f = fixture({ handler: { getProvider: id => createModelProvider(id, env, { fetcher }) } });
+  const bodies = settings.map(([model, effort, maxOutputTokens]) => input({ reading: spread, model, effort, maxOutputTokens }));
+  for (const body of bodies) {
+    const res = await f.handler(await request(body));
+    const { interpretation } = await res.json();
+    assert.equal(interpretation.status, 'completed', interpretation.message);
+    assert.equal(res.status, 201);
+    assert.equal(interpretation.returnedModel, body.model);
+    assert.equal(interpretation.effort, body.effort);
+    ids.push(interpretation.id);
+  }
+  delete env.OPENAI_API_KEY;
+  delete env.ANTHROPIC_API_KEY;
+  for (const body of bodies) {
+    assert.equal((await f.handler(await request(body))).status, 200);
+    const recovered = await f.handler(await request(undefined, { query: `?id=${body.id}` }));
+    assert.equal((await recovered.json()).interpretation.id, body.id);
+  }
+  assert.equal((await f.handler(await request({ ...bodies[1], model: 'gpt-6.1-sol' }))).status, 409);
+  assert.deepEqual(calls, ['/v1/responses/input_tokens', '/v1/responses', '/v1/messages/count_tokens', '/v1/messages', '/v1/messages/count_tokens', '/v1/messages']);
+  const records = recordFixture(f.store);
+  const saved = await records.handler(await request({ ...spread, aiInterpretationIds: ids }));
+  assert.equal(saved.status, 201);
+  const fetched = await records.handler(await request(undefined, { query: `?id=${spread.id}` }));
+  const { record } = await fetched.json();
+  assert.deepEqual(record.aiInterpretations.map(i => [i.model, i.effort, i.maxOutputTokens]), settings);
 });
 test('provider uses fixed official URL, nonredirecting requests and a single attempt', async () => {
   const seen = [];
@@ -459,6 +532,39 @@ function liveFixture(transform = value => value) {
   f.provider.generate = async payload => { f.calls.generate++; f.payloads.push(payload); return transform(liveResponseFor(payload), payload); };
   return f;
 }
+
+test('Claude live results retain checked sources and distinguish attempted from billed searches', async () => {
+  const body = input({ model: 'claude-sonnet-5-5', liveCheck: true, reading: reading({ question: '公开规则今天生效，这对我的计划有什么启示？' }) });
+  const answer = answerFor({ input: JSON.stringify(body.reading) });
+  answer.factChecks = [{ claim: '公开规则今天生效', finding: '示例来源列出今天的生效日期。', status: 'supported', sourceUrls: [webSource.url] }];
+  let generations = 0;
+  const fetcher = async (url, init) => {
+    if (new URL(url).pathname.endsWith('/count_tokens')) return Response.json({ input_tokens: 900 });
+    generations++;
+    const payload = JSON.parse(init.body);
+    return Response.json({
+      type: 'message', role: 'assistant', model: payload.model, stop_reason: 'tool_use',
+      content: [
+        { type: 'server_tool_use', name: 'web_search', id: 'search1', input: { query: '规则日期' } },
+        { type: 'web_search_tool_result', tool_use_id: 'search1', content: { type: 'web_search_tool_result_error', error_code: 'unavailable' } },
+        { type: 'server_tool_use', name: 'web_search', id: 'search2', input: { query: '规则生效公告' } },
+        { type: 'web_search_tool_result', tool_use_id: 'search2', content: [{ type: 'web_search_result', ...webSource }] },
+        { type: 'tool_use', id: 'result', name: 'submit_interpretation', input: answer },
+      ],
+      usage: { input_tokens: 12500, output_tokens: 600, server_tool_use: { web_search_requests: 1 } },
+    });
+  };
+  const f = fixture({ handler: { getProvider: id => createModelProvider(id, { ANTHROPIC_API_KEY: 'synthetic' }, { fetcher }) } });
+  const res = await f.handler(await request(body));
+  const { interpretation } = await res.json();
+  assert.equal(res.status, 201, interpretation.message);
+  assert.deepEqual(interpretation.webCheck, { status: 'searched', checkedAt: clock, searchCalls: 2, sources: [webSource] });
+  assert.equal(interpretation.usage.searchCalls, 1);
+  assert.equal(interpretation.usage.inputTokens, 12500);
+  assert.deepEqual(interpretation.answer.factChecks, answer.factChecks);
+  assert.equal((await f.handler(await request(body))).status, 200);
+  assert.equal(generations, 1);
+});
 
 test('live search is explicit, forced and bounded; local source text and server time remain authoritative input', async () => {
   const f = liveFixture(), body = input({ liveCheck: true, timeZone: 'Australia/Melbourne' });

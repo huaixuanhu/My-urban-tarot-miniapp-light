@@ -1,7 +1,9 @@
-/** Browser-safe settings; the service validates the same values before calling OpenAI. */
+/** The client and service share this model allowlist and the same three effort levels. */
 export const AI_MODELS = Object.freeze([
-  { id: 'gpt-6.1-terra', label: '6.1 Terra' },
-  { id: 'gpt-6.1-sol', label: '6.1 Sol' },
+  { id: 'gpt-6.1-terra', label: '6.1 Terra', provider: 'openai' },
+  { id: 'gpt-6.1-sol', label: '6.1 Sol', provider: 'openai' },
+  { id: 'claude-sonnet-5-5', label: 'Sonnet 5.5', provider: 'anthropic', usdPerMillion: { input: 2, output: 10 } },
+  { id: 'claude-opus-5-5', label: 'Opus 5.5', provider: 'anthropic', usdPerMillion: { input: 4, output: 20 } },
 ]);
 export const AI_DETAILS = Object.freeze([
   { id: 'brief', label: '简读' },
@@ -24,12 +26,18 @@ export const AI_MAX_OUTPUT_TOKENS = 12000;
 export const AI_MAX_INPUT_TOKENS = 10000;
 export const AI_DEFAULTS = Object.freeze({ model: 'gpt-6.1-terra', detail: 'standard', focus: 'general', effort: 'low', maxOutputTokens: 3000, liveCheck: false });
 
-// Intentionally broad guidance for this bounded text-only feature, not a quote.
-// Input, actual generation length, reasoning and model all affect the bill.
 export function aiCostHint(model, effort, liveCheck = false) {
+  const selected = AI_MODELS.find(item => item.id === model);
+  if (!selected) return '';
+  const search = liveCheck ? '，联网另计' : '';
+  if (selected.usdPerMillion) {
+    const { input, output } = selected.usdPerMillion;
+    return `每百万 tokens · 输入 US$${input} / 输出 US$${output}${search}`;
+  }
+  // Existing broad per-reading estimates for the GPT models.
   const sol = model === 'gpt-6.1-sol';
   const upper = effort === 'high' ? (sol ? '0.30' : '0.15') : effort === 'medium' ? (sol ? '0.25' : '0.12') : (sol ? '0.20' : '0.10');
-  return `约 US$0.001–${upper} / 次${liveCheck ? '，联网另计' : ''}`;
+  return `约 US$0.001–${upper} / 次${search}`;
 }
 
 /** Ignore session IDs, human notes and selection-only stacking changes. */

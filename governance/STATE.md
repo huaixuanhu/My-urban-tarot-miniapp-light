@@ -2,7 +2,15 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation: stage2.5.18.1 is published and verified. Accepted revision41 reached the canonical Production domain at application commit 96848d42. The authenticated AI panel loaded the tested assets. All six anonymous access checks passed. Direct saving and fresh-page readback were verified on the production bundle with an isolated synthetic store. The release receipt is in docs/release/stage2.5.18/README.md.
+Current continuation is stage2.5.19.1, the authorized private Production release of accepted revision42.
+
+### stage2.5.19.1 — release the Claude reading models
+
+Parent: stage2.5.19 below. Publish the accepted model choices and their provider integration through the linked main-branch deployment. Use the owner's Anthropic key as a Production-only secret. Verify the exact deployed revision, canonical domain and access checks. The previous verified deployment is at 0a562c0d.
+
+### stage2.5.19 — Claude models on the existing three effort levels
+
+Derived from stages 2.5.13 and 2.5.18. The owner requested the latest Sonnet and Opus models alongside GPT and explicitly confirmed the same three effort settings. Route each selection to its own provider, keep the existing question, source, budget and record rules, and verify the two Claude models with synthetic transport locally. Subscription credit setup belongs to the owner's linked Claude Console organization. README.md owns configuration and DESIGN.md owns the selector. The owner accepted this version and authorized publication under stage2.5.19.1.
 
 ### stage2.5.18.1 — release direct saving from an AI answer
 

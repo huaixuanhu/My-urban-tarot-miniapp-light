@@ -1,5 +1,9 @@
 # Change history
 
+## 2026-11-25 — Claude support for readings
+
+The AI model menu adds Sonnet 5.5 and Opus 5.5 with the same three effort positions as Terra and Sol. The selected provider handles both generation and any requested live check. Saved readings retain their model and effort.
+
 ## 2026-11-21 — direct save from the AI answer
 
 Completed answers can be saved from the reading panel, with a receipt for the selected version. Returning to settings keeps the answer, and search links remain accessible on open-ended questions. An interrupted save retains its original identifier through a later failed retry.
