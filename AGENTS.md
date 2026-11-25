@@ -1,6 +1,6 @@
 # Urban Tarot project entry
 
-Current continuation (2026-11-25) is the authorized release of the accepted Claude integration in governance/STATE.md stage2.5.19.1.
+Current continuation (2026-11-25) is the published Claude integration in governance/STATE.md stage2.5.19.1. The private Production release receipt is in docs/release/stage2.5.19/README.md.
 
 Generated/adapted from human-ai-governance v0.8.4
 

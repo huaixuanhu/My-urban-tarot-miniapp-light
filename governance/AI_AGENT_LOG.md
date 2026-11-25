@@ -1,5 +1,9 @@
 # Agent continuity log
 
+## 2026-11-25 — stage2.5.19.1 private Production release
+
+Codex desktop (GPT-6) configured the production-only Anthropic secret and pushed the accepted application commit 1a93cfc1 to main. The deployment reached READY at the canonical domain and all six access checks passed. The build assets matched the local verification. The [release receipt](../docs/release/stage2.5.19/README.md) records the evidence.
+
 ## 2026-11-25 — stage2.5.19 local Claude integration
 
 After the owner entered the server key locally, both official model lookups returned their exact IDs and advertised web search support. The real Anthropic count_tokens endpoint accepted six synthetic requests, covering low, medium and high for each model, including the web-tool configuration at high effort. These checks used only model lookup and free token counting. They did not run generation, execute a search or measure a credit deduction.

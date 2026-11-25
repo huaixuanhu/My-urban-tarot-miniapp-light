@@ -2,7 +2,7 @@
 
 Origin: the user's 2026-10-22 migration/access request and subsequent augurwell hostname and Vercel setup instructions. This is the initial canonical status/plan owner; there is no parent plan. Any future derived plan must name this owner and its bounded scope.
 
-Current continuation is stage2.5.19.1, the authorized private Production release of accepted revision42.
+Stage2.5.19.1 is published on the private Production site. The application commit is 1a93cfc1. The [release receipt](../docs/release/stage2.5.19/README.md) records the production configuration, deployed version and verification scope.
 
 ### stage2.5.19.1 — release the Claude reading models
 
